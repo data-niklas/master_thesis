@@ -12,6 +12,10 @@
   3. Benchmark method using dataset and pipeline
   
   ~ Goals ~
+  General design, so talk about how goals can be generally achieved through architecture
+  Top-down
 
   ~ Non goals ~
+  Talk about implementation details and tweaks / hacks
 */
+
