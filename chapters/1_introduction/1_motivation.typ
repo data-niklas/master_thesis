@@ -1,0 +1,12 @@
+== Motivation
+- Problems:
+  - Outdated knowledge and retraining not possible
+    - Not flexible enough, as cannot find all needed knowledge for all domains
+    - Fine-tuning / retraining slow
+  - Dynamic techniques can inject up-to-date information, but are:
+    - Relevance: Not specific enough, as they cannot find relevant information
+      - Model confusion, as too many nonrelevant tokens are injected and context window is limited
+    - Speed:
+      - Reliance to terminate, as some iterative methods do not converge
+      - Total generated tokens
+    - Are not localized, as the model does not know *where* the injected knowledge applies to

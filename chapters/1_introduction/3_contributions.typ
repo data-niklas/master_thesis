@@ -1,0 +1,16 @@
+== Contributions
+- General interrupt-based meta-strategy
+  - Almost no performance penalty
+  - Can provide localized information on-the-fly
+  - Robust as it:
+    - Gently guides the generation of the model
+    - Nudges the model by providing injected context
+    - Reduces interrupts 
+- Implementation of interrupt-based meta-strategy on code generation
+  - Programming language independence using LSP
+- Creation of custom dataset to evaluate functional and *approach* correctness
+  - Automated
+  - Plotting
+  - Stats collection => Excel
+  - Includes pinned dependencies and Python version
+  - Implements security concept using Docker
