@@ -1,4 +1,4 @@
-= Design
+= Design <design>
 
 #{
   include "1_interrupt_based_meta_strategy.typ"

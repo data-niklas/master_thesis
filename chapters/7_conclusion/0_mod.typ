@@ -1,4 +1,4 @@
-= Conclusion
+= Conclusion <conclusion>
 
 #{
         include "1_recap.typ"

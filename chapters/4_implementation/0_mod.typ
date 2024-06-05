@@ -1,4 +1,4 @@
-= Implementation
+= Implementation <implementation>
 
 #{
   include "1_interrupt_based_meta_strategy.typ"

@@ -1,7 +1,12 @@
-= Background
+#import "/utils.typ": *
+= Background & Related Work <background>
+Before talking about the main contributions, first the relevant background is given and related work shown. Firstly, fundamental properties of #acrpl("CLM") are introduced in @bg_llms. Afterwards, @bg_code_generation provides an overview over different types of code generation. Thereafter, @bg_meta_strategies discusses several strategies to incorporate #acrpl("CLM") into broader processes for code generation. @bg_guided_generation continues the discussion whilst focusing on sampling strategies. At last, @bg_lsp introduces the functionality of the #acr("LSP").
+
+
+/*
 - LLM are versatile and can be used for many tasks
 - Code generation is one domain, where LLM used to assist developers: programming, designing architectures, understanding code, etc.
-
+*/
 
 #{
   include "1_llm.typ"

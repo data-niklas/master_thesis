@@ -1,1 +1,1 @@
-#import "@preview/acrostiche:0.3.1": acr
+#import "@preview/acrostiche:0.3.1": acr, acrpl

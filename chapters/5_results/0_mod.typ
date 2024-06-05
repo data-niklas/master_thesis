@@ -1,4 +1,4 @@
-= Results
+= Results <results>
 
 #{
   include "1_collection.typ"

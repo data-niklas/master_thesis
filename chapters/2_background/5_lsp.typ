@@ -1,4 +1,4 @@
-== Language Server Protocol
+== Language Server Protocol <bg_lsp>
 === Base protocol
 - Asynchronous
 - Jsonb messages

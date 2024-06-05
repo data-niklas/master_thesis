@@ -1,5 +1,5 @@
 #import "template.typ": *
-
+#import "acronyms.typ": *
 // Take a look at the file `template.typ` in the file panel
 // to customize this template and discover how it works.
 #show: project.with(
@@ -9,20 +9,16 @@
   // Example: `abstract: [This is my abstract...]`
   date: datetime.today().display(),
   abstract: [
-    
+        #lorem(10) 
   ],
-  acronyms: (
-    "LLM":("Large Language Models"),
-    "LSP": ("Language Server Protocol"),
-    "RAG": ("Retrieval Augmented Generation")
+  acronyms: acronyms
   )
-)
 
 // We generated the example code below so you can see how
 // your document will look. Go ahead and replace it with
 // your own content!
 #include "chapters/0_mod.typ"
-
+#bibliography("bibliography.bib")
 
 /*= Prerequisites
 - Key information about general setup information

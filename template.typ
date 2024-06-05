@@ -104,6 +104,9 @@ for plagiarism at the university using plagiarism software.]
     pagebreak(weak: true)
     it
   }
+  show heading.where(level: 3): set heading(numbering: none)
+  show heading.where(level: 4): set heading(numbering: none)
+  show heading.where(level: 5): set heading(numbering: none)
   show math.equation: set text(weight: 400)
   title-page(title: title, author: author, date: date)
   set page(numbering: "I", number-align: center)
@@ -126,7 +129,7 @@ for plagiarism at the university using plagiarism software.]
 
 
   // Table of contents.
-  show outline.entry.where(
+        show outline.entry.where(
     level: 1
   ): it => {
     v(14pt, weak: true)
@@ -138,7 +141,10 @@ for plagiarism at the university using plagiarism software.]
   print-index(outlined: false, title: "Acronyms")
   pagebreak()
 
-
+  show heading: set block(
+below: 0.85em, 
+  above: 1.75em
+)
   // Main body.
   // Reset numbering and start counting at 1
   set page(numbering: "1", number-align: center)
