@@ -47,7 +47,6 @@ show heading.where(level: 5): set heading(numbering: none)
   // Set the document's basic properties.
   set document(author: author, title: title)
   set heading(numbering: "I")
-  apply-styling()
   title-page(title: title, author: author, date: date, matriculation-number: matriculation-number, date-of-submission: date-of-submission)
   set page(numbering: "I", number-align: center)
   i-did-not-cheat-i-swear(author)
