@@ -34,12 +34,15 @@ For the purposes of this thesis, a #acr("CLM") can be defined using the followin
 
 The raw next token prediction function is a mathematical function that takes a sequence of tokens and returns the prediction for the next tokens. The prediction values are not normalized yet and are called logits.
 $
-    "RNTPF"((x_1, x_2, ..., x_n)) = (y_1, y_2, ..., y_(|V|))
+    "RNTPF"((x_1, x_2, ..., x_n)) = (u_1, u_2, ..., u_(|V|))
 $
 
-The output $y$ has the shape of the vocabulary, where each value $y_i$ represents the probability of token $i$ being the next token.
+The output $u$ has the shape of the vocabulary, where each value $u_i$ represents the probability of token $i$ being the next token.
 
-The normalization function takes the logits and normalizes them to a probability distribution. Typically a softmax function is used.
+The normalization function takes the logits and normalizes them to a probability distribution. Typically a softmax function is used:
+$
+    y = "softmax"(u)
+$
 
 // Text generation strategy 
 To generate a full sequence of tokens and thus a document, the model must choose the next probable token in the document using a text generation strategy `TGS`. After choosing the next token $n$, where $1 lt.eq n lt.eq |"vocab"|$, it is appended to the old input $x$ to form $x'$:
@@ -84,4 +87,10 @@ The main drawback is the loss of determinism. Lacking determinism may complicate
 Top-k always chooses from the top $k$ most probable tokens, even if most tokens are very unlikely and only few of the $k$ tokens are probable. Top-p allows for more dynamic shapes of probability distributions, by only sampling from the top $p$ percent of tokens.
 
 === Temperature sampling
-Temperature sampling takes a different approach to top-p. It does not adapt to the shape of the probability distribution, but reshapes it. It divides the raw probability scores by a temperature $tau$
+Temperature sampling takes a different approach to top-p. It does not adapt to the shape of the probability distribution, but reshapes it. It divides the raw probability scores by a temperature $tau$:
+$
+    y = "softmax"(u / tau)
+$
+
+The softmax function normalizes the logits to the range $ (0, 1) $, where the sum of all values is $1$. When dividing by $tau < 1$ all values increase in total. After normalization this skews the probability distribution towards the most probable tokens.
+In contrast, when dividing by $tau > 1$ the probability distribution is flattened. This leads to a more uniform distribution.

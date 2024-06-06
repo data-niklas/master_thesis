@@ -1,4 +1,4 @@
-#import "template.typ": *
+#import "template/0_mod.typ": *
 #import "acronyms.typ": *
 // Take a look at the file `template.typ` in the file panel
 // to customize this template and discover how it works.
@@ -8,17 +8,22 @@
   // Insert your abstract after the colon, wrapped in brackets.
   // Example: `abstract: [This is my abstract...]`
   date: datetime.today().display(),
-  abstract: [
-        #lorem(10) 
+  abstract-en: [
+        #lorem(300) 
   ],
-  acronyms: acronyms
-  )
+  abstract-de: [
+        #lorem(300) 
+  ],
+  acronyms: acronyms,
+  bibliography-file: "/bibliography.bib",
+  matriculation-number: "3737339",
+  date-of-submission: "2024-09-30"
+)
 
 // We generated the example code below so you can see how
 // your document will look. Go ahead and replace it with
 // your own content!
 #include "chapters/0_mod.typ"
-#bibliography("bibliography.bib")
 
 /*= Prerequisites
 - Key information about general setup information
