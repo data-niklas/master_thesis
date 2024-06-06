@@ -31,7 +31,7 @@ show figure: set text(spacing: 100%)
 show table: set text(spacing: 100%)
 show raw: set text(font: "New Computer Modern Mono")
 show par: set block(spacing: 0.55em)
-show heading: set block(above: 1.4em, below: 1em)
+show heading: set block(above: 1.4em, below: 0.3em)
 show heading: it => {
   set text(font: "New Computer Modern Sans")
   it
@@ -42,8 +42,11 @@ show heading.where(level: 1): it => {
   it
 }
 show heading.where(level: 3): set heading(numbering: none)
+show heading.where(level: 3): set block(above: 1.4em, below: -0.2em)
 show heading.where(level: 4): set heading(numbering: none)
+show heading.where(level: 4): set block(above: 1.4em, below: -0.2em)
 show heading.where(level: 5): set heading(numbering: none)
+show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
   // Set the document's basic properties.
   set document(author: author, title: title)
   set heading(numbering: "I")
