@@ -92,5 +92,5 @@ $
     y = "softmax"(u / tau)
 $
 
-The softmax function normalizes the logits to the range $ (0, 1) $, where the sum of all values is $1$. When dividing by $tau < 1$ all values increase in total. After normalization this skews the probability distribution towards the most probable tokens.
+The softmax function normalizes the logits to the range $(0, 1)$, where the sum of all values equals $1$. When dividing by $tau < 1$ all values increase in total. After normalization this skews the probability distribution towards the most probable tokens.
 In contrast, when dividing by $tau > 1$ the probability distribution is flattened. This leads to a more uniform distribution.

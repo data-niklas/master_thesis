@@ -53,7 +53,6 @@ show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
   title-page(title: title, author: author, date: date, matriculation-number: matriculation-number, date-of-submission: date-of-submission)
   set page(numbering: "I", number-align: center)
   i-did-not-cheat-i-swear(author)
-  // set par(leading: 1em)
   // set text(spacing: 150%) // Space text to make it readable (\onehalfspacing)
   // // Apparently in LaTeX the spacing is not applied to the following elements
   // show footnote: set text(spacing: 100%)

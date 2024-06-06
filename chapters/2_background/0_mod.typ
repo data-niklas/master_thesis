@@ -1,6 +1,6 @@
 #import "/utils.typ": *
 = Background & Related Work <background>
-Before talking about the main contributions, first the relevant background is given and related work shown. Firstly, fundamental properties of #acrpl("CLM") are introduced in @bg_llms. Afterwards, @bg_code_generation provides an overview over different types of code generation. Thereafter, @bg_meta_strategies discusses several strategies to incorporate #acrpl("CLM") into broader processes for code generation. @bg_guided_generation continues the discussion whilst focusing on sampling strategies. At last, @bg_lsp introduces the functionality of the #acr("LSP").
+Before talking about the main contributions, first the relevant background is given and related work shown. Firstly, fundamental properties of #acrpl("CLM") are introduced in @bg_llms. Thereafter, @bg_meta_strategies discusses several strategies to incorporate #acrpl("CLM") into broader processes for generation. @bg_guided_generation continues the discussion whilst focusing on sampling strategies. Afterwards, @bg_code_generation introduces important aspects of code generation. At last, @bg_lsp introduces the functionality of the #acr("LSP").
 
 
 /*
@@ -10,9 +10,9 @@ Before talking about the main contributions, first the relevant background is gi
 
 #{
   include "1_llm.typ"
-  include "2_code_generation.typ"
-  include "3_meta_strategies.typ"
-  include "4_guided_generation.typ"
+  include "2_meta_strategies.typ"
+  include "3_guided_generation.typ"
+  include "4_code_generation.typ"
   include "5_lsp.typ"
   // TODO: where do I talk about benchmarks
 }
