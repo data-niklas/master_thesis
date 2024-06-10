@@ -1,5 +1,5 @@
 == Goals
-Goal: Technique to provide the model with up-to-date knowledge while  answering the following research questions:
+Goal: Technique to provide the model with up-to-date knowledge while answering the following research questions:
 
 (Reliance over Quality, as quality output does not matter if the fcking program does not terminate)
 
@@ -10,4 +10,4 @@ Goal: Technique to provide the model with up-to-date knowledge while  answering 
 
 + RQ1: How to find up-to-date information on local code and dependencies
 + RQ2: How to determine the relevancy of the found information on local code and dependencies
-+ RQ3: 
++ RQ3:

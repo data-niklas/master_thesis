@@ -2,7 +2,7 @@
 #import "1_title_page.typ": title-page
 #import "2_i_did_not_cheat_i_swear.typ": i-did-not-cheat-i-swear
 #import "3_abstract.typ": show-abstract
-
+#import "styling.typ": style
 
 #let project(
   title: "",
@@ -15,58 +15,21 @@
   matriculation-number: "",
   date-of-submission: "",
   abstract-en: "",
-  abstract-de: ""
+  abstract-de: "",
 ) = {
-set page(margin: (
-  outside: 2.7cm,
-  inside: 2.5cm,
-  top: 2.5cm,
-  bottom: 2.5cm,
-))
-set cite(style: "association-for-computing-machinery")
-set par(leading: 0.55em, first-line-indent: 1.8em, justify: true)
-set text(font: "New Computer Modern", spacing: 150%)
-show footnote: set text(spacing: 100%)
-show figure: set text(spacing: 100%)
-show table: set text(spacing: 100%)
-set table(    stroke: (x, y) => {
-    let d = (:)
-    if y == 0 {
-        d.insert("bottom", (
-            paint: black,
-            thickness: 0.7pt,
-        ))
-    }
-    if x > 0 {
-        d.insert("left", (
-            paint: black,
-            thickness: 0.7pt,
-        ))
-    }
-    d
-})
-show raw: set text(font: "New Computer Modern Mono")
-show par: set block(spacing: 0.55em)
-show heading: set block(above: 1.4em, below: 0.3em)
-show heading: it => {
-  set text(font: "New Computer Modern Sans")
-  it
-  v(1em)
-}
-show heading.where(level: 1): it => {
-  pagebreak(weak: true)
-  it
-}
-show heading.where(level: 3): set heading(numbering: none)
-show heading.where(level: 3): set block(above: 1.4em, below: -0.2em)
-show heading.where(level: 4): set heading(numbering: none)
-show heading.where(level: 4): set block(above: 1.4em, below: -0.2em)
-show heading.where(level: 5): set heading(numbering: none)
-show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
+  show: doc => {
+    style(doc)
+  }
   // Set the document's basic properties.
   set document(author: author, title: title)
   set heading(numbering: "I")
-  title-page(title: title, author: author, date: date, matriculation-number: matriculation-number, date-of-submission: date-of-submission)
+  title-page(
+    title: title,
+    author: author,
+    date: date,
+    matriculation-number: matriculation-number,
+    date-of-submission: date-of-submission,
+  )
   set page(numbering: "I", number-align: center)
   i-did-not-cheat-i-swear(author)
   // set text(spacing: 150%) // Space text to make it readable (\onehalfspacing)
@@ -87,9 +50,7 @@ show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
 
 
   // Table of contents.
-    show outline.entry.where(
-    level: 1
-  ): it => {
+  show outline.entry.where(level: 1): it => {
     v(14pt, weak: true)
     strong(it)
   }
@@ -108,6 +69,10 @@ show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
   body
   counter(heading).update(0)
   set heading(numbering: "I", outlined: true)
+  show outline: it => {
+    show ref: it => none
+    it
+  }
   show outline: set heading(numbering: "I", outlined: true)
   show bibliography: set heading(numbering: "I")
   bibliography(bibliography-file)

@@ -23,12 +23,11 @@ Thus, a solution is needed to extract thes *common* features from the editors an
 The #acrl("LSP") is an effort to standardize a common feature set for programming language tooling for use in #acrpl("IDE"). The protocol was designed my Microsoft for use in its Visual Studio Code editor, but is now an open standard. This thesis will focus on version `3.17` of the protocol. The protocol includes many different features, of which the following sections introduce a few important. The full specification may be accessed // TODO: here ref lsp spec
 
 === Design
-The protocol is based on a bidirectional client-server architecture. The client is a tool such as the #acr("IDE"). The server, henceforth called the language server, is programming language specific tooling that provides a subset of the protocol. Both the client and server must not implement the full protocol. 
+The protocol is based on a bidirectional client-server architecture. The client is a tool such as the #acr("IDE"). The server, henceforth called the language server, is programming language specific tooling that provides a subset of the protocol. Both the client and server must not implement the full protocol.
 The protocol is capability based. Both parties define and communicate their capabilities, then find common capabilities and restrict their use to them.
 Each client can connect to multiple language servers, and each language server can serve multiple clients. As such a client could use a language server for the Rust programming language while the user is coding on a Rust project. As soon as the user switches projects to a web project, the editor could then connect to several language servers to provide support for HTML, CSS and JavaScript at once. In that scenario several simultaneous language servers are necessary, as CSS and JavaScript can be embedded into HTML.
 // Embedded programming languages!? Code block in markdown
 The communication between the client and server must be bidirectional, as the server must be able to notify the client about events occuring, such as new diagnostic information.
-
 
 === JSON-RPC
 The base protocol relies on #acr("JSON-RPC"). The following section will give a short introduction on the protocol.
@@ -45,28 +44,39 @@ The protocol is versioned. Currently the versions `1.0` and `2.0` are specified.
 , though notifications could be considered a special case of requests. The following section will provide details on each type.
 
 Messages will be defined using TypeScript interfaces, in accordance with the #acr("LSP") specification. A general message has the following interface:
-#figure(code(lang: "TypeScript",
-```typescript
-interface Message {
-    jsonrpc: string;
-}
-```), caption: "General message interface")
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface Message {
+        jsonrpc: string;
+    }
+    ```,
+  ),
+  caption: "General message interface",
+)
 
 To define the other message types, additional TypeScript types are introduced:
 - `integer`: A signed 32-bit integer aliased to the TypeScript type `number`.
 - `uinteger`: An unsigned 32-bit integer aliased to the TypeScript type `number`.
-- `LSPArray`: 
+- `LSPArray`:
 
 // Request
-Request objects have the following #acr("JSON") format, as defined by the following json format: 
-#figure(code(lang: "JSON", ```json
-{
-    "jsonrpc": "string",
-    "method": "string",
-    "params": "any",
-    "id": "string|number|null"
-}
-```), caption: "Request object format")
+Request objects have the following #acr("JSON") format, as defined by the following json format:
+#figure(
+  code(
+    lang: "JSON",
+    ```json
+    {
+        "jsonrpc": "string",
+        "method": "string",
+        "params": "any",
+        "id": "string|number|null"
+    }
+    ```,
+  ),
+  caption: "Request object format",
+)
 The `jsonrpc` field contains the version used and must be set to `2.0`. The `method` field contains the name of the remote procedure to be called.
 // TODO: special case rpc_
 Any parameters needed to call the remote function should be passed in the optional field `params`.
@@ -74,31 +84,46 @@ At last, the `id` field identifies the message and thus allows correlation betwe
 // TODO: refactor previous sentence
 
 Each request must be answered by a response. The response object has the following format:
-#code(lang: "JSON", ```json
-{
-    "jsonrpc": "string",
-    "result": "any",
-    "error": {
-        "code": "number",
-        "message": "string",
-        "data": "any"
-    },
-    "id": "string|number|null"
-}
-```)
+#code(
+  lang: "JSON",
+  ```json
+  {
+      "jsonrpc": "string",
+      "result": "any",
+      "error": {
+          "code": "number",
+          "message": "string",
+          "data": "any"
+      },
+      "id": "string|number|null"
+  }
+  ```,
+)
 Similar to the request object, the `jsonrpc` field must be set to `2.0`.
 Either the `result` or `error` field will be set, depending on the success of the request. To correlate requests and responses, the response will contain the `id` of the request in the field `id`.
 
 Error responses contain the error `code`, a short descriptive `message` and optional additional `data`. The specification defines the following error codes and messages:
 #table(
-columns: (auto, auto, auto),
-    table.header([*Code*], [*Message*], [*Meaning*]),
-    [-32700], [Parse error], [The server received invalid #acr("JSON")],
-    [-32600], [Invalid Request], [The request is not a valid request object],
-    [-32601], [Method not found], [The method does not exist or is not available],
-    [-32602], [Invalid params], [Invalid method parameters],
-    [-32603], [Internal error], [An internal error occurred while processing the request],
-    [-32000], [Server error], [Reserved for implementation-defined server errors]
+  columns: (auto, auto, auto),
+  table.header([*Code*], [*Message*], [*Meaning*]),
+  [-32700],
+  [Parse error],
+  [The server received invalid #acr("JSON")],
+  [-32600],
+  [Invalid Request],
+  [The request is not a valid request object],
+  [-32601],
+  [Method not found],
+  [The method does not exist or is not available],
+  [-32602],
+  [Invalid params],
+  [Invalid method parameters],
+  [-32603],
+  [Internal error],
+  [An internal error occurred while processing the request],
+  [-32000],
+  [Server error],
+  [Reserved for implementation-defined server errors],
 )
 
 In addition, the protocol allows custom error codes.
@@ -118,7 +143,6 @@ The following headers are currently supported:
 - `Content-Type`: The #acr("MIME") type of the content part. The default is `application/vscode-jsonrpc; charset=utf-8` and no other charset is currently supported.
 
 The content part is a #acr("JSON") object, as defined by the #acr("JSON-RPC") specification.
-
 
 === Basic JSON structures
 

@@ -4,45 +4,64 @@
   author: (),
   date: none,
   matriculation-number: "",
-  date-of-submission: ""
+  date-of-submission: "",
 ) = {
   let smallskip = 3pt
   let Large = 14.4pt
   let large = 12pt
   let huge = 20.74pt
-  page(margin: 2.5cm, {
-  v(1cm)
-  align(center, {
-    //set par    
-    set text(font: "New Computer Modern Sans")
-    set text(size: Large)
-    v(1cm)
-    [*Ruprecht-Karls-Universität Heidelberg*]
-    v(smallskip)
-    [*Institute of Computer Science*]
-    v(smallskip)
-    [*Artificial Intelligence for Programming (AIP)*]
-    v(smallskip)
-    v(2cm)
-    text(weight: "bold", size: large)[Master's Thesis]
-    v(smallskip)
-    text(size: huge, title)
-  })
-  v(2cm)
-  place(dx: 1cm, dy: 8cm, {
-    set text(size: large)
-    align(center, 
-    table(
-      columns: (auto, auto),
-      align: left,
-      stroke: none,
-      column-gutter: 4pt,
-      row-gutter: 1pt,
-      [Name:], author,
-      [Matrikelnummer:], matriculation-number,
-      [Betreuer:], link("https://aip.ifi.uni-heidelberg.de/team/aa", "Prof. Dr. Artur Andrzejak"),
-      [Datum der Abgabe], date-of-submission
-    ))
-  })
-  })
+  page(
+    margin: 2.5cm,
+    {
+      v(1cm)
+      align(
+        center,
+        {
+          //set par
+          set text(font: "New Computer Modern Sans")
+          set text(size: Large)
+          v(1cm)
+          [*Ruprecht-Karls-Universität Heidelberg*]
+          v(smallskip)
+          [*Institute of Computer Science*]
+          v(smallskip)
+          [*Artificial Intelligence for Programming (AIP)*]
+          v(smallskip)
+          v(2cm)
+          text(weight: "bold", size: large)[Master's Thesis]
+          v(smallskip)
+          text(size: huge, title)
+        },
+      )
+      v(2cm)
+      place(
+        dx: 1cm,
+        dy: 8cm,
+        {
+          set text(size: large)
+          align(
+            center,
+            table(
+              columns: (auto, auto),
+              align: left,
+              stroke: none,
+              column-gutter: 4pt,
+              row-gutter: 1pt,
+              [Name:],
+              author,
+              [Matrikelnummer:],
+              matriculation-number,
+              [Betreuer:],
+              link(
+                "https://aip.ifi.uni-heidelberg.de/team/aa",
+                "Prof. Dr. Artur Andrzejak",
+              ),
+              [Datum der Abgabe],
+              date-of-submission,
+            ),
+          )
+        },
+      )
+    },
+  )
 }

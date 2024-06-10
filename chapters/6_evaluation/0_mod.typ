@@ -1,9 +1,9 @@
 = Evaluation <evaluation>
 
 #{
-        include "1_research_questions.typ"
-        include "2_evaluation_difficulties.typ"
-        include "3_evaluation.typ"
+  include "1_research_questions.typ"
+  include "2_evaluation_difficulties.typ"
+  include "3_evaluation.typ"
 }
 
 /* ~ General flow ~

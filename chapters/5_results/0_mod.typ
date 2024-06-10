@@ -14,7 +14,7 @@
 
   ~ Goals ~
         Show results / benchmarking
-        Relate to goals / 
+        Relate to goals /
   ~ Non goals ~
-        Evaluate the results and discuss 
+        Evaluate the results and discuss
  */

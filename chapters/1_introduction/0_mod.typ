@@ -7,8 +7,7 @@ Code generation describes the task of generating code for a specific programming
 // Reduce manual effort, increase productivity, reduce writing skeleton code
 An important use of code generation is to provide code completions in an #acr("IDE"). There the completed code removes the need to write boilerplate code.
 
-// Important aspects in an IDE are speed, 
-
+// Important aspects in an IDE are speed,
 
 /*
 - LLM are versatile and can be used for many tasks

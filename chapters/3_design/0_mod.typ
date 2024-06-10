@@ -10,7 +10,7 @@
   1. General new meta-strategy
   2. Use meta-strategy to implement codegen with LSP
   3. Benchmark method using dataset and pipeline
-  
+
   ~ Goals ~
   General design, so talk about how goals can be generally achieved through architecture
   Top-down

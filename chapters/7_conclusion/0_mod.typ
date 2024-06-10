@@ -1,10 +1,9 @@
 = Conclusion <conclusion>
 
 #{
-        include "1_recap.typ"
-        include "2_outlook.typ"
+  include "1_recap.typ"
+  include "2_outlook.typ"
 }
-
 
 /* ~ General flow ~
   1. Recap

@@ -5,7 +5,7 @@
   - Robust as it:
     - Gently guides the generation of the model
     - Nudges the model by providing injected context
-    - Reduces interrupts 
+    - Reduces interrupts
 - Implementation of interrupt-based meta-strategy on code generation
   - Programming language independence using LSP
 - Creation of custom dataset to evaluate functional and *approach* correctness

@@ -1,0 +1,59 @@
+#let style(doc) = {
+  set page(margin: (
+    outside: 2.7cm,
+    inside: 2.5cm,
+    top: 2.5cm,
+    bottom: 2.5cm,
+  ))
+  set cite(style: "association-for-computing-machinery")
+  set par(leading: 0.55em, first-line-indent: 1.8em, justify: true)
+  set text(font: "New Computer Modern", spacing: 150%)
+  show footnote: set text(spacing: 100%)
+  show figure: set text(spacing: 100%)
+  show table: set text(spacing: 100%)
+  set table(stroke: (x, y) => {
+    if y == 0 {
+      (
+        bottom: (
+          paint: black,
+          thickness: 0.4pt,
+        ),
+        top: (
+          paint: black,
+          thickness: 0.7pt,
+        ),
+      )
+    }
+  })
+  show table: it => {
+    let other_table = it.stroke == none
+    if it.children.len() > 0 and it.children.at(it.children.len() - 1) == table.hline() or other_table {
+      it
+    } else {
+      table(
+        columns: it.columns,
+        ..it.children,
+        table.hline(),
+      )
+    }
+  }
+  show raw: set text(font: "New Computer Modern Mono")
+  show par: set block(spacing: 0.55em)
+  show heading: set block(above: 1.4em, below: 0.3em)
+  show heading: it => {
+    set text(font: "New Computer Modern Sans")
+    it
+    v(1em)
+  }
+  show heading.where(level: 1): it => {
+    pagebreak(weak: true)
+    it
+  }
+  show heading.where(level: 3): set heading(numbering: none)
+  show heading.where(level: 3): set block(above: 1.4em, below: -0.2em)
+  show heading.where(level: 4): set heading(numbering: none)
+  show heading.where(level: 4): set block(above: 1.4em, below: -0.2em)
+  show heading.where(level: 5): set heading(numbering: none)
+  show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
+  doc
+}

@@ -1,13 +1,12 @@
 #import "/utils.typ": *
 = Background & Related Work <background>
-This chapter provides important background information and related work, necessary to understand the main contributions of this thesis. 
-Firstly, #acrpl("CLM") are introduced in @bg_llms. Thereafter, @bg_text_generation discusses commonly used text generation strategies. 
+This chapter provides important background information and related work, necessary to understand the main contributions of this thesis.
+Firstly, #acrpl("CLM") are introduced in @bg_llms. Thereafter, @bg_text_generation discusses commonly used text generation strategies.
 
 The sections @bg_meta_strategies and @bg_guided_generation showcase strategies to modify the text generation of a fixed pretrained #acr("CLM").
 @bg_transformers displays important components of the popular Hugging Face libary, which enables #acr("CLM") workflows using all of the techniques introduced in the sections before.
 
 Thereafter, @bg_code_generation highlights important aspects of code generation. Continuing, @bg_lsp introduces the functionality of the #acr("LSP"). At last, @bg_related_work introduces previous work.
-
 
 /*
 - LLM are versatile and can be used for many tasks
@@ -40,7 +39,6 @@ Thereafter, @bg_code_generation highlights important aspects of code generation.
   ~ Non goals ~
   Do not go into details on these methods for code gen, move these details to related work
 */
-
 
 /*
 == Metrics

@@ -3,22 +3,34 @@
 // Monkey-patched from https://github.com/Julian702/typst-packages/blob/46378f36075f2da63db26c8d62c3612f11834255/packages/preview/acrotastic/0.1.0/acrotastic.typ#L111C1-L130C2
 // necessary change: add outlined parameter
 // additionally: changed defaults
-#let print-index(title: "Acronyms", outlined: true, sorted: "up", delimiter: ":", acr-col-size: 20%, level: 1) = {
-  assert(sorted in ("keep","up","down"), message:"Sorted must be a string either \"keep\", \"up\" or \"down\"")
-  if title != "" {heading(level: level, outlined: outlined)[#title]}
-  acros.display(acronyms=>{
+#let print-index(
+  title: "Acronyms",
+  outlined: true,
+  sorted: "up",
+  delimiter: ":",
+  acr-col-size: 20%,
+  level: 1,
+) = {
+  assert(
+    sorted in ("keep", "up", "down"),
+    message: "Sorted must be a string either \"keep\", \"up\" or \"down\"",
+  )
+  if title != "" {
+    heading(level: level, outlined: outlined)[#title]
+  }
+  acros.display(acronyms => {
     let acr-list = acronyms.keys()
     if sorted == "up" {
       acr-list = acr-list.sorted()
     } else if sorted == "down" {
       acr-list = acr-list.sorted().rev()
     }
-    for acr in acr-list{
+    for acr in acr-list {
       table(
-        columns: (acr-col-size,100%-acr-col-size),
-        stroke:none,
+        columns: (acr-col-size, 100% - acr-col-size),
+        stroke: none,
         inset: 0pt,
-        [*#acr#label(acr)#delimiter*], [#acrl(acr, link: false)]
+        [*#acr#label(acr)#delimiter*], [#acrl(acr, link: false)],
       )
     }
   })
@@ -28,7 +40,11 @@
 
 #let Display(acr, text, link: true) = {
   let uppercased_text = upper(text.first()) + text.slice(1, none)
-  if link {display-link(acr, uppercased_text)} else {uppercased_text}
+  if link {
+    display-link(acr, uppercased_text)
+  } else {
+    uppercased_text
+  }
 }
 
 // Display acronym in long form.
@@ -54,7 +70,7 @@
           } else {
             panic("Definitions should be arrays of one or two strings. Definition of " + acr + " is: " + type(defs))
           }
-        } else {  
+        } else {
           Display(acr, defs.at(0), link: link)
         }
       } else {
@@ -64,7 +80,9 @@
   })
 }
 // Display acronym in long plural form.
-#let Acrlpl(acr, link: true) = {Acrl(acr, plural: true, link: link)}
+#let Acrlpl(acr, link: true) = {
+  Acrl(acr, plural: true, link: link)
+}
 
 #let Acrf(acr, plural: false, link: true) = {
   if plural {
@@ -75,17 +93,29 @@
   state(prefix + acr, false).update(true)
 }
 // Display acronym in plural form for the first time.
-#let Acrfpl(acr, link: true) = {Acrf(acr, plural: true, link: link)}
+#let Acrfpl(acr, link: true) = {
+  Acrf(acr, plural: true, link: link)
+}
 
 // Display acronym. Expands it if used for the first time.
 #let Acr(acr, plural: false, link: true) = {
   state(prefix + acr, false).display(seen => {
     if seen {
-      if plural {acrspl(acr, link: link)} else {acrs(acr, link: link)}
+      if plural {
+        acrspl(acr, link: link)
+      } else {
+        acrs(acr, link: link)
+      }
     } else {
-      if plural {Acrfpl(acr, link: link)} else {Acrf(acr, link: link)}
+      if plural {
+        Acrfpl(acr, link: link)
+      } else {
+        Acrf(acr, link: link)
+      }
     }
   })
 }
-// Display acronym in the plural form. Expands it if used for the first time. 
-#let Acrpl(acronym, link: true) = {Acr(acronym, plural: true, link: link)}
+// Display acronym in the plural form. Expands it if used for the first time.
+#let Acrpl(acronym, link: true) = {
+  Acr(acronym, plural: true, link: link)
+}

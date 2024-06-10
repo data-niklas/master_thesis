@@ -9,10 +9,10 @@
   // Example: `abstract: [This is my abstract...]`
   date: datetime.today().display(),
   abstract-en: [
-        #lorem(300) 
+        #lorem(300)
   ],
   abstract-de: [
-        #lorem(300) 
+        #lorem(300)
   ],
   acronyms: acronyms,
   bibliography-file: "/bibliography.bib",

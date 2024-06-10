@@ -1,6 +1,6 @@
 #import "/utils.typ": *
 == Text Generation Strategies <bg_text_generation>
-// Text generation strategy 
+// Text generation strategy
 To generate a full sequence of tokens and thus a document, the model must choose the next probable token in the document using a text generation strategy `TGS`. After choosing the next token $n$, where $1 lt.eq n lt.eq |"vocab"|$, it is appended to the old input $x$ to form $x'$:
 $x' = (x_1, x_2, ..., x_n, n)$.
 
@@ -14,22 +14,17 @@ Its main advantage is the simplicity. The strategy does not require additional s
 As the current best next token is not often the best token overall, the strategy does not produce the highest quality documents.
 
 $
-    hat(w) = "argmax"_(w in V) P(w | w_(lt t))
+  hat(w) = "argmax"_(w in V) P(w | w_(lt t))
 $
-
-
 
 === Beam Search
 Greedy decoding suffers from the problem of always choosing the current most probable token, even if it is not the best token overall. Beam search improves upon this by modeling the decoding process as a search tree. Instead of choosing only a single token, the strategy keeps $k$ possible token choices. These $k$ possible token choices are called `hypothesis`. At each time step the beam search uses the current $k$ hypothesis to independently continue the generation to create $k * V$ possible token combinations. The strategy then keeps the top-k combinations as new hypothesis.
 
-$
-    
-$
+$$
 
 By modeling the decoding process as a search tree, beam search can choose tokens that are better overall. This leads to a higher quality generation.
 
 But as beam search keeps $k$ hypothesis and decodes $k * V$ possible token combinations, the strategy requires more memory and processing power.
-
 
 === Top-k
 Top-k is a generalization of greedy decoding and a sampling strategy. Sampling strategies randomly choose the next token from the probability distribution. Top-k chooses the next token from the top $k$ most probable next tokens. Hence, the model chooses a wider variety of tokens, leading to richer outputs.
@@ -45,7 +40,7 @@ Top-k always chooses from the top $k$ most probable tokens, even if most tokens 
 === Temperature sampling
 Temperature sampling takes a different approach to top-p. It does not adapt to the shape of the probability distribution, but reshapes it. It divides the raw probability scores by a temperature $tau$:
 $
-    y = "softmax"(u / tau)
+  y = "softmax"(u / tau)
 $
 
 The softmax function normalizes the logits to the range $(0, 1)$, where the sum of all values equals $1$. When dividing by $tau < 1$ all values increase in total. After normalization this skews the probability distribution towards the most probable tokens.
