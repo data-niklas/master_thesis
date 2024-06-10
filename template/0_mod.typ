@@ -100,7 +100,6 @@
 
   print-index(outlined: false, title: "Acronyms")
   pagebreak(weak: true)
-  heading("Thesis source")
   if thesis-repo != none {
     set page(header: none)
     align(
