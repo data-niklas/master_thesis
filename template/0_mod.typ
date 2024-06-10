@@ -80,8 +80,6 @@ show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
   outline(depth: 2, indent: auto)
   pagebreak()
   init-acronyms(acronyms)
-  print-index(outlined: false, title: "Acronyms")
-  pagebreak()
 
   // Main body.
   // Reset numbering and start counting at 1
@@ -92,5 +90,26 @@ show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
   counter(heading).update(0)
 
   body
+  show outline: set heading(numbering: "I")
+  show bibliography: set heading(numbering: "I")
   bibliography(bibliography-file)
+  outline(
+    title: [List of Figures],
+    target: figure.where(kind: image),
+  )
+  outline(
+    title: [List of Tables],
+    target: figure.where(kind: table),
+  )
+  outline(
+    title: [List of Code],
+    target: figure.where(kind: raw),
+  )
+  outline(
+    title: [List of Examples],
+    target: figure.where(kind: "example"),
+  )
+
+  print-index(outlined: false, title: "Acronyms")
+  pagebreak()
 }

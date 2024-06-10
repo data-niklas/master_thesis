@@ -1,6 +1,12 @@
 #import "/utils.typ": *
 = Background & Related Work <background>
-Before talking about the main contributions, first the relevant background is given and related work shown. Firstly, fundamental properties of #acrpl("CLM") are introduced in @bg_llms. Thereafter, @bg_meta_strategies discusses several strategies to incorporate #acrpl("CLM") into broader processes for generation. @bg_guided_generation continues the discussion whilst focusing on sampling strategies. Afterwards, @bg_code_generation introduces important aspects of code generation. At last, @bg_lsp introduces the functionality of the #acr("LSP").
+This chapter provides important background information and related work, necessary to understand the main contributions of this thesis. 
+Firstly, #acrpl("CLM") are introduced in @bg_llms. Thereafter, @bg_text_generation discusses commonly used text generation strategies. 
+
+The sections @bg_meta_strategies and @bg_guided_generation showcase strategies to modify the text generation of a fixed pretrained #acr("CLM").
+@bg_transformers displays important components of the popular Hugging Face libary, which enables #acr("CLM") workflows using all of the techniques introduced in the sections before.
+
+Thereafter, @bg_code_generation highlights important aspects of code generation. Continuing, @bg_lsp introduces the functionality of the #acr("LSP"). At last, @bg_related_work introduces previous work.
 
 
 /*
@@ -10,10 +16,13 @@ Before talking about the main contributions, first the relevant background is gi
 
 #{
   include "1_llm.typ"
-  include "2_meta_strategies.typ"
-  include "3_guided_generation.typ"
-  include "4_code_generation.typ"
-  include "5_lsp.typ"
+  include "2_text_generation.typ"
+  include "3_meta_strategies.typ"
+  include "4_guided_generation.typ"
+  include "5_huggingface.typ"
+  include "6_code_generation.typ"
+  include "7_lsp.typ"
+  include "8_related_work.typ"
   // TODO: where do I talk about benchmarks
 }
 
