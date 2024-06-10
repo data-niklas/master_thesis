@@ -72,6 +72,7 @@
   counter(heading).update(0)
 
   body
+  set page(header: none)
   counter(heading).update(0)
   set heading(numbering: "I", outlined: true)
   show outline: it => {
@@ -101,7 +102,6 @@
   print-index(outlined: false, title: "Acronyms")
   pagebreak(weak: true)
   if thesis-repo != none {
-    set page(header: none)
     align(
       center + horizon,
       {
