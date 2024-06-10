@@ -29,6 +29,22 @@ set text(font: "New Computer Modern", spacing: 150%)
 show footnote: set text(spacing: 100%)
 show figure: set text(spacing: 100%)
 show table: set text(spacing: 100%)
+set table(    stroke: (x, y) => {
+    let d = (:)
+    if y == 0 {
+        d.insert("bottom", (
+            paint: black,
+            thickness: 0.7pt,
+        ))
+    }
+    if x > 0 {
+        d.insert("left", (
+            paint: black,
+            thickness: 0.7pt,
+        ))
+    }
+    d
+})
 show raw: set text(font: "New Computer Modern Mono")
 show par: set block(spacing: 0.55em)
 show heading: set block(above: 1.4em, below: 0.3em)
