@@ -1,9 +1,9 @@
 name: Compile, Upload and Release Typst Documents
 on:
-  workflow_dispatch:
   push:
-    tags:
-    - '**'
+    branches:
+    - main
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
@@ -15,15 +15,7 @@ jobs:
       uses: ammar-ahmed22/compile-typst-action@v1
       with:
         source_paths: 'main.typ'
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+    - name: Commit compiled PDFs
+      uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        name: PDF
-        path: '**/*.pdf'
-    - name: Release on tag
-      uses: softprops/action-gh-release@v1
-      if: github.ref_type = 'tag'
-      with:
-        name: "${{ github.ref_name }}"
-        files: |
-          main.pdf
+        commit_message: '[continuous deployment]: Compiled Typst to PDF'
