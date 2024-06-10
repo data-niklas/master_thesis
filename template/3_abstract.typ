@@ -1,4 +1,5 @@
 #let show-abstract(abstract, language) = {
+  set page(header: none)
   align(
     start + horizon,
     {

@@ -1,10 +1,22 @@
+#import "@preview/hydra:0.4.0": hydra
+
 #let style(doc) = {
-  set page(margin: (
-    outside: 2.7cm,
-    inside: 2.5cm,
-    top: 2.5cm,
-    bottom: 2.5cm,
-  ))
+  set page(
+    margin: (
+      outside: 2.7cm,
+      inside: 2.5cm,
+      top: 2.5cm,
+      bottom: 2.5cm,
+    ),
+    header: context {
+      if calc.odd(here().page()) {
+        align(right, smallcaps(hydra(1, book: true)))
+      } else {
+        align(left, smallcaps(hydra(2, book: true)))
+      }
+      line(length: 100%)
+    },
+  )
   set cite(style: "association-for-computing-machinery")
   set par(leading: 0.55em, first-line-indent: 1.8em, justify: true)
   set text(font: "New Computer Modern", spacing: 150%)

@@ -54,7 +54,10 @@
     v(14pt, weak: true)
     strong(it)
   }
-  outline(depth: 2, indent: auto)
+  {
+    set page(header: none)
+    outline(depth: 2, indent: auto)
+  }
   pagebreak()
   init-acronyms(acronyms)
 

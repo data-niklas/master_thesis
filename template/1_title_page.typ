@@ -12,6 +12,7 @@
   let huge = 20.74pt
   page(
     margin: 2.5cm,
+    header: none,
     {
       v(1cm)
       align(
