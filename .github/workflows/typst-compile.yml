@@ -9,3 +9,15 @@ jobs:
       uses: ammar-ahmed22/compile-typst-action@v1
       with:
         source_paths: 'main.typ'
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: PDF
+        path: '**/*.pdf'
+    - name: Release on tag
+      uses: softprops/action-gh-release@v1
+      if: github.ref_type = 'tag'
+      with:
+        name: "${{ github.ref_name }}"
+        files: |
+          main.pdf
