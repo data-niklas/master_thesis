@@ -17,7 +17,8 @@
   acronyms: acronyms,
   bibliography-file: "/bibliography.bib",
   matriculation-number: "3737339",
-  date-of-submission: "2024-09-30"
+  date-of-submission: "2024-09-30",
+  thesis-repo: "https://github.com/data-niklas/master_thesis"
 )
 
 // We generated the example code below so you can see how

@@ -3,6 +3,7 @@
 #import "2_i_did_not_cheat_i_swear.typ": i-did-not-cheat-i-swear
 #import "3_abstract.typ": show-abstract
 #import "styling.typ": style
+#import "@preview/codetastic:0.2.2": qrcode
 
 #let project(
   title: "",
@@ -16,6 +17,7 @@
   date-of-submission: "",
   abstract-en: "",
   abstract-de: "",
+  thesis-repo: none,
 ) = {
   show: doc => {
     style(doc)
@@ -97,4 +99,23 @@
   )
 
   print-index(outlined: false, title: "Acronyms")
+  pagebreak(weak: true)
+  heading("Thesis source")
+  if thesis-repo != none {
+    set page(header: none)
+    align(
+      center + horizon,
+      {
+        align(center, text(size: 14pt, smallcaps("QR code")))
+        v(10pt)
+        figure(
+          qrcode(thesis-repo),
+          caption: [
+            Scan the QR code to access the source code of this thesis:\ ] + link(thesis-repo),
+          supplement: none,
+          kind: "",
+        )
+      },
+    )
+  }
 }
