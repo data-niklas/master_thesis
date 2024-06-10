@@ -90,7 +90,9 @@ show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
   counter(heading).update(0)
 
   body
-  show outline: set heading(numbering: "I")
+  counter(heading).update(0)
+  set heading(numbering: "I", outlined: true)
+  show outline: set heading(numbering: "I", outlined: true)
   show bibliography: set heading(numbering: "I")
   bibliography(bibliography-file)
   outline(
@@ -111,5 +113,4 @@ show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
   )
 
   print-index(outlined: false, title: "Acronyms")
-  pagebreak()
 }
