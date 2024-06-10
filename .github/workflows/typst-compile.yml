@@ -1,5 +1,11 @@
-name: Compile Typst Documents
-on: [push]
+name: Compile, Upload and Release Typst Documents
+on:
+  workflow_dispatch:
+  push:
+    tags:
+    - '**'
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
