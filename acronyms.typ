@@ -1,10 +1,12 @@
 #let acronyms = (
+  "BOS": ("Begin of Sequence"),
   "BPE": ("Byte Pair Encoding"),
   "Code LLM": (
     "Large Language Model for Code",
     "Large Language Models for Code",
   ),
   "CLM": ("Causal Language Models"),
+  "EOS": ("End of Sequence"),
   "IDE": (
     "Integrated Development Environment",
     "Integrated Development Environments",
@@ -15,6 +17,7 @@
   "LLM": ("Large Language Models"),
   "LSP": ("Language Server Protocol"),
   "MIME": ("Multipurpose Internet Mail Extensions"),
+  "PAD": ("Padding"),
   "RAG": ("Retrieval Augmented Generation"),
   "RPC": ("Remote Procedure Call"),
 )

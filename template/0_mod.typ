@@ -86,6 +86,7 @@
     title: [List of Figures],
     target: figure.where(kind: image),
   )
+  // TODO: remove bold text
   outline(
     title: [List of Tables],
     target: figure.where(kind: table),
