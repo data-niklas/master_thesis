@@ -103,27 +103,30 @@ Similar to the request object, the `jsonrpc` field must be set to `2.0`.
 Either the `result` or `error` field will be set, depending on the success of the request. To correlate requests and responses, the response will contain the `id` of the request in the field `id`.
 
 Error responses contain the error `code`, a short descriptive `message` and optional additional `data`. The specification defines the following error codes and messages:
-#table(
-  columns: (auto, auto, auto),
-  table.header([*Code*], [*Message*], [*Meaning*]),
-  [-32700],
-  [Parse error],
-  [The server received invalid #acr("JSON")],
-  [-32600],
-  [Invalid Request],
-  [The request is not a valid request object],
-  [-32601],
-  [Method not found],
-  [The method does not exist or is not available],
-  [-32602],
-  [Invalid params],
-  [Invalid method parameters],
-  [-32603],
-  [Internal error],
-  [An internal error occurred while processing the request],
-  [-32000],
-  [Server error],
-  [Reserved for implementation-defined server errors],
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    table.header([*Code*], [*Message*], [*Meaning*]),
+    [-32700],
+    [Parse error],
+    [The server received invalid #acr("JSON")],
+    [-32600],
+    [Invalid Request],
+    [The request is not a valid request object],
+    [-32601],
+    [Method not found],
+    [The method does not exist or is not available],
+    [-32602],
+    [Invalid params],
+    [Invalid method parameters],
+    [-32603],
+    [Internal error],
+    [An internal error occurred while processing the request],
+    [-32000],
+    [Server error],
+    [Reserved for implementation-defined server errors],
+  ),
+  caption: "Error codes and messages",
 )
 
 In addition, the protocol allows custom error codes.

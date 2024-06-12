@@ -3,7 +3,7 @@
 This chapter provides important background information and related work, necessary to understand the main contributions of this thesis.
 Firstly, #acrpl("CLM") are introduced in @bg_llms. Thereafter, @bg_text_generation discusses commonly used text generation strategies.
 
-The sections @bg_meta_strategies and @bg_guided_generation showcase strategies to modify the text generation of a fixed pretrained #acr("CLM").
+The section @bg_controllable_generation showcases strategies to modify the text generation of a fixed pretrained #acr("CLM").
 @bg_transformers displays important components of the popular Hugging Face libary, which enables #acr("CLM") workflows using all of the techniques introduced in the sections before.
 
 Thereafter, @bg_code_generation highlights important aspects of code generation. Continuing, @bg_lsp introduces the functionality of the #acr("LSP"). At last, @bg_related_work introduces previous work.
@@ -17,11 +17,10 @@ Thereafter, @bg_code_generation highlights important aspects of code generation.
   include "1_llm.typ"
   include "2_text_generation.typ"
   include "3_meta_strategies.typ"
-  include "4_guided_generation.typ"
-  include "5_huggingface.typ"
-  include "6_code_generation.typ"
-  include "7_lsp.typ"
-  include "8_related_work.typ"
+  include "4_huggingface.typ"
+  include "5_code_generation.typ"
+  include "6_lsp.typ"
+  include "7_related_work.typ"
   // TODO: where do I talk about benchmarks
 }
 

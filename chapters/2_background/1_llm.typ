@@ -48,14 +48,15 @@ Each token represents a piece of natural language, such as a part of a word, or 
 #example(
   table(
     columns: (auto, auto),
+    align: (right, left),
     stroke: none,
     [/ Vocabulary: ],
-    [_{"The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", ".", "\<BOS\>", "\<EOS\>"}_],
+    [_{"The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", "\_", ".", "\<BOS\>", "\<EOS\>"}_],
 
     [/ Text: ], [_"The quick brown fox jumps"_],
-    [/ Tokens: ], [_{10, 0, 1, 2, 3, 4}_],
-    [/ Text fragments: ],
-    [_{"\<BOS\>", "The", "quick", "brown", "fox", "jumps"}_],
+    [/ Tokens ids: ], [_{11, 0, 9, 1, 9, 2, 9, 3, 4}_],
+    [/ Tokens: ],
+    [_{"\<BOS\>", "The", "\_", "quick", "\_", "brown", "\_", "fox", "\_", "jumps"}_],
 
   ),
   caption: "Natural language encoded into tokens.",
