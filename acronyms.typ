@@ -20,5 +20,6 @@
   "PAD": ("Padding"),
   "RAG": ("Retrieval Augmented Generation"),
   "RPC": ("Remote Procedure Call"),
+  "URI": ("Uniform Resource Identifier"),
 )
 

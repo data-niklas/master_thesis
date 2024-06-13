@@ -10,7 +10,7 @@ Many modern editors and #acrpl("IDE") provide features such as:
 - Rename symbols
 
 // Important because
-This list is not exhaustive, and the features between different editors may wary. These features are vital for any programmer, as the effort to create and maintain code is significantly reduced. Navigating large code bases and finding documentation on used code is highly beneficial.
+This list is not exhaustive, and the features between different editors may vary. These features are vital for any programmer, as the effort to create and maintain code is significantly reduced. Navigating large code bases and finding documentation on used code is highly beneficial.
 
 // High effort
 These many features take a significant effort to implement for a *single* programming language and editor. Providing support for several programming languages massively increases the implementation effort. In addition, the created features must be maintained next to the editor itself. As more programming languages are designed and are adopted, the need for tooling for these programming languages arises. Editor maintainers must then integrate these features for the new programming language.
@@ -62,16 +62,15 @@ To define the other message types, additional TypeScript types are introduced:
 - `LSPArray`:
 
 // Request
-Request objects have the following #acr("JSON") format, as defined by the following json format:
+Request objects have the following #acr("JSON") format, as defined by the following Typescript interface:
 #figure(
   code(
-    lang: "JSON",
-    ```json
-    {
-        "jsonrpc": "string",
-        "method": "string",
-        "params": "any",
-        "id": "string|number|null"
+    lang: "TypeScript",
+    ```typescript
+    interface RequestMessage extends Message {
+        method: string;
+        params?: any;
+        id: string | number | null;
     }
     ```,
   ),
@@ -84,20 +83,24 @@ At last, the `id` field identifies the message and thus allows correlation betwe
 // TODO: refactor previous sentence
 
 Each request must be answered by a response. The response object has the following format:
-#code(
-  lang: "JSON",
-  ```json
-  {
-      "jsonrpc": "string",
-      "result": "any",
-      "error": {
-          "code": "number",
-          "message": "string",
-          "data": "any"
-      },
-      "id": "string|number|null"
-  }
-  ```,
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface ResponseMessage extends Message {
+        result?: any;
+        error?: ResponseError;
+        id: string | number | null;
+    }
+
+    interface ResponseError {
+        code: number;
+        message: string;
+        data?: any;
+    }
+    ```,
+  ),
+  caption: "Response object format",
 )
 Similar to the request object, the `jsonrpc` field must be set to `2.0`.
 Either the `result` or `error` field will be set, depending on the success of the request. To correlate requests and responses, the response will contain the `id` of the request in the field `id`.
@@ -131,7 +134,19 @@ Error responses contain the error `code`, a short descriptive `message` and opti
 
 In addition, the protocol allows custom error codes.
 
-The final type of message is the notification. Notifications are a special type of request, as they do not contain an `id`. Notifications do not require a response from the server.
+The final type of message is the notification. Notifications are a special type of request, as they do not contain an `id`. Notifications do not require a response from the server:
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface NotificationMessage extends Message {
+        method: string;
+        params?: any;
+    }
+    ```,
+  ),
+  caption: "Notification object format",
+)
 
 // TODO: say that batch not required
 
@@ -145,13 +160,77 @@ The following headers are currently supported:
 - `Content-Length`: A mandatory header that specifies the length of the content part in bytes.
 - `Content-Type`: The #acr("MIME") type of the content part. The default is `application/vscode-jsonrpc; charset=utf-8` and no other charset is currently supported.
 
-The content part is a #acr("JSON") object, as defined by the #acr("JSON-RPC") specification.
+The content part is a #acr("JSON") object, as defined by the #acr("JSON-RPC") specification. The #acr("LSP") specification differs from the #acr("JSON-RPC") in the use of certain types. It restricts the numeric type used for `id` and `code` from `number` to `integer`, to disallow floating point identifiers.
 
 === Basic JSON structures
+Many #acrpl("RPC") share common structures needed to communicate about language features. The following section introduces a few necessary ones.
+
+// URI
+The first important structure is the #acr("URI"), as defined by rfc3986@berners-leeUniformResourceIdentifier2005. #acrpl("URI") are passed as strings and are used to uniquely identify files the language server and client work with.
+
+// Position
+To identify a position inside such a file, the protocol defines the `Position` structure:
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface Position {
+        line: uinteger;
+        character: uinteger;
+    }
+    ```,
+  ),
+  caption: "Position structure",
+)<code_position>
+Line and character define the position in the file starting at `0`.
+
+The last structure is `TextDocumentItem`, which represents an editable text document:
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface TextDocumentItem {
+        uri: DocumentUri;
+        languageId: string;
+        version: integer;
+        text: string;
+    }
+    ```,
+  ),
+  caption: "TextDocumentItem structure",
+)<code_text_document_item>
+In addition to the unique identifier of the document, the `uri`, the structure contains the content of the document in the field `text`. The `languageId` field defines the language of the document. This is needed especially when the language server processes documents of different languages. Passing the `languageId` prevents re-interpreting the file extension. The possible language ids are defined in the specification and can be seen in @table_language_ids in full.
 
 === Lifecycle Messages
+After defining the basic structures, this section introduces the first messages to control the lifecycle of the language server.
+
+// Initialize
+The first message the client sends the server, is the `initialize` message. No other communication will occur, until the server acknowledges the initialization with the response. The connection between client and server may only be initialized once.
+The `initialize` message has the following key fields:
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface InitializeParams {
+        rootUri?: DocumentUri;
+        capabilities: ClientCapabilities;
+        // ... more fields omitted
+    }
+    ```,
+  ),
+  caption: "Initialize message parameters",
+)<code_initialize>
+The `rootUri` is an optional field that specifies the root path of the workspace, the client is working on. Setting the workspace e.g. enables finding virtual environments needed to scan the local code base.
+The next field `capabilities` is a complex structure of flags, which specify all capabilities the client has.
+
+The server responds with the initialize result, which contains the server capabilities.
+
+Afer receiving the response, the client must then acknowledge the response, by sending the `initialized` message. The server then has the option to e.g. register capabilities dynamically or run further initializations. Afterwards, the initialization process is finished.
+
+After using the language server, the client can stop the server in a two step process. First, the client sends a `shutdown` message. The server then stops itself, but preserves its messaging capabilities to send a proper response. In the next step, the client sends the `exit` message, after which the server exits its process.
 
 === Document Synchronization
+After introducing messages to establish and control the connection between server and client, this section focused on the next step, the document synchronization. The goal of these messages is to synchronize the server to the users actions. If a user works on a file, the server should then provide capabilities for the same file.
 
 === Language Features
 
