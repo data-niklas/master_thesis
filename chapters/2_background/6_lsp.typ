@@ -227,19 +227,208 @@ The server responds with the initialize result, which contains the server capabi
 
 Afer receiving the response, the client must then acknowledge the response, by sending the `initialized` message. The server then has the option to e.g. register capabilities dynamically or run further initializations. Afterwards, the initialization process is finished.
 
+// TODO: replace many after
 After using the language server, the client can stop the server in a two step process. First, the client sends a `shutdown` message. The server then stops itself, but preserves its messaging capabilities to send a proper response. In the next step, the client sends the `exit` message, after which the server exits its process.
 
 === Document Synchronization
-After introducing messages to establish and control the connection between server and client, this section focused on the next step, the document synchronization. The goal of these messages is to synchronize the server to the users actions. If a user works on a file, the server should then provide capabilities for the same file.
+After introducing messages to establish and control the connection between server and client, this section focused on the next step, the document synchronization. The goal of these messages is to synchronize the server to the users actions. The server should provide capabilities for a file, while the user works on it.
+
+The first message is the `textDocument/didOpen` notification. Sending this notification informs the server that the client opened the document. The message has the following structure:
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface DidOpenTextDocumentParams {
+        textDocument: TextDocumentItem;
+    }
+    ```,
+  ),
+  caption: "DidOpenTextDocument message parameters",
+)<code_did_open_text_document>
+
+As soon as the file is closed, the client sends the `textDocument/didClose` notification. The message has the same structure as in @code_did_open_text_document.
+
+Other messages for synchronizing documents and notebooks exist and are omitted.
+// TODO: for in depth information look here
+
+// Not needed, as workspace root files are specified in the initialize message
+// === Workspace Synchronization
 
 === Language Features
+This section displays messages to query language features. The #acr("LSP") specification defines many different features, of which this section highlights the few relevant ones:
+- Auto Completion
+- Signature help
+- Provide diagnostics data on the current file
 
-=== Completion
-- types of items (functions, fields, etc.)
-- documentation
-- flags, such as deprecated
-- implementation up to servers
-- many servers for many languages
-=== Signature help
-- Arguments
-=== Note thingy
+// Completion
+The auto completion feature provides a list of completion items for a given position in a document. The completion items can be selected to provide more detailed information. On applying the selected completion item, the completion text is inserted into the document at the given position.
+The feature is split into the two messages `textDocument/completion` and `completionItem/resolve`.The first message queries the completion items for the given position in a text document. Each completion item only contains basic information. If further details are required, the second message `completionItem/resolve` asks the server to extend a single completion item with in depth details.
+
+A completion item has the following structure:
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface CompletionItem {
+        label: string;
+        insertText?: string;
+        labelDetails?: CompletionItemLabelDetails;
+        detail?: string;
+        documentation?: string | MarkupContent;
+        kind?: CompletionItemKind;
+        tags?: CompletionItemTag[];
+        deprecated?: boolean;
+        preselect?: boolean;
+        sortText?: string;
+        filterText?: string;
+        data?: any;
+        ... more fields omitted
+    }
+    ```,
+  ),
+  caption: "CompletionItem structure",
+)<code_completion_item>
+
+The first key property is `label`. The `label` is the main text to be inserted into the document and provides the full symbol. In case the document already contains a prefix of the `label` in the given location, the inserted text must not contain the prefix. In these cases the `label` property remains untouched, but `insertText` is set to the shortened text. `insertText` overrides the text to be inserted, but remains optional.
+
+The `labelDetails` property contains additional information, such as the locator of the symbol to be inserted. The structure of the property can be found in @code_completion_item_label_details.
+
+For accessibility, the completion item includes several human readable properties:
+- `detail` provides a short description of the completion item.
+- `documentation` provides a detailed description of the completion item. The description can be plain text or Markdown. The structure of the property can be found in @code_markup_content.
+
+The next field `kind` specifies the type of the completion item. The type refers to the symbol kind, such as a "function", "field" or "string". The full list is defined in @code_completion_item_kind.
+
+Annotations can be found in the field `tags`. The only supported tag is `Deprecated`, as defined in @code_completion_item_tag. It replaces the now deprecated field `deprecated`.
+
+After receiving the completion items, the client can display the items in a list. The field `preselect` can mark a *single* completion item to be preselected in the list. Additionally, the client may filter and sort the items. In these cases it should use the fields `filterText` and `sortText` for theses tasks, instead of `label`.
+
+Additional server specific data is stored in the field `data`. This information is needed by the server to resolve the completion item and should not be changed.
+// CompletionItemLabelDetails
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface CompletionItemLabelDetails {
+        detail?: string;
+        description?: string;
+    }
+    ```,
+  ),
+  caption: "CompletionItemLabelDetails structure",
+)<code_completion_item_label_details>
+
+// CompletionItemTag
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    namespace CompletionItemTag {
+        const Deprecated = 1;
+    }
+    type CompletionItemTag = 1;
+    ```,
+  ),
+  caption: "CompletionItemTag enum",
+)<code_completion_item_tag>
+
+// MarkupContent
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface MarkupContent {
+        kind: MarkupKind;
+        value: string;
+    }
+    ```,
+  ),
+  caption: "MarkupContent structure",
+)<code_markup_content>
+
+// Markup Kind
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    namespace MarkupKind {
+        const PlainText: 'plaintext' = 'plaintext',
+        const Markdown: 'markdown' = 'markdown'
+    }
+    type MarkupKind = 'plaintext' | 'markdown';
+    ```,
+  ),
+  caption: "MarkupKind enum",
+)<code_markup_kind>
+
+The @code_markup_content structure includes markup content in the field `value`. The type of markup is defined in the field `kind`. Currently the two kinds *plain text* and *Markdown* are supported, as seen in @code_markup_kind.
+
+// Completion request
+To request completions, the client then sends the `textDocument/completion` message. The request the following structure:
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface CompletionParams {
+        textDocument: TextDocumentIdentifier;
+        position: Position;
+        context?: CompletionContext;
+        ... more fields omitted
+    }
+    ```,
+  ),
+  caption: "Completion message parameters",
+)<code_completion_params>
+
+The request contains a `position` in the document `textDocument`. The optional `context` has further details on how the completion was triggered (`triggerKind`) and with which character it was triggered (`triggerCharacter`), as seen in @code_completion_context. Several trigger kinds are currently supported, such as invoked, triggered by a character, or re-triggered to expand an incomplete completion list (@code_completion_trigger_kind).
+
+// Completion Context
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface CompletionContext {
+        triggerKind: CompletionTriggerKind;
+        triggerCharacter?: string;
+    }
+    ```,
+  ),
+  caption: "CompletionContext structure",
+)<code_completion_context>
+
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    namespace CompletionTriggerKind {
+        const Invoked: 1 = 1;
+        const TriggerCharacter: 2 = 2;
+        const TriggerForIncompleteCompletions: 3 = 3;
+    }
+    type CompletionTriggerKind = 1 | 2 | 3;
+    ```,
+  ),
+  caption: "CompletionTriggerKind enum",
+)<code_completion_trigger_kind>
+
+// TODO: use such links everywhere
+The server then responds either with no result, directly with a list of #link(<code_completion_item>)[completion items], or a completion list, as seen in @code_completion_list.
+
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface CompletionList {
+        isIncomplete: boolean;
+        items: CompletionItem[];
+        ... more fields omitted
+    }
+    ```,
+  ),
+  caption: "CompletionList structure",
+)<code_completion_list>
+In addition to containing the completion items, the structure also may indicate that the list is incomplete and will be recomputed // TODO: recomputed when
+through the field `isIncomplete`.
+
+// Resolving completion items
+Resolving a single completion item is done by sending the `completionItem/resolve` message. The message is the completion item to be resolved. The server then responds with the resolved completion item. The resolved completion item is a superset of the provided completion item.
