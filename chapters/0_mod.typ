@@ -7,6 +7,5 @@
   include_chapter("5_results")
   include_chapter("6_evaluation")
   include_chapter("7_conclusion")
-  include_chapter("8_appendix")
 }
 

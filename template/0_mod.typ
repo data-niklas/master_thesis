@@ -18,6 +18,7 @@
   abstract-en: "",
   abstract-de: "",
   thesis-repo: none,
+  appendix: none,
 ) = {
   show: doc => {
     style(doc)
@@ -52,12 +53,13 @@
 
 
   // Table of contents.
-  show outline.entry.where(level: 1): it => {
-    v(14pt, weak: true)
-    strong(it)
-  }
+
   {
     set page(header: none)
+    show outline.entry.where(level: 1): it => {
+      v(14pt, weak: true)
+      strong(it)
+    }
     outline(depth: 2, indent: auto)
   }
   pagebreak()
@@ -74,14 +76,19 @@
   body
   set page(header: none)
   counter(heading).update(0)
-  set heading(numbering: "I", outlined: true)
+  set heading(numbering: none, outlined: true)
   show outline: it => {
     show ref: it => none
     it
   }
-  show outline: set heading(numbering: "I", outlined: true)
-  show bibliography: set heading(numbering: "I")
+  show bibliography: set heading(numbering: none)
+
+  print-index(outlined: true, title: "Acronyms")
+
   bibliography(bibliography-file)
+  show outline: set heading(numbering: none, outlined: true, level: 2)
+
+  heading()[Listings]
   outline(
     title: [List of Figures],
     target: figure.where(kind: image),
@@ -100,7 +107,8 @@
     target: figure.where(kind: "example"),
   )
 
-  print-index(outlined: false, title: "Acronyms")
+  pagebreak(weak: true)
+  appendix
   pagebreak(weak: true)
   if thesis-repo != none {
     align(
