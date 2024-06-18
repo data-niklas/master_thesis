@@ -432,3 +432,79 @@ through the field `isIncomplete`.
 
 // Resolving completion items
 Resolving a single completion item is done by sending the `completionItem/resolve` message. The message is the completion item to be resolved. The server then responds with the resolved completion item. The resolved completion item is a superset of the provided completion item.
+
+// TODO: improve readability / formatting
+// Signature help
+The second feature is the signature help. The signature help provides information about the signature of the symbol at the specified position. A common use case is to display function and class parameters.
+
+// TODO: check the most specific words are used, so notification / request over message
+Sending the `textDocument/signatureHelp` request to the server returns the signature help. The request has a similar structure to @code_completion_params, as seen in @code_signature_help_params:
+
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface SignatureHelpParams {
+        textDocument: TextDocumentIdentifier;
+        position: Position;
+        context?: SignatureHelpContext;
+        // ... more fields omitted
+    }
+    ```,
+  ),
+  caption: "SignatureHelp message parameters",
+)<code_signature_help_params>
+
+The `context` field contains additional information about the context in which the signature help was triggered.
+// TODO: maybe emit or list
+
+The server responds with the signature help in the structure of @code_signature_help:
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface SignatureHelp {
+        signatures: SignatureInformation[];
+        activeSignature?: uinteger;
+        activeParameter?: uinteger;
+    }
+    ```,
+  ),
+  caption: "SignatureHelp structure",
+)<code_signature_help>
+
+The symbol could have several signatures, of which each is represented by a `SignatureInformation` structure. Each single `SignatureInformation` has a `label`, to be shown in the UI, as well as the documentation regarding the whole item.
+Single parameters can be retrieved through the `parameters` field. When typing a function call, the currently typed parameter becomes the active parameter in the `SignatureInformation` (`activeParameter`).
+The parameters each come with a `label` and `documentation` field. The `label` either is a string, or a range referring to the label of the outer signature.
+
+The signature help structure is defined in @code_signature_information, while the single parameter information is provided in @code_parameter_information.
+
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface SignatureInformation {
+        label: string;
+        documentation?: string | MarkupContent;
+        parameters?: ParameterInformation[];
+        activeParameter?: uinteger;
+    }
+    ```,
+  ),
+  caption: "SignatureInformation structure",
+)<code_signature_information>
+
+#figure(
+  code(
+    lang: "TypeScript",
+    ```typescript
+    interface ParameterInformation {
+        label: string | [uinteger, uinteger];
+        documentation?: string | MarkupContent;
+    }
+    ```,
+  ),
+  caption: "ParameterInformation structure",
+)<code_parameter_information>
+
+// TODO: outro
