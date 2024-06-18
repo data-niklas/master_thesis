@@ -67,5 +67,16 @@
   show heading.where(level: 4): set block(above: 1.4em, below: -0.2em)
   show heading.where(level: 5): set heading(numbering: none)
   show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
+  show link: it => {
+    // Workaround for ctheorems package so that its labels keep the default link styling.
+    if type(it.dest) == label {
+      return it
+    }
+    it
+    h(1.6pt)
+    super(
+      box(height: 3.8pt, circle(radius: 1.2pt, stroke: 0.7pt + rgb("#993333"))),
+    )
+  }
   doc
 }
