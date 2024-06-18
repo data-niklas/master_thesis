@@ -282,7 +282,7 @@ A completion item has the following structure:
         sortText?: string;
         filterText?: string;
         data?: any;
-        ... more fields omitted
+        // ... more fields omitted
     }
     ```,
   ),
@@ -373,7 +373,7 @@ To request completions, the client then sends the `textDocument/completion` mess
         textDocument: TextDocumentIdentifier;
         position: Position;
         context?: CompletionContext;
-        ... more fields omitted
+        // ... more fields omitted
     }
     ```,
   ),
@@ -421,7 +421,7 @@ The server then responds either with no result, directly with a list of #link(<c
     interface CompletionList {
         isIncomplete: boolean;
         items: CompletionItem[];
-        ... more fields omitted
+        // ... more fields omitted
     }
     ```,
   ),
