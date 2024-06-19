@@ -13,12 +13,9 @@ Its main advantage is the simplicity. The strategy does not require additional s
 
 As the current best next token is not often the best token overall, the strategy does not produce the highest quality documents.
 
-#figure(
-  $
-    hat(w) = "argmax"_(w in V) P(w | w_(lt n))
-  $,
-  caption: "Greedy Decoding",
-)<greedy_decoding>
+$
+  hat(w) = "argmax"_(w in V) P(w | w_(lt n))
+$<greedy_decoding>
 
 // TODO fix all the can's and remove them
 === Beam Search
@@ -43,12 +40,9 @@ Top-k always chooses from the top $k$ most probable tokens, even if most tokens 
 
 === Temperature sampling
 Temperature sampling takes a different approach to top-p. It does not adapt to the shape of the probability distribution, but reshapes it. It divides the raw probability scores by a temperature $tau$:
-#figure(
-  $
-    y = "softmax"(u / tau)
-  $,
-  caption: "Temperature Sampling",
-)<temperature_sampling>
+$
+  y = "softmax"(u / tau)
+$<temperature_sampling>
 
 // TODO define all symbols centrally and check consistency
 

@@ -26,12 +26,9 @@ Development on #acrpl("LM") has led to powerful models. These now find widesprea
 Neural language models are a type of #acr("LM"). Their name stems from the McCulloch-Pitts neuron, which is a simplified view of a biological neuron as a computational unit@HttpsHomeCsulb@SpeechLanguageProcessing.
 
 In contrast, a modern neural language model is a network of small computing units. Each of the units is a function that takes a sequence of values and returns a singular output value@SpeechLanguageProcessing:
-#figure(
-  $
-    f_"unit": RR^n arrow.r RR
-  $,
-  caption: "Function domain of a singular computing unit.",
-)<math_unit_function>
+$
+  f_"unit": RR^n arrow.r RR
+$<math_unit_function>
 
 Combining many units into a network allows the computation of a complex function $f_"network"$. The behavior of $f_"network"$ can be changed by modifying the parameters inside of the network. By applying changes according to feedback, complex functions can be learned.
 
@@ -85,13 +82,10 @@ For the purposes of this thesis, a #acr("CLM") can be defined using the followin
 - Autoregressive property
 
 The raw next token prediction function is a mathematical function that takes a sequence of tokens and returns the prediction for the next tokens:
-#figure(
-  $
-    f_"rntpf" (x) = u\
-    f_"rntpf": NN^n arrow.r RR^(|V|)
-  $,
-  caption: "Raw next token prediction function.",
-)<math_rntpf>
+$
+  f_"rntpf" (x) = u\
+  f_"rntpf": NN^n arrow.r RR^(|V|)
+$<math_rntpf>
 
 The output $u$ has the shape of the vocabulary, where each value $u_i$ represents the logistical probability of token $i$ being the next token. These values are called `logits`.
 

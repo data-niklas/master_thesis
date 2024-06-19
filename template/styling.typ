@@ -23,6 +23,8 @@
   show footnote: set text(spacing: 100%)
   show figure: set text(spacing: 100%)
   show table: set text(spacing: 100%)
+  set math.equation(supplement: "Equation", numbering: "(1)")
+  set figure(supplement: auto)
   set table(stroke: (x, y) => {
     if y == 0 {
       (
