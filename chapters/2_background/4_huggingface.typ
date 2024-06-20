@@ -79,16 +79,23 @@ In contast, the `torch.bfloat16` keeps the full range of the full-precision floa
   caption: "Brain Floating Point Format: bfloat16",
 )
 The format was introduced by Google Brain and is used in their Tensor Processing Units (TPUs)@BFloat16SecretHigh, as the reduced mantissa precision reduces the size needed for physical hardware multipliers@BFloat16SecretHigh.
+// TODO: paper to show that less precision not really relevant for model quality
 
+In addition to the precision, another aspect of a PyTorch tensor is the *physical location* it is allocated at, the `device`. The function `torch.device` creates a reference to such a physical location.
+Possible relevant device locations are `cpu` and `cuda`, where `cpu` allocates a tensor on the CPU memory, while `cuda` allocates the tensor on GPU memory.
 // Device
 // torch.device
 // torch.to
+Already creates tensor can be *moved to a different device* by calling the `to` method with the new device.
 
 // TEnsor, LongTensor, FloatTensor
+To *create a tensor*, the function `torch.tensor` is used. It takes `data` and optionally `dtype` and the `device`.
 // torch.Tensor
+The order and shape of the tensor can be accessed through the `dim` and `shape` attributes. Indexing the tensor is done through the Python `tensor[indice_list]` notation, where untouched dimensions are marked through the `:` symbol, e.g.: `tensor[3,:,1]`.
 // .shape
 // indexing
 // iterating like normal python (over first dimension)
+Iterating the tensor will iterate over the first dimension.
 
 // functions
 // torch.nn.functional
