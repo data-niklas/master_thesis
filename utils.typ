@@ -6,3 +6,12 @@
   kind: "example",
   supplement: "Example",
 )
+
+#let note(note-text, body) = {
+  let sidenote = footnote(text(stroke: purple, "Note: ") + note-text)
+  underline(
+    stroke: (paint: red, thickness: 2pt, dash: "dashed", cap: "round"),
+    offset: 2pt,
+    body + sidenote,
+  )
+}

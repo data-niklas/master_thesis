@@ -44,9 +44,11 @@
     if it.children.len() > 0 and it.children.at(it.children.len() - 1) == table.hline() or other_table {
       it
     } else {
+      let items = it.fields()
+      let children = items.remove("children")
       table(
-        columns: it.columns,
-        ..it.children,
+        ..items,
+        ..children,
         table.hline(),
       )
     }

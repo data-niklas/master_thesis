@@ -25,6 +25,7 @@
   }
   // Set the document's basic properties.
   set document(author: author, title: title)
+  init-acronyms(acronyms)
   set heading(numbering: "I")
   title-page(
     title: title,
@@ -55,12 +56,11 @@
     }
     outline(depth: 2, indent: auto)
   }
-  pagebreak()
-  init-acronyms(acronyms)
+  set page(numbering: "1", number-align: center)
+  pagebreak(weak: true)
 
   // Main body.
   // Reset numbering and start counting at 1
-  set page(numbering: "1", number-align: center)
   counter(page).update(x => 1)
   // Reset heading styles
   set heading(numbering: "1.1")

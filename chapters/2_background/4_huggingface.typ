@@ -147,15 +147,193 @@ of the many available #acr("CLM") for code generation are:
 - `ise-uiuc/Magicoder-S-DS-6.7B` // MagiCoder is not in the leaderboard
 
 In the case that a model name from the HuggingFace hub is provided, the model is downloaded and cached locally. If the model is already present, it is loaded from cache.
-By default, the model will be loaded using
+By default, the model will be loaded using the data type of the loaded weights. The `torch_dtype` parameters allows loading the weights in e.g. lower precision, to save memory during inference.
+
+The `device_map` parameter controls on which devices the model is allocated. The parameter takes a PyTorch device as value. Passing `auto` computes the most optimized device map automatically.
 
 // Auto models
+Transformers provides an abstraction called `AutoClasses`. These abstraction solve the problem of finding the specific model, config and tokenizer classes to load and use a #acr("CLM"). Instead, the correct classes can be guessed from the name of a model alone.
+This simplifies code when trying different models for the same task, such as code generation:
+#figure(
+  code(
+    lang: "Python",
+    ```python
+    from transformers import AutoModelForCausalLM, LlamaForCausalLM
+    # The following line
+    model = LlamaForCausalLM.from_pretrained("codellama/CodeLlama-7b-Instruct-hf")
+    # Would be transformed into
+    model = AutoModelForCausalLM.from_pretrained("codellama/CodeLlama-7b-Instruct-hf")
+    ```,
+  ),
+  caption: "Using AutoClasses to load a model",
+)<code_auto_classes>
+
+// Resizing token embeddings
+The method `resize_token_embeddings` resizes the token embeddings of the model to a new size. The function is commonly used to account for new special tokens added to the tokenizer at runtime.
+
+=== Tokenizers
+Tokenizers provide the functionality to convert text to and from sequences of token ids. In addition, they store the vocabulary, including information on special tokens, such as the #acr("EOS") token.
+
+Loading a tokenizer is done through the `AutoClasses` abstraction, which will return an instance of a subclass of a `PreTrainedTokenizer`:
+#figure(
+  code(
+    lang: "Python",
+    ```python
+    from transformers import AutoTokenizer
+    tokenizer = AutoTokenizer.from_pretrained("codellama/CodeLlama-7b-Instruct-hf")
+    ```,
+  ),
+  caption: "Loading a tokenizer",
+)<code_auto_tokenizer>
+
+// containde knowledge
+The vocabulary can be accessed through the `get_vocab` method, which returns a dictionary mapping tokens to token ids.
+Special tokens and token ids can be accessed directly through special attributes of the tokenizer:
+#figure(
+  table(
+    columns: 3,
+    align: left,
+    table.header([Token attribute], [Token ID attribute], [Description]),
+    // only bos, eos, pad
+    [bos_token], [bos_token_id], [Beginning of sequence token and token id],
+    [eos_token], [eos_token_id], [End of sequence token and token id],
+    [pad_token], [pad_token_id], [Padding token and token id],
+  ),
+)<code_special_tokens>
+
+// Adding knowledge
+Special tokens can be added at runtime by calling `add_special_tokens` with a dictionary containing the key `additional_special_tokens` with the list of new tokens.
+
+// Tokenization
+The main functionality of a tokenizer is to convert text to token ids. This is done by calling the tokenizer directly, as it implements the special `__call__` function:
+#figure(
+  code(
+    lang: "Python",
+    ```python
+    __call__(
+        text: Union[str, List[str]],
+        add_special_tokens: bool = True,
+        return_tensors: str = None,
+        // ... omitted parameters
+    ) -> BatchEncoding
+    ```,
+  ),
+  caption: "Tokenizing text",
+)<code_tokenization>
+
+The function in @code_tokenization either tokenizes a single string, or a batch of strings. The output `BatchEncoding` has the field `input_ids`, which contains the sequence of token ids, or batch of token ids.
+
+The output format of `input_ids` is controlled by the parameter `return_tensors`. By setting it to `pt`, the `input_ids` will be a PyTorch tensor.
+
+By default, the tokenizer adds special tokens to the input text, such as the #acr("BOS") and #acr("EOS") tokens. This behavior can be controlled by the `add_special_tokens` parameter.
+
+// Detokenization
+In contrast to tokenization, the `PretrainedTokenizer` class provides two different methods for detokenization. Both functions are similar in signature with the single difference that one method takes a single sequence of token ids, and the other method a batch of sequences.
+
+The method `decode` decodes a single sequence and has the following signature:
+#figure(
+  code(
+    lang: "Python",
+    ```python
+    decode(
+        token_ids: Union[torch.Tensor, List[int]],
+        skip_special_tokens: bool = False,
+        // ... omitted parameters
+    ) -> str
+    ```,
+  ),
+  caption: "Detokenizing a single sequence",
+)<code_detokenization_single>
+
+The method `batch_decode` has a similar signature, but decodes a whole batch of sequences.
+
+The parameter `skip_special_tokens` can be enabled to remove special tokens, which might be unwanted when e.g. displaying the returned text.
+
+// convert_tokens_to_ids
+If single tokens are already present, these can be convert to token ids by calling the method `convert_tokens_to_ids`. The converse direction is possible by calling the method `convert_ids_to_tokens`. The method `convert_ids_to_tokens` also takes the parameter `skip_special_tokens`.
 
 === Config
 Models show dynamic behavior, as they can be configured at runtime. This dynamic configuration enables the use of different generation strategies, by setting different model configuration values. Model configurations are classes inheriting from `PretrainedConfig`. The `PretrainedConfig` includes configuration values for the model architecture and for the mentioned dynamic behavior.
+Instantiation a `PretrainedConfig` is possible through the abstraction `AutoClasses`, by using `AutoConfig`.
 
-=== Tokenizers
+Often single configuration values can be passed into the model as single keyword arguments, without the need for a dedicated configuration object.
+Different configuration values will be introduced as function arguments in the following sections.
 
 === Text Generation
+After obtaining a model and a tokenizer, the text generation process can be performed by using one of the following three abstraction. The to be introduced abstraction build upon the previous abstraction.
+
+// forward
+The lowest level abstraction is the `forward` method of the model, which takes previous token ids and returns the logits for the next token id. The arguments to the function only control the provided output format and cache behavior.
+
+// generate
+The next abstraction is the `generate` method, which generates a whole sequence of tokens, until a stopping criteria is met, such as the #acr("EOS") token.
+The functions is provided by the `GenerationMixin` class, which #acr("CLM") inherit from using multiple-inheritance.
+The `GenerationMixin` implements the different text generation strategies, which can be controlled through the provided parameters.
+The `generate` function has the following signature:
+#figure(
+  code(
+    lang: "Python",
+    ```python
+    generate(
+        inputs: torch.Tensor,
+        generation_config: GenerationConfig = None,
+        logits_processor: LogitsProcessorList = None,
+        stopping_criteria: StoppingCriteriaList = None,
+        **kwargs
+        // ... omitted parameters
+    ) -> Union[ModelOutput, torch.LongTensor]
+    ```,
+  ),
+  caption: "Generating a sequence of tokens",
+)<code_generate>
+Next to the provided input tensor `inputs`, the `generation_config` parameter contains configuration values to control the generation. Extra matching keyword arguments override keys in the generation config. @table_generation_config contains important configuration parameters:
+
+#figure(
+  table(
+    columns: 4,
+    align: left,
+    table.header([Category], [Parameter], [Type], [Description]),
+    // table.cell(colspan: 3, raw("// Stopping criteria")),
+    [Stopping Criteria], [max_length],
+    [int],
+    [Maximum length of the generated sequence],
+    [], [max_new_tokens],
+    [int],
+    [Maximum number of new tokens to generate. Overrides `max_length`],
+    [], [max_time],
+    [float],
+    [Maximum time in seconds to generate],
+    [Generation Strategy], [do_sample], [bool], [Whether to sample from the logits],
+    [], [num_beams], [int], [Number of beams for beam search],
+    [Logits manipulation], [temperature], [float], [Temperature for sampling],
+    [], [top_k], [int], [Number of tokens to sample from],
+    [], [top_p], [float], [Cumulative probability for sampling from],
+    [], [repetition_penalty], [float], [Penalizes repeated tokens],
+    // [Output format], [], [bool], [Whether to return the full text],
+    // TODO: continue
+  ),
+)<table_generation_config>
+
+// TODO: add references to previous chapters for logits manipulation, controllable generation, etc
+// stopping criteria
+The first parameters in @table_generation_config configure the first stopping criteria. The generation can be stopped when the sequence reaches a certain length, or when a certain time is reached.
+
+The following diagram displays the different used generation strategies, depending on the provided parameters:
+#figure(
+  image(
+    "/assets/text_strategy_parameters.excalidraw.svg",
+    // width: 50%,
+    height: 30%,
+    fit: "contain",
+  ),
+  caption: "Generation strategies",
+)
+
+// Logits manipulation
+The final parameters manipulate the logits before sampling. They enable `Top-k`, `Top-p` and `Temperature` sampling. The last parameter hinders models from endlessly repeating the same token, until a stopping criterium is reached.
+
+// pipeline
+// TODO: maybe pipeline if needed
 
 === Controllable Generation
+The `generation` method provides parameters to overview and control the generation process. These parameters enable strategies as discussed in @bg_controllable_generation.

@@ -108,7 +108,7 @@ Additionally, the model will use thoughts of previous steps to reason about the 
 
 // TODO: self consistency with CoT?
 
-==== Tree of Thought
+#note("Can be removed with Chain of thought")[==== Tree of Thought]
 Tree of thoughts is a generalization of chain of thought. Chain of thought is only capable of performing linear decision-making@weiChainofThoughtPromptingElicits2023. Ultimately, performing complex reasoning is a search problem and thus, linear reasoning is insufficient.
 The tree of thoughts meta-strategy generalizes the thoughts into a tree structure. Each intermediate problem is then a node in this search tree. The root of the tree is the initial problem. The goal of this search problem then is to find an accepted end node - a finishing thought@yaoTreeThoughtsDeliberate2023a.
 
