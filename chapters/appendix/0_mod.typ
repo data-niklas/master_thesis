@@ -4,7 +4,7 @@
 #columns(2)[
   #figure(
     table(
-      columns: (auto, auto),
+      columns: 2,
       table.header([*Language*], [*Language ID*]),
       [ABAP],
       [abap],

@@ -337,3 +337,49 @@ The final parameters manipulate the logits before sampling. They enable `Top-k`,
 
 === Controllable Generation
 The `generation` method provides parameters to overview and control the generation process. These parameters enable strategies as discussed in @bg_controllable_generation.
+
+// stopping criteria
+The first control mechanism are the stopping criteria. The stopping criteria define custom conditions that terminate the generation, when one of the conditions is met.
+
+Transformers defines a few vital stopping criteria, like the maximum time or the maximum number of tokens to generate. These stopping criteria are enabled by passing certain keyword arguments into the `generate` method, as introduced in the section before.
+
+Custom stopping criteria are defined by subclassing the `StoppingCriteria` class and adding an instance of the new class to the `stopping_criteria` list in the `generate` method.
+
+A subclass of `StoppingCriteria` only needs to implement the `__call__` method:
+#figure(
+  code(
+    lang: "Python",
+    ```python
+    __call__(
+        input_ids: torch.LongTensor,
+        scores: torch.FloatTensor,
+        **kwargs
+    ) -> bool
+    ```,
+  ),
+  caption: "Stopping criteria signature",
+)<code_stopping_criteria>
+The method in @code_stopping_criteria returns whether the generation should be stopped, based on the previous token ids `input_ids` and the current `scores`. The method must support batching, as `input_ids` has the shape `(batch_size, sequence_length)` and `scores` the shape `(batch_size, vocab_size)`.
+
+// logits processor
+The second control mechanism are the logits processors. Logits processors manipulate the current logits before a decoding strategy chooses the next token id on the then manipulated logits.
+
+Custom logits processors are defined by subclassing the `LogitsProcessor` class and adding an instance of the new class to the `logits_processor` list in the `generate` method.
+
+A subclass of `LogitsProcessor` only needs to implement the `__call__` method:
+#figure(
+  code(
+    lang: "Python",
+    ```python
+    __call__(
+        input_ids: torch.LongTensor,
+        scores: torch.FloatTensor,
+        **kwargs
+    ) -> torch.FloatTensor
+    ```,
+  ),
+  caption: "Logits processor signature",
+)<code_logits_processor>
+The arguments in @code_logits_processor are identical to the arguments in @code_stopping_criteria. The method must return the manipulated logits, which have the same shape as the input `scores`.
+
+// todo: logitswarper?

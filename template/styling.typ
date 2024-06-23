@@ -17,7 +17,6 @@
       line(length: 100%)
     },
   )
-  set cite(style: "association-for-computing-machinery")
   set par(leading: 0.55em, first-line-indent: 1.8em, justify: true)
   set text(font: "New Computer Modern", spacing: 150%)
   show footnote: set text(spacing: 100%)
@@ -25,20 +24,31 @@
   show table: set text(spacing: 100%)
   set math.equation(supplement: "Equation", numbering: "(1)")
   set figure(supplement: auto)
-  set table(stroke: (x, y) => {
-    if y == 0 {
-      (
-        bottom: (
-          paint: black,
-          thickness: 0.4pt,
-        ),
-        top: (
-          paint: black,
-          thickness: 0.7pt,
-        ),
-      )
-    }
-  })
+  let heading-align = left
+  let cell-align = left
+  set table(
+    align: (x, y) => {
+      if y == 0 {
+        heading-align
+      } else {
+        cell-align
+      }
+    },
+    stroke: (x, y) => {
+      if y == 0 {
+        (
+          bottom: (
+            paint: black,
+            thickness: 0.4pt,
+          ),
+          top: (
+            paint: black,
+            thickness: 0.7pt,
+          ),
+        )
+      }
+    },
+  )
   show table: it => {
     let other_table = it.stroke == none
     if it.children.len() > 0 and it.children.at(it.children.len() - 1) == table.hline() or other_table {

@@ -108,7 +108,7 @@ Either the `result` or `error` field will be set, depending on the success of th
 Error responses contain the error `code`, a short descriptive `message` and optional additional `data`. The specification defines the following error codes and messages:
 #figure(
   table(
-    columns: (auto, auto, auto),
+    columns: 3,
     table.header([*Code*], [*Message*], [*Meaning*]),
     [-32700],
     [Parse error],

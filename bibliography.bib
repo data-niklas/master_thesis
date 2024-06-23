@@ -1,3 +1,11 @@
+@article{agrawalMonitorGuidedDecodingCode,
+  title = {Monitor-{{Guided Decoding}} of {{Code LMs}} with {{Static Analysis}} of {{Repository Context}}},
+  author = {Agrawal, Lakshya A and Kanade, Aditya and Goyal, Navin and Lahiri, Shuvendu K and Rajamani, Sriram K},
+  abstract = {Language models of code (LMs) work well when the surrounding code provides sufficient context. This is not true when it becomes necessary to use types, functionality or APIs defined elsewhere in the repository or a linked library, especially those not seen during training. LMs suffer from limited awareness of such global context and end up hallucinating.},
+  langid = {english},
+  file = {/home/niklas/Documents/Niklas/Bildung/Zotero/storage/TS3VZNX7/Agrawal et al. - Monitor-Guided Decoding of Code LMs with Static An.pdf}
+}
+
 @online{austinProgramSynthesisLarge2021,
   title = {Program {{Synthesis}} with {{Large Language Models}}},
   author = {Austin, Jacob and Odena, Augustus and Nye, Maxwell and Bosma, Maarten and Michalewski, Henryk and Dohan, David and Jiang, Ellen and Cai, Carrie and Terry, Michael and Le, Quoc and Sutton, Charles},
@@ -483,6 +491,29 @@
   langid = {english},
   organization = {arXiv.org},
   file = {/home/niklas/Documents/Niklas/Bildung/Zotero/storage/WFJMZYRA/Lahiri et al. - 2022 - Interactive Code Generation via Test-Driven User-I.pdf}
+}
+
+@article{leDeepLearningSource2021,
+  title = {Deep {{Learning}} for {{Source Code Modeling}} and {{Generation}}: {{Models}}, {{Applications}} and {{Challenges}}},
+  shorttitle = {Deep {{Learning}} for {{Source Code Modeling}} and {{Generation}}},
+  author = {Le, Triet H. M. and Chen, Hao and Babar, M. Ali},
+  date = {2021-05-31},
+  journaltitle = {ACM Computing Surveys},
+  shortjournal = {ACM Comput. Surv.},
+  volume = {53},
+  number = {3},
+  eprint = {2002.05442},
+  eprinttype = {arxiv},
+  eprintclass = {cs},
+  pages = {1--38},
+  issn = {0360-0300, 1557-7341},
+  doi = {10.1145/3383458},
+  url = {http://arxiv.org/abs/2002.05442},
+  urldate = {2024-06-23},
+  abstract = {Deep Learning (DL) techniques for Natural Language Processing have been evolving remarkably fast. Recently, the DL advances in language modeling, machine translation and paragraph understanding are so prominent that the potential of DL in Software Engineering cannot be overlooked, especially in the field of program learning. To facilitate further research and applications of DL in this field, we provide a comprehensive review to categorize and investigate existing DL methods for source code modeling and generation. To address the limitations of the traditional source code models, we formulate common program learning tasks under an encoder-decoder framework. After that, we introduce recent DL mechanisms suitable to solve such problems. Then, we present the state-of-the-art practices and discuss their challenges with some recommendations for practitioners and researchers as well.},
+  langid = {english},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Machine Learning,Computer Science - Software Engineering},
+  file = {/home/niklas/Documents/Niklas/Bildung/Zotero/storage/9V47PCD8/Le et al. - 2021 - Deep Learning for Source Code Modeling and Generat.pdf}
 }
 
 @online{leiBoostingLogicalReasoning2023a,
@@ -1176,4 +1207,22 @@
   langid = {english},
   organization = {arXiv.org},
   file = {/home/niklas/Documents/Niklas/Bildung/Zotero/storage/76CGQIGB/Zhang et al. - 2023 - Wider and Deeper LLM Networks are Fairer LLM Evalu.pdf}
+}
+
+@online{zhouDocPromptingGeneratingCode2023,
+  title = {{{DocPrompting}}: {{Generating Code}} by {{Retrieving}} the {{Docs}}},
+  shorttitle = {{{DocPrompting}}},
+  author = {Zhou, Shuyan and Alon, Uri and Xu, Frank F. and Wang, Zhiruo and Jiang, Zhengbao and Neubig, Graham},
+  date = {2023-02-18},
+  eprint = {2207.05987},
+  eprinttype = {arxiv},
+  eprintclass = {cs},
+  url = {http://arxiv.org/abs/2207.05987},
+  urldate = {2024-06-23},
+  abstract = {Publicly available source-code libraries are continuously growing and changing. This makes it impossible for models of code to keep current with all available APIs by simply training these models on existing code repositories. Thus, existing models inherently cannot generalize to using unseen functions and libraries, because these would never appear in the training data. In contrast, when human programmers use functions and libraries for the first time, they frequently refer to textual resources such as code manuals and documentation, to explore and understand the available functionality. Inspired by this observation, we introduce DocPrompting: a natural-language-to-code generation approach that explicitly leverages documentation by (1) retrieving the relevant documentation pieces given an NL intent, and (2) generating code based on the NL intent and the retrieved documentation. DocPrompting is general: it can be applied to any programming language and is agnostic to the underlying neural model. We demonstrate that DocPrompting consistently improves NL-to-code models: DocPrompting improves strong base models such as CodeT5 by 2.85\% in pass@1 (52\% relative gain) and 4.39\% in pass@10 (30\% relative gain) in execution-based evaluation on the popular Python CoNaLa benchmark; on a new Bash dataset tldr, DocPrompting improves CodeT5 and GPT-Neo1.3B by up to absolute 6.9\% exact match.},
+  langid = {english},
+  pubstate = {preprint},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language,Computer Science - Software Engineering},
+  note = {Comment: ICLR 2023 (notable-top-25\%); code and data are available at https://github.com/shuyanzhou/docprompting},
+  file = {/home/niklas/Documents/Niklas/Bildung/Zotero/storage/ESGH2CBV/Zhou et al. - 2023 - DocPrompting Generating Code by Retrieving the Do.pdf}
 }

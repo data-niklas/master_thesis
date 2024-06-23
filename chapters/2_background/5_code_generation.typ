@@ -1,27 +1,38 @@
 #import "/utils.typ": *
-== Code Generation <bg_code_generation>
-Code generation is a task in the general domain of text generation. It refers to the generation of any type of source code. This section will first introduce several important applications for code generation. Then it will list several problems common to specifically code generation. At last general approaches to improve code generation are shown.
+== Code Completion <bg_code_generation>
+// TODO: sub headings
+// What is it generally?
+Code completion is a task in the domain of code generation. Generally, code generation predicts code or program structure from multimodal data sources@leDeepLearningSource2021. These sources include incomplete code, programs in other programming languages, natural language descriptions, or execution examples@leDeepLearningSource2021. Code generation is a vast field with many applications, from generating tests, to debugging code, to completing code.
 
-=== Uses
-This section will introduce three common use cases, which slightly differ in their requirements. Common requirements are the following:
+// What is code completion
+Code completion predicts code of an incomplete code snippet. While the incomplete code snippet is the main data source, other secondary multimodal data sources can be used. The main use is for integration in #acrpl("IDE").
+
+// Generated code = full code
+// completed code = only code withouth the input
+
+// Differences to normal generation
+In contrast to normal generation, code completion can leverage many properties specific to code.
+The first main property is the syntax of the programming language of the to be completed code. The syntax of the full generated code must be valid according to the grammar of the programming language.
+The second main property is the semantics of the generated code. The generated code must be semantically correct. The code should execute without errors, such as using incorrect functions, methods, function parameters and types.
+Available documentation is the third property. Often code is documented to improve maintainability.
+
+// Validation
+// Syntax
+// Semantics
+// -testing is a part of semantic
+// Documentation
+// Testing
+
+All three properties can be used as additionaly data sources for code completion.
+
+As the code completion is intended for use in #acrpl("IDE"), the following requirements are important:
 - The generated code should be syntactically correct.
 - The generated code should be semantically correct.
-- To increase maintainability, the generated code should follow best practices.
-- The developer might be working on a single file or a large project.
+- To increase maintainability, the generated code should follow best practices. // TODO: elaborate
+- The developer might be working on a single file or a large project. For large projects, the generated code should be aware of the local code base.
 - The developer could work on a project of *any* programming language.
 - Knowledge about related code:
 The #acr("CLM") performing the task should take the following context into consideration when generating code: At the core, the #acr("CLM") has the context of the local file that is edited. The next wider context is code in a local repository, when working on a larger project. At last, the model should use knowledge of installed packages.
-
-The first use case is *code completion* for use in #acrpl("IDE"). In this scenario, a developer will have installed tooling to run autocomplete in parallel to his typing. To display the autocompletion before the developer continues writing, the code must be generated in a timely fashion.
-
-The second use case is for generation of *unit tests*. This scenario differs in the size of the generated code. Generated unit tests generally are larger than code generated as inline code completion.
-Additionally, the generated code // TODO: needs other function to test
-// TODO: his / her
-// TODO: image of onion: the center is the local file, around is the local repository, around are foreign code pieces / repositories
-
-The last use case is for prototyping, in which a single or several files are generated. The difference to other use cases is the increased runtime. Moreover, the code is generated from a task the developer provided.
-
-// TODO: rename developer to user?
 
 === Problems
 Current code generation models and strategies are capable of the following:
@@ -29,9 +40,7 @@ Current code generation models and strategies are capable of the following:
 - Generating semantically correct code.
 - Generating code for any programming language.
 
-Current techniques still struggle generating code, which is aware of the local code base.
+Current techniques still struggle generating code that is aware of the local code base.
 
 Requirements, which current techniques do not fulfill are topics, such as following best practices and having knowledge about related code.
 
-=== General approaches
-// iterative process to add information needed
