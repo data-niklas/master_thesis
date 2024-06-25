@@ -1,13 +1,14 @@
+#import "/utils.typ": *
 == Goals
-Goal: Technique to provide the model with up-to-date knowledge while answering the following research questions:
+This thesis aims to combine up-to-date information from static analysis with the prediction capabilities of #acrpl("CLM"). The combination shall provide the neural code completion with the contextual information needed, to suggest code fitting the local code environment.
 
-(Reliance over Quality, as quality output does not matter if the fcking program does not terminate)
+In addition, the time impact of the proposed approach shall be kept low, to ensure a responsive system.
 
 // General RQ on interrupt based method
-+ RQ1: How to find relevant information needed for the model generation
-+ RQ2: How to provide the model with the relevant information to nudge it towards the desired outcome (understeering causes no change, oversteering is too inflexible, we want nudges)
-+ RQ3: How to decrease the performance impact upon the default generation and ensure a reliable generation
-
-+ RQ1: How to find up-to-date information on local code and dependencies
-+ RQ2: How to determine the relevancy of the found information on local code and dependencies
-+ RQ3:
+The following research questions guide the thesis toward the goal:
++ RQ1: Which sources provide #acrpl("CLM") with the necessary information to suggest fitting code?
++ RQ2: How to filter sourced information to provide the most relevant information to #acrpl("CLM")?
++ RQ3: How to integrate the contextual information into the neural code completion?
++ RQ4: How to ensure the robustness of the approach?
++ RQ5: How to generalize the approach to work with different programming languages?
++ RQ6: How to reduce the performance impact of the approach?

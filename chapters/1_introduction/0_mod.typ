@@ -1,18 +1,27 @@
 #import "/utils.typ": *
 = Introduction <introduction>
-// Code gen: description prompt, or completion
-Code generation describes the task of generating code for a specific programming language. Generally the code could be generated from a description of the desired functionality, or as a continuation of existing code.
+// Code completion is
+Code completion provides code suggestions to developers extending their incomplete code.
+The suggestions used multimodal data sources to combine a variety of information.
 
-// Focus on completion, in a repository of a developer
-// Reduce manual effort, increase productivity, reduce writing skeleton code
-An important use of code generation is to provide code completions in an #acr("IDE"). There the completed code removes the need to write boilerplate code.
+It is one of the most used productivity tools in #acrpl("IDE"). Every major #acr("IDE") from VSCode, Jetbrains #acrpl("IDE"), Eclipse, Neovim and Emacs with plugins support code completion.
+// Shows methods, properties of objects including documentation
+It reduces the mental burden of remembering method names, properties, their types and associated information, such as documentation and if the item is deprecated.
+In addition it saves time by reducing written boilerplate code by suggesting code snippets.
+Using the code completion saves time spent searching for corresponding documentation outside of the #acrpl("IDE").
 
-// Important aspects in an IDE are speed,
+As Amann et al.@amannStudyVisualStudio2016 found, code completion is the most frequently used tool inside #acrpl("IDE") with a frequency of 19.7%.
+Moreover, developers spend 22.4% of their time inside #acrpl("IDE") navigating code, in contrast to 28.5% editing and executing the code. They hypothesize that a significant amount of time navigating code is spent due to a lack of understanding of the code.
+Moreover, 39.8% of the total time is spent outside the #acr("IDE"), which likely includes time spent searching for documentation.
+// Even displays information like deprecation information
+// Saves time spent looking up documentation
+// Facts
+// - Time spent outside
+// - Most used tool
+// - Navigation
+// Importance of code completion
 
-/*
-- LLM are versatile and can be used for many tasks
-- Code generation is one domain, where LLM used to assist developers: programming, designing architectures, understanding code, etc.
-*/
+Good code completion is a crucial tool for developers, reducing time spent in total and reducing the time spent outside the #acr("IDE"), further increasing the focus of the developer.
 
 /* ~ General flow ~
   1. Code gen horribly bad, outdated or slow or inaccurate

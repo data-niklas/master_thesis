@@ -1,55 +1,35 @@
 #import "/utils.typ": *
 == Related Work <bg_related_work>
-This section is divided into related work that introduces general techniques and related work specific to code completion.
-Related work is evaluated based on the criteria introduced in @bg_code_generation.
-// #set cite(form: "prose")
+// Not many related work has focused on enhancing code completion specifically
+// No solution that works for large codebases, with up-to-date code for any language and precision to provide high quality context
+Not many related work has focused on enhancing code completion specifically. The few works that enhance code completion fail to solve all three problems introduced in @bg_code_generation. Other work introduces general techniques to improve #acr("CLM") generation for complex tasks, but does not apply such techniques on code completion.
 
-=== General Techniques
-The first related work are meta-strategies that improve decision making through a multi-step process.
-The meta-strategies could be then combined with data sources specific to code completion to improve code completion.
+// Monitor guided generation
+// 1. finds relevant identifiers using language server protocol!
+// 1.1 scope: global, but limited to type consistent identifiers
+// 1.2 precision: provided identifiers are highly relevant
+// 1.3 up-to-date: as language server protocol, highly up-to-date
+// 2. Injection: guided generation
+// 3. Cross platform: yes
+The most promising previous work is "Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context"@agrawalMonitorGuidedDecodingCode. It uses static analysis of the generated code using #acr("LSP") to constrain the completion of the dereference operator "`.`", names of instantiated classes, the number of arguments in a function call and enumeration options in a switch statement.
 
-The first technique is Tree-of-Thoughts, as described in @bg_controllable_generation @yaoTreeThoughtsDeliberate2023a. A meta-strategy which generalizes this concept even further is Graph of Thoughts @bestaGraphThoughtsSolving2023.
+Relevant context is provided by the #acr("LSP"). The information provided is precise, up-to-date and includes information on dependencies. The context is injected through watching and manipulating the logits using controlled generation, such as the `LogitsProcessor`. And finally the work is programming language independent through the use of #acr("LSP").
 
-// TODO: what is graph of thought
+Generally, by combining static analysis through the #acr("LSP") with controlled generation, most problems can be solved.
 
-Such techniques can improve the syntax of the generated code, only when paired with the grammar of the programming language as a data source, and when reasoning about the syntax.
-Similarly, these approaches can improve the semantics of the generated code, only when paired with data sources such as documentation and when reasoning about the documentation.
-Generally, these general meta-strategies lack an integration into a strategy that finds relevant data sources.
-// it is hard
+The work is currently partially limited to Java, as some features only support Java features and some features Java-style features, such as the `new` statement.
+Additionally, it does not disallow deprecated items and does not improve function arguments in constructors and other general functions.
 
-=== Specific Techniques
-// Outlines
-The work "Outlines" @willardEfficientGuidedGeneration2023 that enables controlling the generation based on a provided syntax. Naturally, one could combine the syntax of a programming language with "Outlines" to force the model to generate syntactically correct code.
-This work only focuses on syntax and does not consider other requirements.
+// embeddings
+Other work, such as "RepoCoder" @zhangRepoCoderRepositoryLevelCode2023 or "DocPrompting" @zhouDocPromptingGeneratingCode2023, improve code completion on a repository level through #acr("RAG") techniques, but fail in the scope and precision.
 
-A work that focuses on semantics is "RepoCoder" @zhangRepoCoderRepositoryLevelCode2023. It uses repository level embeddings, paired with retrieval-augmented generation, to provide a repository level data source to the generation.
-This work only focuses on semantics and does not consider other requirements.
-As the work uses embeddings for relevant code retrieval, the quality of the embeddings is crucial for the quality of the generated code. Additionally, each repository must be embedded before use of this technique and it currently cannot retrieve information regarding external dependencies.
+RepoCoder uses embeddings of the repository to retrieve relevant code context. This approach is not able to provide context on dependencies and does not propose an update mechanism for the local embeddings.
+Additionally, the precision is only as high as the quality of the embeddings.
 
+DocCoder in contrast uses embeddings of documentation as context. The work does not propose specific documentation sources, as such the scope is not specified.
+As with RepoCoder, the precision is only as high as the quality of the embeddings.
+Lastly, the work does not propose an update mechanism for the embeddings.
 
-
-// Training
-// Enabling code completion using repo level information through training
-// @shrivastavaRepoFusionTrainingCode2023
-
-// Techniques for documentation:
-// Only uses information using RAG...
-@zhouDocPromptingGeneratingCode2023
-Similar to "RepoCoder" is "DocPrompting"@zhouDocPromptingGeneratingCode2023, which uses embeddings of general documentation to provide relevant documentation as a data source.
-
-// works on edits
-// multi-step planning
-// static analysis!!!!
-// tree-sitter
-// why no language tooling, like LSP?
-@bairiCodePlanRepositorylevelCoding2023
-
-// does most with LSP
-// why does it exist!?!?!
-// Downsides:
-// - only triggered on '.'
-// - only finds type consistent identifiers
-@agrawalMonitorGuidedDecodingCode
-
-// => no function signatures
+// planning
+// CodePlan?
 

@@ -1,11 +1,8 @@
 #import "/utils.typ": *
 == Code Completion <bg_code_generation>
 // TODO: sub headings
-// What is it generally?
-Code completion is a task in the domain of code generation. Generally, code generation predicts code or program structure from multimodal data sources@leDeepLearningSource2021. These sources include incomplete code, programs in other programming languages, natural language descriptions, or execution examples@leDeepLearningSource2021. Code generation is a vast field with many applications, from generating tests, to debugging code, to completing code.
 
-// What is code completion
-Code completion predicts code of an incomplete code snippet. While the incomplete code snippet is the main data source, other secondary multimodal data sources can be used. The main use is for integration in #acrpl("IDE").
+=== Special Properties
 
 // Generated code = full code
 // completed code = only code withouth the input
@@ -25,6 +22,7 @@ Available documentation is the third property. Often code is documented to impro
 
 All three properties can be used as additionaly data sources for code completion.
 
+=== Requirements
 As the code completion is intended for use in #acrpl("IDE"), the following requirements are important:
 - The generated code should be syntactically correct.
 - The generated code should be semantically correct.
@@ -35,12 +33,24 @@ As the code completion is intended for use in #acrpl("IDE"), the following requi
 The #acr("CLM") performing the task should take the following context into consideration when generating code: At the core, the #acr("CLM") has the context of the local file that is edited. The next wider context is code in a local repository, when working on a larger project. At last, the model should use knowledge of installed packages.
 
 === Problems
-Current code generation models and strategies are capable of the following:
-- Generating syntactically correct code.
-- Generating semantically correct code.
-- Generating code for any programming language.
+Fulfilling all requirements using #acrpl("CLM") is hard. By solving the following problems, the requirements can be met:
+1. Finding relevant context
+2. Injecting context into generation process
+3. Supporting most programming languages
 
-Current techniques still struggle generating code that is aware of the local code base.
+The problems are discussed in the following sections.
 
-Requirements, which current techniques do not fulfill are topics, such as following best practices and having knowledge about related code.
+=== Finding relevant context
+Each #acr("CLM") has ingrained knowledge about the data it was trained on. #acrpl("CLM") trained on code have limited knowledge about the language itself, the standard library and other dependencies. // E.g. PyTorch
+The problem with the inbuilt knowledge is that it is insufficient or outdated, especially for large projects with many dependencies. In addition, the knowledge only reaches until the cut-off date of the training data and does not include changes afterwards. In contrast, working on legacy projects poses the same problem, as the knowledge the model was trained on is too new.
 
+The conclusion is that a framework must find all needed information and supply it to the #acr("CLM") - the "context". The following attributes are of importance:
+1. *Scope*: The context should include information about the local file, repository and installed packages.
+2. *Precision*: The context should not "drown" the model in information, but still provide all relevant information as compact as possible.
+3. *Up-to-date*: The provided information on dependencies should be up-to-date with the version of the dependencies used in the local repository.
+
+=== Injecting context into generation process
+The next step in a framework is to inject the collected context into the generation process of a #acr("CLM"). As seen in previous sections, many different approaches are possible and can be combined.
+
+=== Supporting most programming languages
+Finally, the framework should support most programming languages. This is crucial for the framework to be used in a wide range of projects. As each programming language has different syntax, semantic and package management, this problem is especially hard.
