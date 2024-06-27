@@ -1,4 +1,4 @@
-== Contributions
+== Contributions<chapter:introduction:contributions>
 The main contributions of the thesis are:
 1. Performant, robust and generalizable neural code completion using up-to-date package information.
 2. A novel interrupt-based meta-strategy for injecting context into the model.

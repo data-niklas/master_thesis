@@ -12,11 +12,13 @@
 - Developers spend a considerable amount of time outside the IDE, potentially using external tools for their work
 
 # Productivity Assessment of Neural Code Completion
-| Field     | Value                                   |
-|-----------|-----------------------------------------|
+| Field     | Value                                    |
+|-----------|------------------------------------------|
 | Reference | @zieglerProductivityAssessmentNeural2022 |
-| Keywords  | neural, completion, productivity        |
-| Year      | 2022                                    |
+| Keywords  | neural, completion, productivity         |
+| Year      | 2022                                     |
+
+
 
 **Summary**:
 >  it lies in helping the user to make the best progress

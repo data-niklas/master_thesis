@@ -7,6 +7,9 @@ The few prior work presented in @bg_related_work has several weaknesses, such as
 // Design wihch will solve prolbems
 This chapter first introduces a general design for a meta-strategy to robustly inject context into code completion in @design_ibms. Then a specific framework solving the aforementioned problems is detailed in @design_lsp. Finally, this work creates a dataset to benchmark the implementation of the design.
 
+Each section will include the requirements, evaluation criteria and the components of each design.
+Furthermore, each requirement will be linked to research questions and thus the goals of the work.
+
 #{
   include "1_interrupt_based_meta_strategy.typ"
   include "2_lsp_aided_generation.typ"

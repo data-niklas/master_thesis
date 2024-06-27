@@ -83,7 +83,8 @@
   show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
   show link: it => {
     // Workaround for ctheorems package so that its labels keep the default link styling.
-    if type(it.dest) == label {
+    // Ignore research question links
+    if type(it.dest) == label and not str(it.dest).starts-with("rq:") {
       return it
     }
     it
