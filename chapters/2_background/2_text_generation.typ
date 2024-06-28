@@ -1,5 +1,5 @@
 #import "/utils.typ": *
-== Text Generation Strategies <bg_text_generation>
+== Text Generation Strategies <chapter:bg:text_generation>
 // Text generation strategy
 To generate a full sequence of tokens and thus a document, the model must choose the next probable token in the document using a text generation strategy `TGS`. After choosing the next token $hat(w)$, where $1 lt.eq hat(w) lt.eq |"vocab"|$, it is appended to the old input $x$ to form $x'$:
 $ x' = x paren.t angle.l hat(w) angle.r = (x_1, x_2, ..., x_n, hat(w)) $.

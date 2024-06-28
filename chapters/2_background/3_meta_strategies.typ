@@ -1,13 +1,13 @@
 #import "/utils.typ": *
 
-== Controllable Generation <bg_controllable_generation>
+== Controllable Generation <chapter:bg:controllable_generation>
 #acrpl("CLM") suffer from many problems, such as outdated knowledge, insufficient knowledge and insufficient capabilities. Most of these problems can be adressed by fine-tuning the model on further data, such as up-to-date information.
 The problem with fine-tuning is the need for a large amount of up-to-date data, which might not exist yet. In addition. fine-tuning is resource intensive and must be performed continously, to stay up-to-date.
 
 This section will showcase different ways to control the generation of the model, without the need to perform fine-tuning. The text generation is complex and there are many different strategies and components, which may be controlled. Guided generation will focus in strategies to control the prediction of a single next token, while the chapter prompting strategies will focus on prompting techniques.
 
-=== Guided Generation <bg_guided_generation>
-The #acr("CLM") generates a text, by iteratively choosing the next token ids. The decision on which token ids is the next token id, depends on two factors, as discussed in @bg_llms. It depends on the logits produced through the raw next token prediction function $f_"rntpf"$ and a decoding strategy.
+=== Guided Generation <chapter:bg:guided_generation>
+The #acr("CLM") generates a text, by iteratively choosing the next token ids. The decision on which token ids is the next token id, depends on two factors, as discussed in @chapter:bg:llms. It depends on the logits produced through the raw next token prediction function $f_"rntpf"$ and a decoding strategy.
 Guided generation is a technique to modify the logits before the decoding strategy is applied. The logits are modified according to a set of domain specific rules. The rules not only have access to the current logits, but also to the previously generated text. Thes allows for complex rules.
 
 Consider the following example:
@@ -53,9 +53,9 @@ Few-shot prompting involves providing the model with several examples in the pro
     *Response:*
     A: Rome
   ```,
-)<example_few_shot>
+)<example:few_shot>
 
-As can be seen in @example_few_shot, the model prefixes the response with `A: ` and does not provide additional information. The output format was not specified explicitly, but matches the format of the examples perfectly.
+As can be seen in @example:few_shot, the model prefixes the response with `A: ` and does not provide additional information. The output format was not specified explicitly, but matches the format of the examples perfectly.
 
 In contrast to providing knowledge about a desired response format, *context injection* adds important context into the prompt, which the model then uses to respond.
 
@@ -69,19 +69,19 @@ In contrast to providing knowledge about a desired response format, *context inj
   *Response:*
   Heidelberg
   ```,
-)<example_context_injection>
+)<example:context_injection>
 
-@example_context_injection demonstrates how adding information controls the response of the model. This technique is very powerful, but comes with two strong restrictions:
+@example:context_injection demonstrates how adding information controls the response of the model. This technique is very powerful, but comes with two strong restrictions:
 1. Finding relevant context.
 2. Limited prompt size.
 
-The first restriction is that the injected context must first be found. This is a hard search problem, as the information must be retrieved *before* prompting, before the intent of the prompt is known yet. In @example_context_injection the task of the #acr("CLM") is question answering. Even though the general task is known, the software has no way to known the specific domain, such as "country capitals" beforehand.
+The first restriction is that the injected context must first be found. This is a hard search problem, as the information must be retrieved *before* prompting, before the intent of the prompt is known yet. In @example:context_injection the task of the #acr("CLM") is question answering. Even though the general task is known, the software has no way to known the specific domain, such as "country capitals" beforehand.
 
 The second restriction is the limited prompt size. Models are only capable of focusing on a prompt of limited size. Thus, token space is precious and may not be wasted. Providing the model with an up-to-date version of Wikipedia for every prompt oversaturates the prompt size limit instantly. The injected context must be *targeted* and *relevant*. The more *targeted* the context is, the less tokens are used.
 
 As finding relevant context is a hard problem, several steps are needed to search for the context. Searching for relevant context may even involve the output of another #acr("CLM"). Strategies that involve the model in a multi-step process are called meta-strategies. These strategies will be further discussed in the next section.
 
-=== Meta-Strategies <bg_meta_strategies>
+=== Meta-Strategies <chapter:bg:meta_strategies>
 // TODO: merge with guided generation, under section "controllable generation"
 // TODO: mention that it is possible without fine-tuning
 Meta-strategies incorporate a model into an algorithm according to a wider strategy. These strategies shift the focus to viewing the #acrpl("CLM") as a building block to be used as needed. Several models with different strenghts could be combined into a meta-strategy.

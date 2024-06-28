@@ -1,12 +1,12 @@
 #import "/utils.typ": *
 = Background & Related Work <background>
 This chapter provides important background information and related work, necessary to understand the main contributions of this thesis.
-Firstly, #acrpl("CLM") are introduced in @bg_llms. Thereafter, @bg_text_generation discusses commonly used text generation strategies.
+Firstly, #acrpl("CLM") are introduced in @chapter:bg:llms. Thereafter, @chapter:bg:text_generation discusses commonly used text generation strategies.
 
-The section @bg_controllable_generation showcases strategies to modify the text generation of a fixed pretrained #acr("CLM").
-@bg_transformers displays important components of the popular Hugging Face libary, which enables #acr("CLM") workflows using all of the techniques introduced in the sections before.
+The section @chapter:bg:controllable_generation showcases strategies to modify the text generation of a fixed pretrained #acr("CLM").
+@chapter:bg:transformers displays important components of the popular Hugging Face libary, which enables #acr("CLM") workflows using all of the techniques introduced in the sections before.
 
-Thereafter, @bg_code_generation highlights important aspects of code generation. Continuing, @bg_lsp introduces the functionality of the #acr("LSP"). At last, @bg_related_work introduces previous work.
+Thereafter, @chapter:bg:code_generation highlights important aspects of code generation. Continuing, @chapter:bg:lsp introduces the functionality of the #acr("LSP"). At last, @chapter:bg:related_work introduces previous work.
 
 /*
 - LLM are versatile and can be used for many tasks

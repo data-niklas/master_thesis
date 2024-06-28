@@ -1,5 +1,5 @@
 #import "/utils.typ": *
-== Causal Language Models <bg_llms>
+== Causal Language Models <chapter:bg:llms>
 This section will first introduce the concept of a #acrpl("LM"), then move from neural language models, to #acrpl("CLM"). Important text generation strategies for #acr("CLM") are discussed in depth in the next section.
 
 // TODO: test
@@ -57,9 +57,9 @@ Each token represents a piece of natural language, such as a part of a word, or 
 
   ),
   caption: "Natural language encoded into tokens.",
-)<example_tokens>
+)<example:tokens>
 
-@example_tokens showcases the tokenization for the start of the famous English pangram. The tokens values correspond to the index in the given vocabulary. The given vocabulary only provides tokens for full words and does not provide tokens for sub-word fragments.
+@example:tokens showcases the tokenization for the start of the famous English pangram. The tokens values correspond to the index in the given vocabulary. The given vocabulary only provides tokens for full words and does not provide tokens for sub-word fragments.
 // Special tokens
 Not only does the vocabulary contain tokens for natural language, but also special tokens. These special tokens encode further semantic information for the #acr("CLM"). Common special tokens are the #acr("BOS"), #acr("EOS") and #acr("PAD") tokens:
 / #acr("BOS"): Marks the beginning of a natural text. Used to delimit several unrelated texts.

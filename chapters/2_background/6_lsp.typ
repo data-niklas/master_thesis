@@ -1,6 +1,6 @@
 #import "/utils.typ": *
 
-== Language Server Protocol <bg_lsp>
+== Language Server Protocol <chapter:bg:lsp>
 Many modern editors and #acrpl("IDE") provide features such as:
 - Autocompletion
 - Signature help
@@ -181,7 +181,7 @@ To identify a position inside such a file, the protocol defines the `Position` s
     ```,
   ),
   caption: "Position structure",
-)<code_position>
+)<code:position>
 Line and character define the position in the file starting at `0`.
 
 The last structure is `TextDocumentItem`, which represents an editable text document:
@@ -198,8 +198,8 @@ The last structure is `TextDocumentItem`, which represents an editable text docu
     ```,
   ),
   caption: "TextDocumentItem structure",
-)<code_text_document_item>
-In addition to the unique identifier of the document, the `uri`, the structure contains the content of the document in the field `text`. The `languageId` field defines the language of the document. This is needed especially when the language server processes documents of different languages. Passing the `languageId` prevents re-interpreting the file extension. The possible language ids are defined in the specification and can be seen in @table_language_ids in full.
+)<code:text_document_item>
+In addition to the unique identifier of the document, the `uri`, the structure contains the content of the document in the field `text`. The `languageId` field defines the language of the document. This is needed especially when the language server processes documents of different languages. Passing the `languageId` prevents re-interpreting the file extension. The possible language ids are defined in the specification and can be seen in @table:language_ids in full.
 
 === Lifecycle Messages
 After defining the basic structures, this section introduces the first messages to control the lifecycle of the language server.
@@ -219,7 +219,7 @@ The `initialize` message has the following key fields:
     ```,
   ),
   caption: "Initialize message parameters",
-)<code_initialize>
+)<code:initialize>
 The `rootUri` is an optional field that specifies the root path of the workspace, the client is working on. Setting the workspace e.g. enables finding virtual environments needed to scan the local code base.
 The next field `capabilities` is a complex structure of flags, which specify all capabilities the client has.
 
@@ -244,9 +244,9 @@ The first message is the `textDocument/didOpen` notification. Sending this notif
     ```,
   ),
   caption: "DidOpenTextDocument message parameters",
-)<code_did_open_text_document>
+)<code:did_open_text_document>
 
-As soon as the file is closed, the client sends the `textDocument/didClose` notification. The message has the same structure as in @code_did_open_text_document.
+As soon as the file is closed, the client sends the `textDocument/didClose` notification. The message has the same structure as in @code:did_open_text_document.
 
 Other messages for synchronizing documents and notebooks exist and are omitted.
 // TODO: for in depth information look here
@@ -287,19 +287,19 @@ A completion item has the following structure:
     ```,
   ),
   caption: "CompletionItem structure",
-)<code_completion_item>
+)<code:completion_item>
 
 The first key property is `label`. The `label` is the main text to be inserted into the document and provides the full symbol. In case the document already contains a prefix of the `label` in the given location, the inserted text must not contain the prefix. In these cases the `label` property remains untouched, but `insertText` is set to the shortened text. `insertText` overrides the text to be inserted, but remains optional.
 
-The `labelDetails` property contains additional information, such as the locator of the symbol to be inserted. The structure of the property can be found in @code_completion_item_label_details.
+The `labelDetails` property contains additional information, such as the locator of the symbol to be inserted. The structure of the property can be found in @code:completion_item_label_details.
 
 For accessibility, the completion item includes several human readable properties:
 - `detail` provides a short description of the completion item.
-- `documentation` provides a detailed description of the completion item. The description can be plain text or Markdown. The structure of the property can be found in @code_markup_content.
+- `documentation` provides a detailed description of the completion item. The description can be plain text or Markdown. The structure of the property can be found in @code:markup_content.
 
-The next field `kind` specifies the type of the completion item. The type refers to the symbol kind, such as a "function", "field" or "string". The full list is defined in @code_completion_item_kind.
+The next field `kind` specifies the type of the completion item. The type refers to the symbol kind, such as a "function", "field" or "string". The full list is defined in @code:completion_item_kind.
 
-Annotations can be found in the field `tags`. The only supported tag is `Deprecated`, as defined in @code_completion_item_tag. It replaces the now deprecated field `deprecated`.
+Annotations can be found in the field `tags`. The only supported tag is `Deprecated`, as defined in @code:completion_item_tag. It replaces the now deprecated field `deprecated`.
 
 After receiving the completion items, the client can display the items in a list. The field `preselect` can mark a *single* completion item to be preselected in the list. Additionally, the client may filter and sort the items. In these cases it should use the fields `filterText` and `sortText` for theses tasks, instead of `label`.
 
@@ -316,7 +316,7 @@ Additional server specific data is stored in the field `data`. This information 
     ```,
   ),
   caption: "CompletionItemLabelDetails structure",
-)<code_completion_item_label_details>
+)<code:completion_item_label_details>
 
 // CompletionItemTag
 #figure(
@@ -330,7 +330,7 @@ Additional server specific data is stored in the field `data`. This information 
     ```,
   ),
   caption: "CompletionItemTag enum",
-)<code_completion_item_tag>
+)<code:completion_item_tag>
 
 // MarkupContent
 #figure(
@@ -344,7 +344,7 @@ Additional server specific data is stored in the field `data`. This information 
     ```,
   ),
   caption: "MarkupContent structure",
-)<code_markup_content>
+)<code:markup_content>
 
 // Markup Kind
 #figure(
@@ -359,9 +359,9 @@ Additional server specific data is stored in the field `data`. This information 
     ```,
   ),
   caption: "MarkupKind enum",
-)<code_markup_kind>
+)<code:markup_kind>
 
-The @code_markup_content structure includes markup content in the field `value`. The type of markup is defined in the field `kind`. Currently the two kinds *plain text* and *Markdown* are supported, as seen in @code_markup_kind.
+The @code:markup_content structure includes markup content in the field `value`. The type of markup is defined in the field `kind`. Currently the two kinds *plain text* and *Markdown* are supported, as seen in @code:markup_kind.
 
 // Completion request
 To request completions, the client then sends the `textDocument/completion` message. The request the following structure:
@@ -378,9 +378,9 @@ To request completions, the client then sends the `textDocument/completion` mess
     ```,
   ),
   caption: "Completion message parameters",
-)<code_completion_params>
+)<code:completion_params>
 
-The request contains a `position` in the document `textDocument`. The optional `context` has further details on how the completion was triggered (`triggerKind`) and with which character it was triggered (`triggerCharacter`), as seen in @code_completion_context. Several trigger kinds are currently supported, such as invoked, triggered by a character, or re-triggered to expand an incomplete completion list (@code_completion_trigger_kind).
+The request contains a `position` in the document `textDocument`. The optional `context` has further details on how the completion was triggered (`triggerKind`) and with which character it was triggered (`triggerCharacter`), as seen in @code:completion_context. Several trigger kinds are currently supported, such as invoked, triggered by a character, or re-triggered to expand an incomplete completion list (@code:completion_trigger_kind).
 
 // Completion Context
 #figure(
@@ -394,7 +394,7 @@ The request contains a `position` in the document `textDocument`. The optional `
     ```,
   ),
   caption: "CompletionContext structure",
-)<code_completion_context>
+)<code:completion_context>
 
 #figure(
   code(
@@ -409,10 +409,10 @@ The request contains a `position` in the document `textDocument`. The optional `
     ```,
   ),
   caption: "CompletionTriggerKind enum",
-)<code_completion_trigger_kind>
+)<code:completion_trigger_kind>
 
 // TODO: use such links everywhere
-The server then responds either with no result, directly with a list of #link(<code_completion_item>)[completion items], or a completion list, as seen in @code_completion_list.
+The server then responds either with no result, directly with a list of #link(<code:completion_item>)[completion items], or a completion list, as seen in @code:completion_list.
 
 #figure(
   code(
@@ -426,7 +426,7 @@ The server then responds either with no result, directly with a list of #link(<c
     ```,
   ),
   caption: "CompletionList structure",
-)<code_completion_list>
+)<code:completion_list>
 In addition to containing the completion items, the structure also may indicate that the list is incomplete and will be recomputed // TODO: recomputed when
 through the field `isIncomplete`.
 
@@ -438,7 +438,7 @@ Resolving a single completion item is done by sending the `completionItem/resolv
 The second feature is the signature help. The signature help provides information about the signature of the symbol at the specified position. A common use case is to display function and class parameters.
 
 // TODO: check the most specific words are used, so notification / request over message
-Sending the `textDocument/signatureHelp` request to the server returns the signature help. The request has a similar structure to @code_completion_params, as seen in @code_signature_help_params:
+Sending the `textDocument/signatureHelp` request to the server returns the signature help. The request has a similar structure to @code:completion_params, as seen in @code:signature_help_params:
 
 #figure(
   code(
@@ -453,12 +453,12 @@ Sending the `textDocument/signatureHelp` request to the server returns the signa
     ```,
   ),
   caption: "SignatureHelp message parameters",
-)<code_signature_help_params>
+)<code:signature_help_params>
 
 The `context` field contains additional information about the context in which the signature help was triggered.
 // TODO: maybe emit or list
 
-The server responds with the signature help in the structure of @code_signature_help:
+The server responds with the signature help in the structure of @code:signature_help:
 #figure(
   code(
     lang: "TypeScript",
@@ -471,13 +471,13 @@ The server responds with the signature help in the structure of @code_signature_
     ```,
   ),
   caption: "SignatureHelp structure",
-)<code_signature_help>
+)<code:signature_help>
 
 The symbol could have several signatures, of which each is represented by a `SignatureInformation` structure. Each single `SignatureInformation` has a `label`, to be shown in the UI, as well as the documentation regarding the whole item.
 Single parameters can be retrieved through the `parameters` field. When typing a function call, the currently typed parameter becomes the active parameter in the `SignatureInformation` (`activeParameter`).
 The parameters each come with a `label` and `documentation` field. The `label` either is a string, or a range referring to the label of the outer signature.
 
-The signature help structure is defined in @code_signature_information, while the single parameter information is provided in @code_parameter_information.
+The signature help structure is defined in @code:signature_information, while the single parameter information is provided in @code:parameter_information.
 
 #figure(
   code(
@@ -492,7 +492,7 @@ The signature help structure is defined in @code_signature_information, while th
     ```,
   ),
   caption: "SignatureInformation structure",
-)<code_signature_information>
+)<code:signature_information>
 
 #figure(
   code(
@@ -505,6 +505,6 @@ The signature help structure is defined in @code_signature_information, while th
     ```,
   ),
   caption: "ParameterInformation structure",
-)<code_parameter_information>
+)<code:parameter_information>
 
 // TODO: outro

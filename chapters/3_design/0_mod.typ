@@ -1,7 +1,7 @@
 = Design <design>
 // 3 Problems
-As was introduced in @bg_code_generation, the three main problems with code completion are finding *precise*, *globally scoped* and *up-to-date* context, injecting the context and a working framework for most programming languages.
-The few prior work presented in @bg_related_work has several weaknesses, such as only improving type-valid identifier dereferences, using deprecated dependencies, using imprecise context or having enough data sources.
+As was introduced in @chapter:bg:code_generation, the three main problems with code completion are finding *precise*, *globally scoped* and *up-to-date* context, injecting the context and a working framework for most programming languages.
+The few prior work presented in @chapter:bg:related_work has several weaknesses, such as only improving type-valid identifier dereferences, using deprecated dependencies, using imprecise context or having enough data sources.
 
 // Not enough related work
 // Design wihch will solve prolbems

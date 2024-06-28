@@ -118,7 +118,7 @@
       [yaml],
     ),
     caption: "Possible language ids defined in the LSP specification",
-  )<table_language_ids>
+  )<table:language_ids>
 ]
 
 #figure(
@@ -156,4 +156,4 @@
     ```,
   ),
   caption: "CompletionItemKind enum",
-)<code_completion_item_kind>
+)<code:completion_item_kind>

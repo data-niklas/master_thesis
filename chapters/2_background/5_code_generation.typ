@@ -1,5 +1,5 @@
 #import "/utils.typ": *
-== Code Completion <bg_code_generation>
+== Code Completion <chapter:bg:code_generation>
 // TODO: sub headings
 
 === Special Properties

@@ -1,6 +1,6 @@
 #import "/utils.typ": *
 
-== Torch <bg_torch>
+== Torch <chapter:bg:torch>
 // TODO: @rabanserIntroductionTensorDecompositions2017
 Torch is a widely used machine learning library in Python. It enables the creation and manipulation of tensors in different precisions. The Transformers provides high level abstractions which base on Pytorch. // TODO as an example, other models are also possible
 This section shortly introduces a few core concepts of Pytorch, which are used in the Transformers library. It will focus on version #link("https://pytorch.org/docs/2.2/")[`2.2`] of PyTorch.
@@ -59,9 +59,9 @@ PyTorch supports many different numerical data types, of which the following are
     [torch.bool],
   ),
   caption: "Relevant PyTorch data types",
-)<table_data_types>
+)<table:data_types>
 
-The data types can be used by specifying the `dtype` parameter when creating a tensor. The value is one of the variables listed in the `dtype` column in @table_data_types.
+The data types can be used by specifying the `dtype` parameter when creating a tensor. The value is one of the variables listed in the `dtype` column in @table:data_types.
 
 // float16 vs bfloat16
 The difference between `torch.float16` and `torch.bfloat16` is the precision of the floating point number. Both formats use 16 bits to encode the floating point number. The difference lies in the number of bits used to encode the mantissa.
@@ -100,10 +100,10 @@ Iterating the tensor will iterate over the first dimension.
 // functions
 // torch.nn.functional
 
-== Transformers Library <bg_transformers>
+== Transformers Library <chapter:bg:transformers>
 Transformers is the name of the popular Python machine learning library developed by HuggingFace. It provides broad support for many different machine learning domains, such as computer vision, audio processing, multimodal models and *natural language processing*.
 For each domain, the library enables simple training and inference of state-of-the-art models.
-The thesis heavily relies on functionality provided by this library, as it provides in-depth features to implement the more advanced features. It provides support for all techniques introduced in @bg_llms and @bg_text_generation.
+The thesis heavily relies on functionality provided by this library, as it provides in-depth features to implement the more advanced features. It provides support for all techniques introduced in @chapter:bg:llms and @chapter:bg:text_generation.
 
 As the library receives frequent updates, the thesis focuses on version #link("https://huggingface.co/docs/transformers/v4.41.3/en/index")[`4.41.3`]. In addition, the library is complex and enables many different use-cases through many abstraction layers. This section will focus on the #acr("CLM") use-case, omit unneeded arguments and list parameters only available for #acr("CLM").
 
@@ -132,9 +132,9 @@ Loading a pre-trained model for inference is done by calling the `from_pretraine
     ```,
   ),
   caption: "Loading a pre-trained model",
-)<code_model_from_pretrained>
+)<code:model_from_pretrained>
 
-Calling @code_model_from_pretrained returns a model instance with pre-trained weights, loaded onto one or several physical devices. The model is either loaded from a local directory, or from the HuggingFace model hub. Where the model is loaded from depends on the type of the `pretrained_model_name_or_path` parameter.
+Calling @code:model_from_pretrained returns a model instance with pre-trained weights, loaded onto one or several physical devices. The model is either loaded from a local directory, or from the HuggingFace model hub. Where the model is loaded from depends on the type of the `pretrained_model_name_or_path` parameter.
 
 The HuggingFace model hub allows for easy access of pre-trained models, given the name of the model and the name of the publisher. The model name has the format `publisher_name/model_name`.
 Some#footnote()[
@@ -166,7 +166,7 @@ This simplifies code when trying different models for the same task, such as cod
     ```,
   ),
   caption: "Using AutoClasses to load a model",
-)<code_auto_classes>
+)<code:auto_classes>
 
 // Resizing token embeddings
 The method `resize_token_embeddings` resizes the token embeddings of the model to a new size. The function is commonly used to account for new special tokens added to the tokenizer at runtime.
@@ -184,7 +184,7 @@ Loading a tokenizer is done through the `AutoClasses` abstraction, which will re
     ```,
   ),
   caption: "Loading a tokenizer",
-)<code_auto_tokenizer>
+)<code:auto_tokenizer>
 
 // containde knowledge
 The vocabulary can be accessed through the `get_vocab` method, which returns a dictionary mapping tokens to token ids.
@@ -199,7 +199,7 @@ Special tokens and token ids can be accessed directly through special attributes
     [eos_token], [eos_token_id], [End of sequence token and token id],
     [pad_token], [pad_token_id], [Padding token and token id],
   ),
-)<code_special_tokens>
+)<code:special_tokens>
 
 // Adding knowledge
 Special tokens can be added at runtime by calling `add_special_tokens` with a dictionary containing the key `additional_special_tokens` with the list of new tokens.
@@ -219,9 +219,9 @@ The main functionality of a tokenizer is to convert text to token ids. This is d
     ```,
   ),
   caption: "Tokenizing text",
-)<code_tokenization>
+)<code:tokenization>
 
-The function in @code_tokenization either tokenizes a single string, or a batch of strings. The output `BatchEncoding` has the field `input_ids`, which contains the sequence of token ids, or batch of token ids.
+The function in @code:tokenization either tokenizes a single string, or a batch of strings. The output `BatchEncoding` has the field `input_ids`, which contains the sequence of token ids, or batch of token ids.
 
 The output format of `input_ids` is controlled by the parameter `return_tensors`. By setting it to `pt`, the `input_ids` will be a PyTorch tensor.
 
@@ -243,7 +243,7 @@ The method `decode` decodes a single sequence and has the following signature:
     ```,
   ),
   caption: "Detokenizing a single sequence",
-)<code_detokenization_single>
+)<code:detokenization_single>
 
 The method `batch_decode` has a similar signature, but decodes a whole batch of sequences.
 
@@ -285,8 +285,8 @@ The `generate` function has the following signature:
     ```,
   ),
   caption: "Generating a sequence of tokens",
-)<code_generate>
-Next to the provided input tensor `inputs`, the `generation_config` parameter contains configuration values to control the generation. Extra matching keyword arguments override keys in the generation config. @table_generation_config contains important configuration parameters:
+)<code:generate>
+Next to the provided input tensor `inputs`, the `generation_config` parameter contains configuration values to control the generation. Extra matching keyword arguments override keys in the generation config. @table:generation_config contains important configuration parameters:
 
 #figure(
   table(
@@ -312,11 +312,11 @@ Next to the provided input tensor `inputs`, the `generation_config` parameter co
     // [Output format], [], [bool], [Whether to return the full text],
     // TODO: continue
   ),
-)<table_generation_config>
+)<table:generation_config>
 
 // TODO: add references to previous chapters for logits manipulation, controllable generation, etc
 // stopping criteria
-The first parameters in @table_generation_config configure the first stopping criteria. The generation can be stopped when the sequence reaches a certain length, or when a certain time is reached.
+The first parameters in @table:generation_config configure the first stopping criteria. The generation can be stopped when the sequence reaches a certain length, or when a certain time is reached.
 
 The following diagram displays the different used generation strategies, depending on the provided parameters:
 #figure(
@@ -336,7 +336,7 @@ The final parameters manipulate the logits before sampling. They enable `Top-k`,
 // TODO: maybe pipeline if needed
 
 === Controllable Generation
-The `generation` method provides parameters to overview and control the generation process. These parameters enable strategies as discussed in @bg_controllable_generation.
+The `generation` method provides parameters to overview and control the generation process. These parameters enable strategies as discussed in @chapter:bg:controllable_generation.
 
 // stopping criteria
 The first control mechanism are the stopping criteria. The stopping criteria define custom conditions that terminate the generation, when one of the conditions is met.
@@ -358,8 +358,8 @@ A subclass of `StoppingCriteria` only needs to implement the `__call__` method:
     ```,
   ),
   caption: "Stopping criteria signature",
-)<code_stopping_criteria>
-The method in @code_stopping_criteria returns whether the generation should be stopped, based on the previous token ids `input_ids` and the current `scores`. The method must support batching, as `input_ids` has the shape `(batch_size, sequence_length)` and `scores` the shape `(batch_size, vocab_size)`.
+)<code:stopping_criteria>
+The method in @code:stopping_criteria returns whether the generation should be stopped, based on the previous token ids `input_ids` and the current `scores`. The method must support batching, as `input_ids` has the shape `(batch_size, sequence_length)` and `scores` the shape `(batch_size, vocab_size)`.
 
 // logits processor
 The second control mechanism are the logits processors. Logits processors manipulate the current logits before a decoding strategy chooses the next token id on the then manipulated logits.
@@ -379,7 +379,7 @@ A subclass of `LogitsProcessor` only needs to implement the `__call__` method:
     ```,
   ),
   caption: "Logits processor signature",
-)<code_logits_processor>
-The arguments in @code_logits_processor are identical to the arguments in @code_stopping_criteria. The method must return the manipulated logits, which have the same shape as the input `scores`.
+)<code:logits_processor>
+The arguments in @code:logits_processor are identical to the arguments in @code:stopping_criteria. The method must return the manipulated logits, which have the same shape as the input `scores`.
 
 // todo: logitswarper?
