@@ -1,3 +1,3 @@
 #import "/utils.typ": *
 
-== Language Server Protocol aided generation<design_lsp>
+== Language Server Protocol aided generation<chapter:design:lsp>

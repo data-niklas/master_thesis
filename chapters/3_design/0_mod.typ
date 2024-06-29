@@ -5,7 +5,7 @@ The few prior work presented in @chapter:bg:related_work has several weaknesses,
 
 // Not enough related work
 // Design wihch will solve prolbems
-This chapter first introduces a general design for a meta-strategy to robustly inject context into code completion in @design_ibms. Then a specific framework solving the aforementioned problems is detailed in @design_lsp. Finally, this work creates a dataset to benchmark the implementation of the design.
+This chapter first introduces a general design for a meta-strategy to robustly inject context into code completion in @chapter:design:ibms. Then a specific framework solving the aforementioned problems is detailed in @chapter:design:lsp. Finally, this work creates a dataset to benchmark the implementation of the design.
 
 Each section will include the requirements, evaluation criteria and the components of each design.
 Furthermore, each requirement will be linked to research questions and thus the goals of the work.
