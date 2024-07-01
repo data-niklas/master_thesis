@@ -97,9 +97,12 @@ The edited prompt is then passed into the model generation again, repeating the 
 Inside the model generation, the component `Monitor` watches the generation process, deciding if an interrupt is necessary. It was injected into the default model generation process, by the `Generator`.
 The `Monitor` is called for each token prediction, receiving the previous token sequence and the next token prediction and optionally modifying the prediction logits.
 In its functionality it is similar to the monitor in Agrawal et al.@agrawalMonitorGuidedDecodingCode, but with the difference that it only controls the prediction of the special interrupt token.
-If an interrupt is necessary, the `Monitor` will force the prediction of the interrupt token, thus stopping the generation process. In addition, it will provide context for retrieval inside the `Generator`.
+If an interrupt is necessary, the `Monitor` will force the prediction of the interrupt token, thus stopping the generation process.
+In addition, it will provide context for retrieval inside the `Generator`.
 
 To decide if an interrupt is necessary, the `Monitor` will call an external `Static Analysis` tool. The `Static Analysis` component represents any form of external tooling that can analyze the current generation and provide additional context. This could include a web search of named entities, a keyword search in local documents or #acr("LSP") tooling. If no additional context was found, the model generation proceeds normally.
+
+To reduce the number of interruptions, the `Monitor` will only interrupt the generation if the additional context is not yet present in the prompt.
 
 // maybe next section
 // === Use cases

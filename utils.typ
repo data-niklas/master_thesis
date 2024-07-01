@@ -17,3 +17,14 @@
 }
 
 #let rq(number) = link(label("rq:" + str(number)))[*RQ#str(number)*]
+#let thought(body) = align(
+  center,
+  block(
+    fill: luma(240),
+    radius: 10pt,
+    outset: 7pt,
+    spacing: 20pt,
+    width: 90%,
+    align(left, body),
+  ),
+)
