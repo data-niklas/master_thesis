@@ -58,13 +58,13 @@ PyTorch supports many different numerical data types, of which the following are
     [Boolean],
     [torch.bool],
   ),
-  caption: "Relevant PyTorch data types",
+  caption: [Relevant PyTorch data types@TensorAttributesPyTorch],
 )<table:data_types>
 
-The data types can be used by specifying the `dtype` parameter when creating a tensor. The value is one of the variables listed in the `dtype` column in @table:data_types.
+The data types can be used by specifying the `dtype` parameter when creating a tensor. The value is one of the variables listed in the `dtype` column in @table:data_types@TorchTensorPyTorch.
 
 // float16 vs bfloat16
-The difference between `torch.float16` and `torch.bfloat16` is the precision of the floating point number. Both formats use 16 bits to encode the floating point number. The difference lies in the number of bits used to encode the mantissa.
+The difference between `torch.float16` and `torch.bfloat16` is the precision of the floating point number. Both formats use 16 bits to encode the floating point number. The difference lies in the number of bits used to encode the mantissa@TensorAttributesPyTorch.
 
 The `torch.float16` is a half-precision floating point number, as defined in the IEEE 754 standard. It uses one sign bit, five exponent bits and 10 mantissa bits@IEEEStandardsAssociation.
 // TODO: better IEEE reference
@@ -73,7 +73,7 @@ The `torch.float16` is a half-precision floating point number, as defined in the
   caption: "IEEE 754 half-precision floating point number: float16",
 )
 
-In contast, the `torch.bfloat16` keeps the full range of the full-precision floating point number of 8-bits, but has a reduced precision of 7 mantissa bits@BFloat16SecretHigh.
+In contast, the `torch.bfloat16` keeps the full range of the full-precision floating point number of 8-bits, but has a reduced precision of 7 mantissa bits@BFloat16SecretHigh@TensorAttributesPyTorch.
 #figure(
   image("/assets/bfloat16.svg"),
   caption: "Brain Floating Point Format: bfloat16",
@@ -82,16 +82,16 @@ The format was introduced by Google Brain and is used in their Tensor Processing
 // TODO: paper to show that less precision not really relevant for model quality
 
 In addition to the precision, another aspect of a PyTorch tensor is the *physical location* it is allocated at, the `device`. The function `torch.device` creates a reference to such a physical location.
-Possible relevant device locations are `cpu` and `cuda`, where `cpu` allocates a tensor on the CPU memory, while `cuda` allocates the tensor on GPU memory.
+Possible relevant device locations are `cpu` and `cuda`, where `cpu` allocates a tensor on the CPU memory, while `cuda` allocates the tensor on GPU memory@TensorAttributesPyTorch.
 // Device
 // torch.device
 // torch.to
-Already creates tensor can be *moved to a different device* by calling the `to` method with the new device.
+Already creates tensor can be *moved to a different device* by calling the `to` method with the new device@TorchTensorPyTorcha.
 
 // TEnsor, LongTensor, FloatTensor
-To *create a tensor*, the function `torch.tensor` is used. It takes `data` and optionally `dtype` and the `device`.
+To *create a tensor*, the function `torch.tensor` is used. It takes `data` and optionally `dtype` and the `device`@TorchTensorPyTorch.
 // torch.Tensor
-The order and shape of the tensor can be accessed through the `dim` and `shape` attributes. Indexing the tensor is done through the Python `tensor[indice_list]` notation, where untouched dimensions are marked through the `:` symbol, e.g.: `tensor[3,:,1]`.
+The order and shape of the tensor can be accessed through the `dim` and `shape` attributes@TorchTensorDim@TorchTensorShape. Indexing the tensor is done through the Python `tensor[indice_list]` notation, where untouched dimensions are marked through the `:` symbol, e.g.: `tensor[3,:,1]`@TensorIndexingAPI.
 // .shape
 // indexing
 // iterating like normal python (over first dimension)
@@ -101,9 +101,9 @@ Iterating the tensor will iterate over the first dimension.
 // torch.nn.functional
 
 == Transformers Library <chapter:bg:transformers>
-Transformers is the name of the popular Python machine learning library developed by HuggingFace. It provides broad support for many different machine learning domains, such as computer vision, audio processing, multimodal models and *natural language processing*.
+Transformers is the name of the popular Python machine learning library developed by HuggingFace. It provides broad support for many different machine learning domains, such as computer vision, audio processing, multimodal models and *natural language processing*@Transformers.
 For each domain, the library enables simple training and inference of state-of-the-art models.
-The thesis heavily relies on functionality provided by this library, as it provides in-depth features to implement the more advanced features. It provides support for all techniques introduced in @chapter:bg:llms and @chapter:bg:text_generation.
+The thesis heavily relies on functionality provided by this library, as it provides in-depth features to implement the more advanced features. It provides support for all techniques introduced in @chapter:bg:llms and @chapter:bg:text_generation@Transformers.
 
 As the library receives frequent updates, the thesis focuses on version #link("https://huggingface.co/docs/transformers/v4.41.3/en/index")[`4.41.3`]. In addition, the library is complex and enables many different use-cases through many abstraction layers. This section will focus on the #acr("CLM") use-case, omit unneeded arguments and list parameters only available for #acr("CLM").
 
@@ -112,9 +112,9 @@ The structure of this section will mirror the structure of previous sections. It
 Using different text generation strategies with the Transformers library will follow. At last, implementing controllable generation will be shown.
 
 === Models
-In transformers, every type of model architecture is represented by a model class. Each model defines the layers of the model and the operations between layers. Common model functionality is inherited through the base class `PreTrainedModel`.
+In transformers, every type of model architecture is represented by a model class. Each model defines the layers of the model and the operations between layers. Common model functionality is inherited through the base class `PreTrainedModel`@Models.
 
-Pretrained models provide the following functionality (not exhaustive):
+Pretrained models provide the following functionality (not exhaustive)@Models:
 - Loading pre-trained weights
 - Resizing the token embeddings
 
@@ -131,7 +131,7 @@ Loading a pre-trained model for inference is done by calling the `from_pretraine
     ) -> PreTrainedModel
     ```,
   ),
-  caption: "Loading a pre-trained model",
+  caption: [Loading a pre-trained model@AutoClasses],
 )<code:model_from_pretrained>
 
 Calling @code:model_from_pretrained returns a model instance with pre-trained weights, loaded onto one or several physical devices. The model is either loaded from a local directory, or from the HuggingFace model hub. Where the model is loaded from depends on the type of the `pretrained_model_name_or_path` parameter.
@@ -152,27 +152,27 @@ By default, the model will be loaded using the data type of the loaded weights. 
 The `device_map` parameter controls on which devices the model is allocated. The parameter takes a PyTorch device as value. Passing `auto` computes the most optimized device map automatically.
 
 // Auto models
-Transformers provides an abstraction called `AutoClasses`. These abstraction solve the problem of finding the specific model, config and tokenizer classes to load and use a #acr("CLM"). Instead, the correct classes can be guessed from the name of a model alone.
+Transformers provides an abstraction called `AutoClasses`. These abstraction solve the problem of finding the specific model, config and tokenizer classes to load and use a #acr("CLM"). Instead, the correct classes can be guessed from the name of a model alone@AutoClasses.
 This simplifies code when trying different models for the same task, such as code generation:
 #figure(
   code(
     lang: "Python",
     ```python
-    from transformers import AutoModelForCausalLM, LlamaForCausalLM
+    from transformers import AutoModel, LlamaForCausalLM
     # The following line
     model = LlamaForCausalLM.from_pretrained("codellama/CodeLlama-7b-Instruct-hf")
     # Would be transformed into
-    model = AutoModelForCausalLM.from_pretrained("codellama/CodeLlama-7b-Instruct-hf")
+    model = AutoModel.from_pretrained("codellama/CodeLlama-7b-Instruct-hf")
     ```,
   ),
-  caption: "Using AutoClasses to load a model",
+  caption: [Using AutoClasses to load a model@AutoClasses],
 )<code:auto_classes>
 
 // Resizing token embeddings
-The method `resize_token_embeddings` resizes the token embeddings of the model to a new size. The function is commonly used to account for new special tokens added to the tokenizer at runtime.
+The method `resize_token_embeddings` resizes the token embeddings of the model to a new size. The function is commonly used to account for new special tokens added to the tokenizer at runtime@Models.
 
 === Tokenizers
-Tokenizers provide the functionality to convert text to and from sequences of token ids. In addition, they store the vocabulary, including information on special tokens, such as the #acr("EOS") token.
+Tokenizers provide the functionality to convert text to and from sequences of token ids. In addition, they store the vocabulary, including information on special tokens, such as the #acr("EOS") token@Tokenizer.
 
 Loading a tokenizer is done through the `AutoClasses` abstraction, which will return an instance of a subclass of a `PreTrainedTokenizer`:
 #figure(
@@ -183,11 +183,11 @@ Loading a tokenizer is done through the `AutoClasses` abstraction, which will re
     tokenizer = AutoTokenizer.from_pretrained("codellama/CodeLlama-7b-Instruct-hf")
     ```,
   ),
-  caption: "Loading a tokenizer",
+  caption: [Loading a tokenizer@AutoClasses],
 )<code:auto_tokenizer>
 
 // containde knowledge
-The vocabulary can be accessed through the `get_vocab` method, which returns a dictionary mapping tokens to token ids.
+The vocabulary can be accessed through the `get_vocab` method, which returns a dictionary mapping tokens to token ids@Tokenizer.
 Special tokens and token ids can be accessed directly through special attributes of the tokenizer:
 #figure(
   table(
@@ -199,13 +199,14 @@ Special tokens and token ids can be accessed directly through special attributes
     [eos_token], [eos_token_id], [End of sequence token and token id],
     [pad_token], [pad_token_id], [Padding token and token id],
   ),
+  caption: [Special tokens and token id attributes@Tokenizer],
 )<code:special_tokens>
 
 // Adding knowledge
-Special tokens can be added at runtime by calling `add_special_tokens` with a dictionary containing the key `additional_special_tokens` with the list of new tokens.
+Special tokens can be added at runtime by calling `add_special_tokens` with a dictionary containing the key `additional_special_tokens` with the list of new tokens@Tokenizer.
 
 // Tokenization
-The main functionality of a tokenizer is to convert text to token ids. This is done by calling the tokenizer directly, as it implements the special `__call__` function:
+The main functionality of a tokenizer is to convert text to token ids. This is done by calling the tokenizer directly, as it implements the special `__call__` function@Tokenizer:
 #figure(
   code(
     lang: "Python",
@@ -228,7 +229,7 @@ The output format of `input_ids` is controlled by the parameter `return_tensors`
 By default, the tokenizer adds special tokens to the input text, such as the #acr("BOS") and #acr("EOS") tokens. This behavior can be controlled by the `add_special_tokens` parameter.
 
 // Detokenization
-In contrast to tokenization, the `PretrainedTokenizer` class provides two different methods for detokenization. Both functions are similar in signature with the single difference that one method takes a single sequence of token ids, and the other method a batch of sequences.
+In contrast to tokenization, the `PretrainedTokenizer` class provides two different methods for detokenization. Both functions are similar in signature with the single difference that one method takes a single sequence of token ids, and the other method a batch of sequences@Tokenizer.
 
 The method `decode` decodes a single sequence and has the following signature:
 #figure(
@@ -242,33 +243,32 @@ The method `decode` decodes a single sequence and has the following signature:
     ) -> str
     ```,
   ),
-  caption: "Detokenizing a single sequence",
+  caption: [Detokenizing a single sequence@Tokenizer],
 )<code:detokenization_single>
 
 The method `batch_decode` has a similar signature, but decodes a whole batch of sequences.
-
-The parameter `skip_special_tokens` can be enabled to remove special tokens, which might be unwanted when e.g. displaying the returned text.
+The parameter `skip_special_tokens` can be enabled to remove special tokens, which might be unwanted when e.g. displaying the returned text@Tokenizer.
 
 // convert_tokens_to_ids
-If single tokens are already present, these can be convert to token ids by calling the method `convert_tokens_to_ids`. The converse direction is possible by calling the method `convert_ids_to_tokens`. The method `convert_ids_to_tokens` also takes the parameter `skip_special_tokens`.
+If single tokens are already present, these can be convert to token ids by calling the method `convert_tokens_to_ids`. The converse direction is possible by calling the method `convert_ids_to_tokens`. The method `convert_ids_to_tokens` also takes the parameter `skip_special_tokens`@Tokenizer.
 
 === Config
-Models show dynamic behavior, as they can be configured at runtime. This dynamic configuration enables the use of different generation strategies, by setting different model configuration values. Model configurations are classes inheriting from `PretrainedConfig`. The `PretrainedConfig` includes configuration values for the model architecture and for the mentioned dynamic behavior.
-Instantiation a `PretrainedConfig` is possible through the abstraction `AutoClasses`, by using `AutoConfig`.
+Models show dynamic behavior, as they can be configured at runtime. This dynamic configuration enables the use of different generation strategies, by setting different model configuration values. Model configurations are classes inheriting from `PretrainedConfig`. The `PretrainedConfig` includes configuration values for the model architecture and for the mentioned dynamic behavior@Configuration.
+Instantiation a `PretrainedConfig` is possible through the abstraction `AutoClasses`, by using `AutoConfig`@AutoClasses.
 
-Often single configuration values can be passed into the model as single keyword arguments, without the need for a dedicated configuration object.
+Often single configuration values can be passed into the model as single keyword arguments, without the need for a dedicated configuration object@Generationa.
 Different configuration values will be introduced as function arguments in the following sections.
 
 === Text Generation
 After obtaining a model and a tokenizer, the text generation process can be performed by using one of the following three abstraction. The to be introduced abstraction build upon the previous abstraction.
 
 // forward
-The lowest level abstraction is the `forward` method of the model, which takes previous token ids and returns the logits for the next token id. The arguments to the function only control the provided output format and cache behavior.
+The lowest level abstraction is the `forward` method of the model, which takes previous token ids and returns the logits for the next token id. The arguments to the function only control the provided output format and cache behavior@Models.
 
 // generate
 The next abstraction is the `generate` method, which generates a whole sequence of tokens, until a stopping criteria is met, such as the #acr("EOS") token.
 The functions is provided by the `GenerationMixin` class, which #acr("CLM") inherit from using multiple-inheritance.
-The `GenerationMixin` implements the different text generation strategies, which can be controlled through the provided parameters.
+The `GenerationMixin` implements the different text generation strategies, which can be controlled through the provided parameters@Generationa.
 The `generate` function has the following signature:
 #figure(
   code(
@@ -284,7 +284,7 @@ The `generate` function has the following signature:
     ) -> Union[ModelOutput, torch.LongTensor]
     ```,
   ),
-  caption: "Generating a sequence of tokens",
+  caption: [Generating a sequence of tokens@Generationa],
 )<code:generate>
 Next to the provided input tensor `inputs`, the `generation_config` parameter contains configuration values to control the generation. Extra matching keyword arguments override keys in the generation config. @table:generation_config contains important configuration parameters:
 
@@ -312,6 +312,7 @@ Next to the provided input tensor `inputs`, the `generation_config` parameter co
     // [Output format], [], [bool], [Whether to return the full text],
     // TODO: continue
   ),
+  caption: [Generation configuration parameters@Generationa],
 )<table:generation_config>
 
 // TODO: add references to previous chapters for logits manipulation, controllable generation, etc
@@ -341,9 +342,9 @@ The `generation` method provides parameters to overview and control the generati
 // stopping criteria
 The first control mechanism are the stopping criteria. The stopping criteria define custom conditions that terminate the generation, when one of the conditions is met.
 
-Transformers defines a few vital stopping criteria, like the maximum time or the maximum number of tokens to generate. These stopping criteria are enabled by passing certain keyword arguments into the `generate` method, as introduced in the section before.
+Transformers defines a few vital stopping criteria, like the maximum time or the maximum number of tokens to generate. These stopping criteria are enabled by passing certain keyword arguments into the `generate` method, as introduced in the section before@UtilitiesGeneration@Generationa.
 
-Custom stopping criteria are defined by subclassing the `StoppingCriteria` class and adding an instance of the new class to the `stopping_criteria` list in the `generate` method.
+Custom stopping criteria are defined by subclassing the `StoppingCriteria` class and adding an instance of the new class to the `stopping_criteria` list in the `generate` method@UtilitiesGeneration.
 
 A subclass of `StoppingCriteria` only needs to implement the `__call__` method:
 #figure(
@@ -357,15 +358,14 @@ A subclass of `StoppingCriteria` only needs to implement the `__call__` method:
     ) -> bool
     ```,
   ),
-  caption: "Stopping criteria signature",
+  caption: [Stopping criteria signature@UtilitiesGeneration],
 )<code:stopping_criteria>
-The method in @code:stopping_criteria returns whether the generation should be stopped, based on the previous token ids `input_ids` and the current `scores`. The method must support batching, as `input_ids` has the shape `(batch_size, sequence_length)` and `scores` the shape `(batch_size, vocab_size)`.
+The method in @code:stopping_criteria returns whether the generation should be stopped, based on the previous token ids `input_ids` and the current `scores`. The method must support batching, as `input_ids` has the shape `(batch_size, sequence_length)` and `scores` the shape `(batch_size, vocab_size)`@UtilitiesGeneration.
 
 // logits processor
 The second control mechanism are the logits processors. Logits processors manipulate the current logits before a decoding strategy chooses the next token id on the then manipulated logits.
 
 Custom logits processors are defined by subclassing the `LogitsProcessor` class and adding an instance of the new class to the `logits_processor` list in the `generate` method.
-
 A subclass of `LogitsProcessor` only needs to implement the `__call__` method:
 #figure(
   code(
@@ -378,7 +378,7 @@ A subclass of `LogitsProcessor` only needs to implement the `__call__` method:
     ) -> torch.FloatTensor
     ```,
   ),
-  caption: "Logits processor signature",
+  caption: [Logits processor signature@UtilitiesGeneration],
 )<code:logits_processor>
 The arguments in @code:logits_processor are identical to the arguments in @code:stopping_criteria. The method must return the manipulated logits, which have the same shape as the input `scores`.
 
