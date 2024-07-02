@@ -17,7 +17,12 @@
       line(length: 100%)
     },
   )
-  set par(leading: 0.55em, first-line-indent: 1.8em, justify: true)
+  set par(
+    leading: 0.55em,
+    first-line-indent: 1.8em,
+    justify: true,
+    linebreaks: "optimized",
+  )
   set text(font: "New Computer Modern", spacing: 150%)
   show footnote: set text(spacing: 100%)
   show figure: set text(spacing: 100%)

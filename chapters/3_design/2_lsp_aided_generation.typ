@@ -58,6 +58,8 @@ Different models allow different prompt sections, such as a system and a user pr
 
 The difference in the `Monitors` is the threefold divide into subcomponents. The first subcomponent `LSP Processor` corresponds to the previous component `Monitor`. It receives context from a `Language Server` (previous `Static Analysis`) and enables the interrupt-based meta-strategy applied to code completion.
 The task of the `LSP Processor` is twofold. First, it enables the interrupt-based meta-strategy. Secondly, it controls the logits to force the model towards certain behavior, when guiding is not enough.
+// TODO: Writing to a temporary file
+// TODO: how control logits
 
 The purpose of the `Boundary Processor` is to fix boundary issues when using tokenizers which allow multi-character tokens.
 Usually, #acr("LSP") information, such as autocompletion and signature help, is requested after every keystroke in an #acr("IDE"), or for certain hotkeys.
@@ -78,7 +80,59 @@ The `Comments Processor` disallows the generation of code comments, by stopping 
 === Design Decisions
 This section provides details on different design decision for the introduced components.
 
-The first design decision is the selection of sources to suggest fitting code, as introduced in #rq(1).
+// RQ1: code completion provides available symbols, documentation and type information
+// RQ1: signature help provides parameters for chosen functions
+The first design decision is the selection of sources to suggest fitting code, as introduced in #rq(1). The previous sections already highlight why the #acr("LSP") is fitting.
+The protocol provides a vast amount of different information.
+We argue that the core information to use are the completion items and the signature help information.
+
+When generating code, the primary source are the completion items, as they dictate the available symbols. The completion items list the attributes of objects and which attributes are deprecated and should be replaced.
+
+After using the completion items to write callable code, the secondary source is the signature help. Likewise, the signature help lists available parameters of a function call and includes documentation.
+
+Both types of information sources allow code generation using up-to-date information. Other features provided through #acr("LSP") may improve code generation, but are not vital, such as diagnostics information. In addition, both sources can be used on partial code and provide suggestions on how to extend the code, aiding the natural #acr("CLM") generation flow.
+Diagnostic information and other information reference code already written, increasing the difficulty to integrate into the natural generation flow.
+
+// TODO:
+// RQ1: No algorithmic information, except diagnostics data
+// RQ1: Would require higher decision making
+
+// RQ2: Problem: too much information fills token limit => information needs refinement
+// RQ2: 1. Control generation based on deprecation information
+// RQ2: 2. Filter completion symbols on next token prediction
+// RQ2: 3. Filter built-in functionality, such as standard library functions, or other functions already present in the current context (=> file)
+// RQ2: 4. Remove completions already completed
+// RQ2: 5. Remove completions, such as snippets, units colors etc.
+// RQ2: 6. Remove signatures without parameters
+The second design decision, #rq(2), is about processing the completion items and signature help information.
+Both sources provide critical information, but also a lot of unrelevant information not needed to decide on the next code piece.
+Such context pollutes the context window of #acr("CLM") and worsens the prediction quality. As such, preprocessing is needed to filter such data.
+
+// Allow only specific types (no snippets)
+// Remove builtins
+// Remove from current file
+// Additional private or meta functions (__, __getitem__)
+// Stop completion item already completed
+// Only allow completion items extending the current partial word
+
+Completion items are initially filtered by their `CompletionItemKind`#footnote()[The full list is visible in @code:completion_item_kind]. Only items of kind `Method`, `Field`, `Class`, `Function`, `Property` or `Variable` are allowed, to remove kinds such as `Snippet`, `Color` and `File`.
+
+To reduce confusion further, completion items of builtins are removed, as the assumption is made that the model has the knowledge of builtins. If the model does not have knowledge about builtins, this filter can be disabled, to e.g improve support of low resource languages.
+Filtering is done by checking the `detail` field of the completion item, as it contains the origin of the code item, such as the code file.
+
+Next, completion items from the current code piece are removed. Similarily, it is assumed that the current code is in the context of the #acr("CLM").
+Again, this filter checks the `detail` field of the completion item.
+
+Then private or meta functions are removed, such as the `__getitem__` function in Python. These functions are not meant to be called directly.
+
+To avoid the completion of already completed code, the to be inserted text is checked against the ending of the currently generated code. This also removes items which do not properly extend the current code.
+// TODO: explain more
+
+// Deprecation vs non-deprecation
+Then the completion items are split into two categories, the non-deprecated and the deprecated completion items. This differentiation allows later steps to guide the model towards non-deprecated items, while avoiding deprecated items.
+
+The model may be biased towards generating old deprecated code. To only focus on the deprecated items, which the model *may* predict, the deprecated items are finally filtered by the next predicted token.
+// Filter deprecation by next token
 
 // initialize different components
 // embeddings for new special token
@@ -103,20 +157,6 @@ The first design decision is the selection of sources to suggest fitting code, a
 // @Specification
 
 // TODO: references for software development
-
-// RQ1: code completion provides available symbols, documentation and type information
-// RQ1: signature help provides parameters for chosen functions
-
-// RQ1: No algorithmic information, except diagnostics data
-// RQ1: Would require higher decision making
-
-// RQ2: Problem: too much information fills token limit => information needs refinement
-// RQ2: 1. Control generation based on deprecation information
-// RQ2: 2. Filter completion symbols on next token prediction
-// RQ2: 3. Filter built-in functionality, such as standard library functions, or other functions already present in the current context (=> file)
-// RQ2: 4. Remove completions already completed
-// RQ2: 5. Remove completions, such as snippets, units colors etc.
-// RQ2: 6. Remove signatures without parameters
 
 // RQ3: Combine instruction tuned model with information in the user prompt
 // RQ3: No system prompt for generality, as not every model has system and user prompt
