@@ -5,7 +5,7 @@
     "Large Language Model for Code",
     "Large Language Models for Code",
   ),
-  "CLM": ("Causal Language Models"),
+  "CLM": ("Causal Language Model"),
   "EOS": ("End of Sequence"),
   "IDE": (
     "Integrated Development Environment",

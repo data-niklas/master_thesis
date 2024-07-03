@@ -2,7 +2,7 @@
 == Related Work <chapter:bg:related_work>
 // Not many related work has focused on enhancing code completion specifically
 // No solution that works for large codebases, with up-to-date code for any language and precision to provide high quality context
-Not many related work has focused on enhancing code completion specifically. The few works that enhance code completion fail to solve all three problems introduced in @chapter:bg:code_generation. Other work introduces general techniques to improve #acr("CLM") generation for complex tasks, but does not apply such techniques on code completion.
+Not many related works have focused on enhancing code completion specifically. Some works introduces general techniques to improve #acr("CLM") generation for complex tasks, but does not apply such techniques on code completion.
 
 // Monitor guided generation
 // 1. finds relevant identifiers using language server protocol!

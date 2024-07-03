@@ -6,7 +6,7 @@ Firstly, #acrpl("CLM") are introduced in @chapter:bg:llms. Thereafter, @chapter:
 The section @chapter:bg:controllable_generation showcases strategies to modify the text generation of a fixed pretrained #acr("CLM").
 @chapter:bg:transformers displays important components of the popular Hugging Face libary, which enables #acr("CLM") workflows using all of the techniques introduced in the sections before.
 
-Thereafter, @chapter:bg:code_generation highlights important aspects of code generation. Continuing, @chapter:bg:lsp introduces the functionality of the #acr("LSP"). At last, @chapter:bg:related_work introduces previous work.
+Thereafter, @chapter:bg:lsp introduces the functionality of the #acr("LSP"). At last, @chapter:bg:related_work introduces previous work.
 
 /*
 - LLM are versatile and can be used for many tasks
@@ -18,7 +18,6 @@ Thereafter, @chapter:bg:code_generation highlights important aspects of code gen
   include "2_text_generation.typ"
   include "3_meta_strategies.typ"
   include "4_huggingface.typ"
-  include "5_code_generation.typ"
   include "6_lsp.typ"
   include "7_related_work.typ"
   // TODO: where do I talk about benchmarks

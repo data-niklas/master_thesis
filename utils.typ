@@ -17,6 +17,7 @@
 }
 
 #let rq(number) = link(label("rq:" + str(number)))[*RQ#str(number)*]
+#let r(number) = link(label("r:" + str(number)))[*R#str(number)*]
 #let thought(body) = align(
   center,
   block(
