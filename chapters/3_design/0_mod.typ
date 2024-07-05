@@ -1,9 +1,9 @@
 #import "/utils.typ": *
 = Design <design>
 After introducing the necessary background in @background,
-this section will first derive the requirements from the motivation and goals. // TODO: in
+this section will first derive the requirements from the motivation and goals in @chapter:design:requirements.
 
-By analyzing the shortcomings of existing solutions in TODO // TODO: in
+By analyzing the shortcomings of existing solutions in @chapter:design:analysis,
 the thesis will propose a new design to integrate high quality context into neural code completion. Context retrieval is enhanced with hand crafted filtering rules, to reduce noise and improve completion accuracy.
 
 Lastly, a dataset design is proposed to evaluate the effectiveness of the new design.
@@ -74,23 +74,56 @@ The programming language ecosystem is vast and diverse. Even though only a few p
 By supporting lesser used programming languages, this approach can be used to help developers in a wider range of projects, such as hobby projects. It could be even used to maintain legacy code.
 
 === Performance <r:5>
+Using editor tooling feels fast, as responses in interactions with toolings only take a few milliseconds, up to a second. Integrating #acr("CLM") for code completion increases the latency by a significant margin, as inference takes several seconds up to a minute. // TODO: ref
 
-// Problem
-// Incompatability between dependencies
+While the goal of this thesis is not to reduce the latency in neural code generation, the approach should not impose a significant overhead on the default code completion.
 
-// 3 Problems
-// As was introduced in @chapter:bg:code_generation, the three main problems with code completion are finding *precise*, *globally scoped* and *up-to-date* context, injecting the context and a working framework for most programming languages.
-// The few prior work presented in @chapter:bg:related_work has several weaknesses, such as only improving type-valid identifier dereferences, using deprecated dependencies, using imprecise context or having enough data sources.
-//
-// // Not enough related work
-// // Design wihch will solve prolbems
-// This chapter first introduces a general design for a meta-strategy to robustly inject context into code completion in @chapter:design:ibms. Then a specific framework solving the aforementioned problems is detailed in @chapter:design:lsp. Finally, this work creates a dataset to benchmark the implementation of the design.
-//
-// Each section will include the requirements, evaluation criteria and the components of each design.
-// Furthermore, each requirement will be linked to research questions and thus the goals of the work.
+== Analysis <chapter:design:analysis>
+After introducing the five requirements in the previous section, this section will analyze the shortcomings of existing solutions in regards to the requirements. In particular, the analysis will focus on the work by Agrawal et al.@agrawalMonitorGuidedDecodingCode, as it is the most promising work.
+
+=== Monitor-Guided Decoding
+In short, the work by Agrawal et al. fulfills all requirements except the Dependency Accuracy, but is limited in scope when considering dependencies.
+
+By guiding the neural code completion selectively through the monitor, the approach improves upon the default code completion and fulfills the requirement of General Correctness.
+Meanwhile, the Dependency Accuracy is only partially fulfilled. The work takes an important step in using #acr("LSP"), as it enables retrieving context globally of the exact version of used dependencies.
+As the work only guides the dereference operation and function arguments count, the approach does not consider changes between dependency versions, such as deprecated items.
+// second case does not work
+It cannot guide the model away from now deprecated features.
+
+Additionally, other code items, such as function signature parameters are not considered in the work.
+
+As the work depends on the #acr("LSP"), it is robust under the assumption, that the running language server is robust.
+By abstracting language dependant features, the work is generalizable to other programming languages, though the implementation of the work relies on Java specific functionality.
+Through the use of #acr("MGD"), the only performance overhead of this method is the additional processing for each token. The bulk of the processing is shifted towards the language server, which performs the static analysis. As the language servers are optimized towards these analysis, the performance impact is $O(n)$, where $n$ is the token count@agrawalMonitorGuidedDecodingCode.
+
+=== RepoCoder
+The work by Zhang et al. fails in most requirements, only fulfilling basic requirements.
+It improves the default neural code completion through the use of repository level code snippets, thus fulfilling the General Correctness requirement.
+But in only considering repository level code, it fails to work on remote dependencies and cannot capture the nuances between different versions of dependencies. Thus, it also fails the robustness, especially as embedding of the local repository must be performed upfront. This upfront embedding of local code scales with the repository size and taking a considerable time for larger projects.
+By reusing local code, the approach is generalizable to other programming languages, as the retrieved context is of the same language.
+Under the assumption taht the embedding is performed upfront, the performance decreases by the iteration count $i$.
+
+=== DocPrompting
+The work by Zhou et al. fails similarly to RepoCoder, as it uses a similar approach, but tuned towards globally available documentation. As no iterations are used, the performance impact is a single similarity seach using embeddings.
+
+=== Summary
+While DocPrompting and RepoCoder show that using documentation and available code can improve neural code completion, they fail to improve completions for very specific installed dependnecies.
+The work by Agrawal et al. fulfills the most requirements, through the clever use of #acr("LSP").
+#acr("LSP") is a protocol abstracting programming language features, thus enabling generalizable approaches using global context of the exact installed dependencies.
+
+A possible approach would use available information, such as the `CompletionItemTag` in a `CompletionItem`, to check if an item was deprecated and should not be used anymore.
+Furthermore, additional language features, such as signature completions, could be used to guide the neural code completion of parameters in function calls.
+
+A full #acr("MGD") is not possible, due to deprecated completion items. A typical #acr("MGD") approach would keep the logits of completion item to guide the dereferece operation, as seen in Agrawal et al., but mask other tokens.
+
+When combined with deprecated completion items, tokens of deprecated completion items would need to be masked, *while* tokens of non deprecated completion items would not be masked.
+The problem arises when deprecated and non deprecated completion items share the same prefix when represented as a token sequence. Now the same token would need masking and retaining.
+
+The thesis will thus propose a new alternative design, which enables the use of both types of information sources, by reranking logits of the #acr("CLM") locally in the monitor and globally by altering the prompt with injected information.
+The design is threefold and includes a novel meta-strategy to guide the model through prompt-engineering, with dynamically obtained information from static analysis. The second part is the approach based on the first novel meta-strategy. Lastly, the design of a new dataset is introduced, to evaluate the performance of the proposed approach.
 
 #{
-  // include "1_interrupt_based_meta_strategy.typ"
+  include "1_interrupt_based_meta_strategy.typ"
   // include "2_lsp_aided_generation.typ"
   // include "3_dataset_design.typ"
 }

@@ -16,6 +16,7 @@
   "LM": ("Language Model"),
   "LLM": ("Large Language Models"),
   "LSP": ("Language Server Protocol"),
+  "MGD": ("Monitor-Guided Decoding"),
   "MIME": ("Multipurpose Internet Mail Extensions"),
   "PAD": ("Padding"),
   "RAG": ("Retrieval Augmented Generation"),

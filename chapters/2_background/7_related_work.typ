@@ -1,35 +1,29 @@
 #import "/utils.typ": *
 == Related Work <chapter:bg:related_work>
-// Not many related work has focused on enhancing code completion specifically
-// No solution that works for large codebases, with up-to-date code for any language and precision to provide high quality context
-Not many related works have focused on enhancing code completion specifically. Some works introduces general techniques to improve #acr("CLM") generation for complex tasks, but does not apply such techniques on code completion.
+Several prior works introduce repository level context or global context into neural code completion.
+The work "Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context" @agrawalMonitorGuidedDecodingCode by Agrawal et al. is the most advanced framework and uses static analysis to supplement code completion.
+Other works, such as "RepoCoder" @zhangRepoCoderRepositoryLevelCode2023 or "DocPrompting" @zhouDocPromptingGeneratingCode2023, use #acr("RAG") techniques to retrieve supplemental context.
 
-// Monitor guided generation
-// 1. finds relevant identifiers using language server protocol!
-// 1.1 scope: global, but limited to type consistent identifiers
-// 1.2 precision: provided identifiers are highly relevant
-// 1.3 up-to-date: as language server protocol, highly up-to-date
-// 2. Injection: guided generation
-// 3. Cross platform: yes
-The most promising previous work is "Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context"@agrawalMonitorGuidedDecodingCode. It uses static analysis of the generated code using #acr("LSP") to constrain the completion of the dereference operator "`.`", names of instantiated classes, the number of arguments in a function call and enumeration options in a switch statement.
+=== Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
+The work by Agrawal et al. introduces *#acr("MGD")*, a technique to guide the decoding by observing the generation using a monitor, combined with static analysis.
 
-Relevant context is provided by the #acr("LSP"). The information provided is precise, up-to-date and includes information on dependencies. The context is injected through watching and manipulating the logits using controlled generation, such as the `LogitsProcessor`. And finally the work is programming language independent through the use of #acr("LSP").
+During the generation process, the monitor has access to the current token sequence and the logits of the prediction. The monitor then retrieves information from the static-analysis, based on the current token sequence. Depending on internal rules, the monitor decides if the logits should be guided and to what extent@agrawalMonitorGuidedDecodingCode.
 
-Generally, by combining static analysis through the #acr("LSP") with controlled generation, most problems can be solved.
+The work uses the *#acr("LSP")* to retrieve information about the global context.
+It suggests rules to guide the generation of the dereference operator "`.`", names of instantiated classes, the number of arguments in a function call and enumeration options in a switch statement.
+They show that smaller models can be augmented to outperform larger models through the use of the monitor. Additionally, compilation rates are consistently improved@agrawalMonitorGuidedDecodingCode.
 
-The work is currently partially limited to Java, as some features only support Java features and some features Java-style features, such as the `new` statement.
-Additionally, it does not disallow deprecated items and does not improve function arguments in constructors and other general functions.
+=== RepoCoder
+The work by Zhang et al. introduces *RepoCoder*, a framework to improve neural code completion on a repository level through iterative retrieval and generation of code.
 
-// embeddings
-Other work, such as "RepoCoder" @zhangRepoCoderRepositoryLevelCode2023 or "DocPrompting" @zhouDocPromptingGeneratingCode2023, improve code completion on a repository level through #acr("RAG") techniques, but fail in the scope and precision.
+RepoCoder is based on a conventional #acr("RAG"), which uses a similarity-based retriever to locate relevant code snippets in the repository and enhance the code completion using the relevant code.
+The key insight is to enhance the similarity-based retriever by retrieving code similar to the generated code and regenerating the code with the new retrieved code snippets iteratively@zhangRepoCoderRepositoryLevelCode2023.
 
-RepoCoder uses embeddings of the repository to retrieve relevant code context. This approach is not able to provide context on dependencies and does not propose an update mechanism for the local embeddings.
-Additionally, the precision is only as high as the quality of the embeddings.
+// TODO: results
 
-DocCoder in contrast uses embeddings of documentation as context. The work does not propose specific documentation sources, as such the scope is not specified.
-As with RepoCoder, the precision is only as high as the quality of the embeddings.
-Lastly, the work does not propose an update mechanism for the embeddings.
+=== DocPrompting
+The work by Zhou et al. introduces *DocPrompting*, a framework to improve neural code completion by using documentation as context.
 
-// planning
-// CodePlan?
+In contrast to Zhang et al., the work uses documentation as context to improve code completion and does not work iteratively. The documentation is sourced from globally available documentation, such as DevDocs@DevDocs.
 
+// TODO: results

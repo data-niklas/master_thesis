@@ -4,6 +4,27 @@ As sketched in @chapter:introduction:contributions, the interrupt-based meta-str
 It is heavily focused on integration multiple information sources independently. The context shall be integrated seamlessly, without affecting the generation flow of the initial generation, except providing the additional information.
 
 === Requirements
+The interrupt-based meta-strategy is just a single component in the overall approach. The final goal is to enable injection of context from language servers into the prompt. Thus, the requirements are separate from the general requirements.
+
+The exact requirements are listed in @table:ibms:requirements.
+#figure(
+  table(
+    columns: 2,
+    table.header([Identifier], [Keyword]),
+    [*R1*],
+    [General Correctness],
+    [*R2*],
+    [Dependency Accuracy],
+    [*R3*],
+    [Robustness],
+    [*R4*],
+    [Generalizability],
+    [*R5*],
+    [Performance],
+  ),
+  caption: "General requirements of the thesis",
+)<table:ibms:requirements>
+
 // context integration into model generation => RQ3
 The strategy shall be heavily focused on providing a seamless context integration, answering #rq(3).
 
