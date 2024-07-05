@@ -1,6 +1,24 @@
 #import "@preview/hydra:0.4.0": hydra
 
-#let style(doc) = {
+#let link-style(doc) = {
+  show link: it => {
+    // Workaround for ctheorems package so that its labels keep the default link styling.
+    // Ignore research question links
+    if type(it.dest) == label and not str(it.dest).starts-with("rq:") {
+      return it
+    }
+    it
+    h(1.6pt)
+    super(
+      box(
+        height: 3.8pt,
+        circle(radius: 1.2pt, stroke: 0.7pt + rgb("#993333")),
+      ),
+    )
+  }
+}
+
+#let style(print-mode, doc) = {
   set page(
     margin: (
       outside: 2.7cm,
@@ -88,17 +106,24 @@
   show heading.where(level: 4): set block(above: 1.4em, below: -0.2em)
   show heading.where(level: 5): set heading(numbering: none)
   show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
-  show link: it => {
-    // Workaround for ctheorems package so that its labels keep the default link styling.
-    // Ignore research question links
-    if type(it.dest) == label and not str(it.dest).starts-with("rq:") {
-      return it
+  if not print-mode {
+    show link: it => {
+      // Workaround for ctheorems package so that its labels keep the default link styling.
+      // Ignore research question links
+      if type(it.dest) == label and not str(it.dest).starts-with("rq:") {
+        return it
+      }
+      it
+      h(1.6pt)
+      super(
+        box(
+          height: 3.8pt,
+          circle(radius: 1.2pt, stroke: 0.7pt + rgb("#993333")),
+        ),
+      )
     }
-    it
-    h(1.6pt)
-    super(
-      box(height: 3.8pt, circle(radius: 1.2pt, stroke: 0.7pt + rgb("#993333"))),
-    )
+    doc
+  } else {
+    doc
   }
-  doc
 }

@@ -10,6 +10,7 @@
   abstract: [],
   author: (),
   date: none,
+  print-mode: false,
   acronyms: (:),
   body,
   bibliography-file: none,
@@ -21,7 +22,7 @@
   appendix: none,
 ) = {
   show: doc => {
-    style(doc)
+    style(print-mode, doc)
   }
   // Set the document's basic properties.
   set document(author: author, title: title)

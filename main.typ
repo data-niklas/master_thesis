@@ -5,6 +5,7 @@
 #show: project.with(
   title: "TITLE",
   author: "Niklas Loeser",
+  // print-mode: true,
   // Insert your abstract after the colon, wrapped in brackets.
   // Example: `abstract: [This is my abstract...]`
   date: datetime.today().display(),
