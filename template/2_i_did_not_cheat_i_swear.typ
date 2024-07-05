@@ -9,7 +9,7 @@
     and wording to the printed version. I agree that this electronic version is being checked
     for plagiarism at the university using plagiarism software.]
   v(50pt)
-  [Heidelberg, den #datetime.today().display("[year]-[month]-[day]")]
+  [Heidelberg, the #datetime.today().display("[year]-[month]-[day]")]
   v(15pt)
   line(length: 6cm, stroke: 0.02cm + black)
   name
