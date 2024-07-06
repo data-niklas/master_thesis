@@ -3,19 +3,20 @@
 #import "2_i_did_not_cheat_i_swear.typ": i-did-not-cheat-i-swear
 #import "3_abstract.typ": show-abstract
 #import "styling.typ": style
+#import "generate_bib.typ": generate_bib_entry
+
 #import "@preview/codetastic:0.2.2": qrcode
 
 #let project(
   title: "",
   abstract: [],
   author: (),
-  date: none,
   print-mode: false,
   acronyms: (:),
   body,
   bibliography-file: none,
   matriculation-number: "",
-  date-of-submission: "",
+  date-of-submission: datetime.today(),
   abstract-en: "",
   abstract-de: "",
   thesis-repo: none,
@@ -31,7 +32,6 @@
   title-page(
     title: title,
     author: author,
-    date: date,
     matriculation-number: matriculation-number,
     date-of-submission: date-of-submission,
   )
@@ -117,6 +117,12 @@
           supplement: none,
           kind: "",
         )
+        if not print-mode {
+          v(23%)
+
+          align(center, text(size: 14pt, smallcaps("Cite this thesis:")))
+          generate_bib_entry(title, author, thesis-repo, date-of-submission)
+        }
       },
     )
   }

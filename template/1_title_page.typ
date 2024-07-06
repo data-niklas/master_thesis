@@ -2,9 +2,8 @@
 #let title-page(
   title: "",
   author: (),
-  date: none,
   matriculation-number: "",
-  date-of-submission: "",
+  date-of-submission: none,
 ) = {
   let smallskip = 3pt
   let Large = 14.4pt
@@ -22,7 +21,7 @@
           set text(font: "New Computer Modern Sans")
           set text(size: Large)
           v(1cm)
-          [*Ruprecht-Karls-Universität Heidelberg*]
+          [*Heidelberg University*]
           v(smallskip)
           [*Institute of Computer Science*]
           v(smallskip)
@@ -58,7 +57,7 @@
                 "Prof. Dr. Artur Andrzejak",
               ),
               [Datum der Abgabe],
-              date-of-submission,
+              date-of-submission.display(),
             ),
           )
         },

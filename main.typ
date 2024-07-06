@@ -3,12 +3,11 @@
 // Take a look at the file `template.typ` in the file panel
 // to customize this template and discover how it works.
 #show: project.with(
-  title: "TITLE",
+  title: "Interrupt-Guided Neural Code Completion with Static Analysis of Dependencies",
   author: "Niklas Loeser",
-  // print-mode: true,
+  print-mode: false,
   // Insert your abstract after the colon, wrapped in brackets.
   // Example: `abstract: [This is my abstract...]`
-  date: datetime.today().display(),
   abstract-en: [
         #lorem(300)
   ],
@@ -18,7 +17,11 @@
   acronyms: acronyms,
   bibliography-file: "/bibliography.bib",
   matriculation-number: "3737339",
-  date-of-submission: "2024-09-30",
+  date-of-submission: datetime(
+    year: 2024,
+    month: 09,
+    day: 30
+  ),
   thesis-repo: "https://github.com/data-niklas/master_thesis",
   appendix: include "/chapters/appendix/0_mod.typ"
 )
