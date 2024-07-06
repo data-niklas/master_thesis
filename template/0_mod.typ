@@ -7,10 +7,46 @@
 
 #import "@preview/codetastic:0.2.2": qrcode
 
+#let assert-type(value, t, message) = assert.eq(
+  type(value),
+  t,
+  message: message,
+)
+
+#let assert-types(
+  title,
+  abstract,
+  author,
+  print-mode,
+  acronyms,
+  bibliography-file,
+  matriculation-number,
+  date-of-submission,
+  thesis-repo,
+) = {
+  assert-type(title, str, "Title must be a str")
+  assert-type(author, str, "Author must be a str")
+  assert-type(print-mode, bool, "Print mode must be a boolean")
+  assert-type(acronyms, dictionary, "Acronyms must be a dictionary")
+  assert-type(bibliography-file, str, "Bibliography file must be a str")
+  assert-type(
+    matriculation-number,
+    str,
+    "Matriculation number must be a str",
+  )
+  assert-type(
+    date-of-submission,
+    datetime,
+    "Date of submission must be a datetime",
+  )
+  assert-type(thesis-repo, str, "Thesis repository must be a str")
+
+}
+
 #let project(
   title: "",
   abstract: [],
-  author: (),
+  author: "",
   print-mode: false,
   acronyms: (:),
   body,
@@ -22,6 +58,17 @@
   thesis-repo: none,
   appendix: none,
 ) = {
+  assert-types(
+    title,
+    abstract,
+    author,
+    print-mode,
+    acronyms,
+    bibliography-file,
+    matriculation-number,
+    date-of-submission,
+    thesis-repo,
+  )
   show: doc => {
     style(print-mode, doc)
   }
@@ -29,6 +76,12 @@
   set document(author: author, title: title)
   init-acronyms(acronyms)
   set heading(numbering: "I")
+  context if query(figure.where(kind: "todo")).len() > 0 {
+    outline(
+      title: [TODOS],
+      target: figure.where(kind: "todo"),
+    )
+  }
   title-page(
     title: title,
     author: author,

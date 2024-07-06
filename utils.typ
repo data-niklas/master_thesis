@@ -29,3 +29,20 @@
     align(left, body),
   ),
 )
+
+#let todo(text) = figure(
+  block(
+    fill: rgb("#d7fff1"),
+    stroke: (
+      left: 2pt + rgb("#219d73"),
+    ),
+    width: 100%,
+    inset: 4pt,
+    radius: 4pt,
+    align(left, "TODO: " + text),
+  ),
+  kind: "todo",
+  supplement: "TODO",
+  outlined: true,
+  caption: text,
+)
