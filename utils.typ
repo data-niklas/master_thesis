@@ -46,3 +46,14 @@
   outlined: true,
   caption: text,
 )
+
+#let prompt(body) = {
+  set text(size: 11pt, font: "New Computer Modern Mono")
+  block(
+    stroke: 1pt + luma(180),
+    fill: luma(250),
+    inset: 5pt,
+    radius: 3pt,
+    align(left, body),
+  )
+}

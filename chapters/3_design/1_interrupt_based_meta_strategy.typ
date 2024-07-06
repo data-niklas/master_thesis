@@ -79,14 +79,14 @@ Removing context is done similarly, by finding context in the list of all inject
 
 // ‎ whitespace needed to prevent it from being parsed as a label
 #figure(
-  code(```plaintext
-  [INST]<‎SYS>
-  system prompt
-  </SYS>
-  user prompt
-  [/INST]
-  model output
-  ```),
+  prompt()[
+    [INST]\<SYS>\
+    system prompt\
+    </SYS>\
+    user prompt\
+    [/INST]\
+    model output
+  ],
   caption: "Format of a typical model generation result",
 )<code:clm:format>
 @code:clm:format shows the format of a (partial) model generation output. The editor is flexible and can edit the prompt in any way, even inserting context into the partial model output.

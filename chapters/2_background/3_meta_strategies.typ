@@ -42,17 +42,17 @@ Few-shot prompting involves providing the model with several examples in the pro
 
 #example(
   caption: "Few-shot prompting",
-  ```md
-    *Prompt:*
-    Q: What is the capital of Germany?
-    A: Berlin
-    Q: What is the capital of France?
-    A: Paris
-    Q: What is the capital of Italy?
-
-    *Response:*
+  prompt()[
+    *Prompt:*\
+    Q: What is the capital of Germany?\
+    A: Berlin\
+    Q: What is the capital of France?\
+    A: Paris\
+    Q: What is the capital of Italy?\
+    \
+    *Response:*\
     A: Rome
-  ```,
+  ],
 )<example:few_shot>
 
 As can be seen in @example:few_shot, the model prefixes the response with `A: ` and does not provide additional information. The output format was not specified explicitly, but matches the format of the examples perfectly.
@@ -61,14 +61,14 @@ In contrast to providing knowledge about a desired response format, *context inj
 
 #example(
   caption: "Context injection",
-  ```
-  *Prompt:*
-  The capital of Germany was changed to Heidelberg.
-  What is the capital of Germany?
-
-  *Response:*
-  Heidelberg
-  ```,
+  prompt()[
+    *Prompt:*\
+    The capital of Germany was changed to Heidelberg.\
+    What is the capital of Germany?\
+    \
+    *Response:*\
+    Heidelberg
+  ],
 )<example:context_injection>
 
 @example:context_injection demonstrates how adding information controls the response of the model. This technique is very powerful, but comes with two strong restrictions:

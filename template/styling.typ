@@ -88,7 +88,7 @@
   }
   show raw: set text(font: "New Computer Modern Mono")
   // Else texttt style text in normal backticks is too small
-  show raw.where(lang: none): set text(size: 11pt)
+  show raw.where(lang: none, block: false): set text(size: 11pt)
   show par: set block(spacing: 0.55em)
   show heading: set block(above: 1.4em, below: 0.3em)
   show heading: it => {
