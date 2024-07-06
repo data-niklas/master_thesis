@@ -7,6 +7,7 @@
   ),
   "CLM": ("Causal Language Model"),
   "EOS": ("End of Sequence"),
+  "IBMS": ("Interrupt-based meta-strategy"),
   "IDE": (
     "Integrated Development Environment",
     "Integrated Development Environments",

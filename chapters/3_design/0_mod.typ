@@ -9,7 +9,7 @@ the thesis will propose a new design to integrate high quality context into neur
 Lastly, a dataset design is proposed to evaluate the effectiveness of the new design.
 
 == Requirements <chapter:design:requirements>
-The general requirements of this thesis are derived from the motivation and goals, namely the design of a Copilot like solution which has *full* knowledge of the local development environment.
+The general requirements of this thesis are derived from the motivation and goals, namely the design of a `Copilot` like solution which has *full* knowledge of the local development environment.
 
 The general requirements in descending order of importance are seen in @requirements.
 #figure(
@@ -17,9 +17,9 @@ The general requirements in descending order of importance are seen in @requirem
     columns: 2,
     table.header([Identifier], [Keyword]),
     [*R1*],
-    [General Correctness],
-    [*R2*],
     [Dependency Accuracy],
+    [*R2*],
+    [General Correctness],
     [*R3*],
     [Robustness],
     [*R4*],
@@ -30,15 +30,7 @@ The general requirements in descending order of importance are seen in @requirem
   caption: "General requirements of the thesis",
 )<requirements>
 
-=== General Correctness <r:1>
-The proposed approach builds upon other work to improve especially dependency handling in neural code completion. Still, the basic assumptions on code correctness should still stand.
-
-In particular, the approach should suggest syntactically correct code.
-Additionally, the approach should suggest code that is functionally correct and solves the given task.
-
-Both correctness requirements are the essentials, which are expected from any code completion tool, upon which the thesis improves.
-
-=== Dependency Accuracy <r:2>
+=== Dependency Accuracy <r:1>
 Neural code completion works under the assumption that the #acr("CLM") has knowledge of the used code dependencies.
 This requires either vast amounts of training data on code written using a similar version of the dependencies or the local code to already use the dependency correctly.
 The first option has the problem, that the training data is not annotated with the correct dependency version, thus #acrpl("CLM") cannot differentiate between different versions of the same dependency.
@@ -62,6 +54,14 @@ The following different scenarios between dependency versions can be distinguish
 It should be notes, that local code bases are a special case of a dependency and should not be treated differently, as many different works do.
 Locally available code is also imported and used alongside remote dependencies. As such, the *scope* of this thesis includes prediction of all possible code.
 
+=== General Correctness <r:2>
+The proposed approach builds upon other work to improve especially dependency handling in neural code completion. Still, the basic assumptions on code correctness should still stand.
+In particular, the approach should suggest syntactically correct code.
+Additionally, the approach should suggest code that is functionally correct and solves the given task.
+
+Both correctness requirements are the essentials, which are expected from any code completion tool, upon which the thesis improves.
+The focus of this thesis lies on improving methodical correctness through `Dependency Accuracy` and functional correctness and `General Correctness` are secondary.
+
 === Robustness <r:3>
 Developers may work on code in a variety of different environments and using different types of dependencies. The approach should be robust under any circumstances and still provide reasonably good completions.
 
@@ -80,12 +80,13 @@ While the goal of this thesis is not to reduce the latency in neural code genera
 
 == Analysis <chapter:design:analysis>
 After introducing the five requirements in the previous section, this section will analyze the shortcomings of existing solutions in regards to the requirements. In particular, the analysis will focus on the work by Agrawal et al.@agrawalMonitorGuidedDecodingCode, as it is the most promising work.
+While this thesis has evolved without the knowledge of the work by Agrawal et al. and is not based on it, the general design choices are similar enough to show initial observations and design choices.
 
 === Monitor-Guided Decoding
-In short, the work by Agrawal et al. fulfills all requirements except the Dependency Accuracy, but is limited in scope when considering dependencies.
+In short, the work by Agrawal et al. fulfills all requirements except the `Dependency Accuracy`, but is limited in scope when considering dependencies.
 
-By guiding the neural code completion selectively through the monitor, the approach improves upon the default code completion and fulfills the requirement of General Correctness.
-Meanwhile, the Dependency Accuracy is only partially fulfilled. The work takes an important step in using #acr("LSP"), as it enables retrieving context globally of the exact version of used dependencies.
+By guiding the neural code completion selectively through the monitor, the approach improves upon the default code completion and fulfills the requirement of `General Correctness`.
+Meanwhile, the `Dependency Accuracy` is only partially fulfilled. The work takes an important step in using #acr("LSP"), as it enables retrieving context globally of the exact version of used dependencies.
 As the work only guides the dereference operation and function arguments count, the approach does not consider changes between dependency versions, such as deprecated items.
 // second case does not work
 It cannot guide the model away from now deprecated features.
@@ -98,16 +99,16 @@ Through the use of #acr("MGD"), the only performance overhead of this method is 
 
 === RepoCoder
 The work by Zhang et al. fails in most requirements, only fulfilling basic requirements.
-It improves the default neural code completion through the use of repository level code snippets, thus fulfilling the General Correctness requirement.
-But in only considering repository level code, it fails to work on remote dependencies and cannot capture the nuances between different versions of dependencies. Thus, it also fails the robustness, especially as embedding of the local repository must be performed upfront. This upfront embedding of local code scales with the repository size and taking a considerable time for larger projects.
+It improves the default neural code completion through the use of repository level code snippets, thus fulfilling the `General Correctness` requirement.
+But in only considering repository level code, it fails to work on remote dependencies and cannot capture the nuances between different versions of dependencies. Thus, it also fails the `Robustness`, especially as embedding of the local repository must be performed upfront. This upfront embedding of local code scales with the repository size and taking a considerable time for larger projects.
 By reusing local code, the approach is generalizable to other programming languages, as the retrieved context is of the same language.
 Under the assumption taht the embedding is performed upfront, the performance decreases by the iteration count $i$.
 
 === DocPrompting
-The work by Zhou et al. fails similarly to RepoCoder, as it uses a similar approach, but tuned towards globally available documentation. As no iterations are used, the performance impact is a single similarity seach using embeddings.
+The work by Zhou et al. fails similarly to `RepoCoder`, as it uses a similar approach, but tuned towards globally available documentation. As no iterations are used, the performance impact is a single similarity seach using embeddings.
 
 === Summary
-While DocPrompting and RepoCoder show that using documentation and available code can improve neural code completion, they fail to improve completions for very specific installed dependnecies.
+While `DocPrompting` and `RepoCoder` show that using documentation and available code can improve neural code completion, they fail to improve completions for very specific installed dependenecies.
 The work by Agrawal et al. fulfills the most requirements, through the clever use of #acr("LSP").
 #acr("LSP") is a protocol abstracting programming language features, thus enabling generalizable approaches using global context of the exact installed dependencies.
 
@@ -124,7 +125,7 @@ The design is threefold and includes a novel meta-strategy to guide the model th
 
 #{
   include "1_interrupt_based_meta_strategy.typ"
-  // include "2_lsp_aided_generation.typ"
+  include "2_lsp_aided_generation.typ"
   // include "3_dataset_design.typ"
 }
 

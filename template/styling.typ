@@ -103,9 +103,7 @@
   show heading.where(level: 3): set heading(numbering: none)
   show heading.where(level: 3): set block(above: 1.4em, below: -0.2em)
   show heading.where(level: 4): set heading(numbering: none)
-  show heading.where(level: 4): set block(above: 1.4em, below: -0.2em)
-  show heading.where(level: 5): set heading(numbering: none)
-  show heading.where(level: 5): set block(above: 1.4em, below: -0.2em)
+  show heading.where(level: 4): it => [\ ] + strong(it.body) + [ ]
   if not print-mode {
     show link: it => {
       // Workaround for ctheorems package so that its labels keep the default link styling.
