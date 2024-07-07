@@ -1,7 +1,7 @@
 #import "/utils.typ": *
 == Interrupt-based meta-strategy<chapter:design:ibms>
 As sketched in @chapter:introduction:contributions, the #acrf("IBMS") is a novel approach to integrate context into model generation.
-It is heavily focused on integration multiple information sources independently. The context shall be integrated seamlessly, without affecting the generation flow of the initial generation, except providing the additional information.
+It is heavily focused on integrating multiple information sources independently. The context shall be integrated seamlessly, without affecting the generation flow of the initial generation, except providing the additional information.
 The strategy shall serve as a basis for globally guiding the model generation, by dynamically injecting relevant context into the prompt.
 
 === Requirements
@@ -22,13 +22,13 @@ The exact requirements are listed in @table:ibms:requirements.
   caption: [Special requirements of the #acr("IBMS")],
 )<table:ibms:requirements>
 
-==== Multiple source support.
+==== Multiple source support. <ribms:1>
 The goal of the strategy is to integrate context of multiple sources. As such, the strategy must be able to differentiate between different sources and process these independently.
 
-==== Flexible context location.
+==== Flexible context location.<ribms:2>
 In addition to integrating multiple sources, the integrated context should be able to be placed anywhere in the prompt. It could be integrated into the system prompt, the user prompt or even the model output at "runtime".
 
-==== Minimal overhead.
+==== Minimal overhead.<ribms:3>
 The last requirement is for the strategy to have minimal overhead over the default model generation. Integrating context should not affect the generation flow of the model in any way, not even performance wise.
 
 === Heritage
@@ -80,12 +80,13 @@ Removing context is done similarly, by finding context in the list of all inject
 // ‎ whitespace needed to prevent it from being parsed as a label
 #figure(
   prompt()[
-    [INST]\<SYS>\
+    <s>[INST] \<\<SYS>>\
     system prompt\
-    </SYS>\
+    <</SYS>>\
     user prompt\
     [/INST]\
     model output
+    </s>
   ],
   caption: "Format of a typical model generation result",
 )<code:clm:format>

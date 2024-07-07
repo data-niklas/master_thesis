@@ -18,11 +18,15 @@
 
 #let rq(number) = link(label("rq:" + str(number)))[*RQ#str(number)*]
 #let r(number) = link(label("r:" + str(number)))[*R#str(number)*]
+#let ribms(number) = link(
+  label("ribms:" + str(number)),
+)[*R#sub[IBMS]#str(number)*]
 #let thought(body) = align(
   center,
   block(
-    fill: luma(240),
-    radius: 10pt,
+    fill: luma(250),
+    stroke: 1pt + luma(180),
+    radius: 6pt,
     outset: 7pt,
     spacing: 20pt,
     width: 90%,
@@ -30,22 +34,25 @@
   ),
 )
 
-#let todo(text) = figure(
-  block(
-    fill: rgb("#d7fff1"),
-    stroke: (
-      left: 2pt + rgb("#219d73"),
+#let todo(text) = {
+  show figure.caption: it => []
+  figure(
+    block(
+      fill: rgb("#d7fff1"),
+      stroke: (
+        left: 2pt + rgb("#219d73"),
+      ),
+      width: 100%,
+      inset: 4pt,
+      radius: 4pt,
+      align(left, "TODO: " + text),
     ),
-    width: 100%,
-    inset: 4pt,
-    radius: 4pt,
-    align(left, "TODO: " + text),
-  ),
-  kind: "todo",
-  supplement: "TODO",
-  outlined: true,
-  caption: text,
-)
+    kind: "todo",
+    supplement: "TODO",
+    outlined: true,
+    caption: text,
+  )
+}
 
 #let prompt(body) = {
   set text(size: 11pt, font: "New Computer Modern Mono")
@@ -53,7 +60,7 @@
     stroke: 1pt + luma(180),
     fill: luma(250),
     inset: 5pt,
-    radius: 3pt,
+    radius: 6pt,
     align(left, body),
   )
 }
