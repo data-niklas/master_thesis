@@ -28,7 +28,11 @@
                             table.id = id;
                             document.body.appendChild(table);
                             let data = text.split('\n').map(row => row.split(','));
-                            let dataTable = new DataTable(`#${table.id}`, data);
+                            let headers = data.shift();
+                            let dataTable = new DataTable(`#${table.id}`, {
+                                data: data,
+                                columns: headers.map(header => ({ data: header }))
+                            });
                         });
                 });
             });
