@@ -31,7 +31,7 @@
                             let headers = data.shift();
                             let dataTable = new DataTable(`#${table.id}`, {
                                 data: data,
-                                columns: headers.map(header => ({ data: header }))
+                                columns: headers.map(header => ({name: header }))
                             });
                         });
                 });
