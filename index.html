@@ -26,7 +26,7 @@
                             let table = document.createElement('table');
                             let id = file.split('.')[0];
                             table.id = id;
-                            body.appendChild(table);
+                            document.body.appendChild(table);
                             let data = text.split('\n').map(row => row.split(','));
                             let dataTable = new DataTable(`#${table.id}`, data);
                         });
