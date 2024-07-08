@@ -11,7 +11,7 @@
 <body>
     <script>
         (async ()  => {
-            let response = fetch("https://api.github.com/repos/data-niklas/master_thesis/contents/")
+            let response = await fetch("https://api.github.com/repos/data-niklas/master_thesis/contents/")
             let data = await response.json()
             console.log(data)
         })()
