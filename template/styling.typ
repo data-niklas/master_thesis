@@ -1,4 +1,5 @@
 #import "@preview/hydra:0.4.0": hydra
+#import "@preview/equate:0.2.0": equate
 
 #let link-style(doc) = {
   show link: it => {
@@ -45,7 +46,9 @@
   show footnote: set text(spacing: 100%)
   show figure: set text(spacing: 100%)
   show table: set text(spacing: 100%)
-  set math.equation(supplement: "Equation", numbering: "(1)")
+  set math.equation(supplement: "Equation", numbering: "(1.1)")
+  show: equate.with(breakable: true, sub-numbering: true)
+
   set figure(supplement: auto)
   show figure.where(kind: "listing"): fig => {
     align(

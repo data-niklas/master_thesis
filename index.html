@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Table viewer</title>
+
+</head>
+
+<body>
+    <script>
+        (async ()  => {
+            let response = fetch("https://api.github.com/repos/data-niklas/master_thesis/contents/")
+            let data = await response.json()
+            console.log(data)
+        })()
+    </script>
+</body>
+
+</html>
+
