@@ -161,7 +161,7 @@ The following fields are combined to form the full solution:
     {`solution`}
   ],
   caption: "Combination of fields to form the full solution in DependencyEval",
-)<table:dataset:fields>
+)<prompt:dataset:fields>
 
 The `import_statements` contains a list of import statements to be performed at the start of the code snippet.
 The `context` field contains additional definitions of classes, functions or variables that are required for the code snippet to run.
@@ -323,7 +323,7 @@ Both examples serve as core test cases for the different included information so
 // For each combination: Create code with and without method, then run tests for each generated code
 
 The evaluation pipeline takes a version of the dataset, a list of models and a list of hyperparameters for the models as input.
-For each different combination, the pipeline runs the approach described in @chapter:design:lsp on the code snippets in the format described in @code:dataset:fields (without the `solution` field).
+For each different combination, the pipeline runs the approach described in @chapter:design:lsp on the code snippets in the format described in @prompt:dataset:fields (without the `solution` field).
 Additionally, it runs a neural code completion without the approach, to serve as a baseline.
 Before running the code completion, the pipeline must first create a virtual Python environment (venv) in which all of the dependencies for the task are installed in. The code completion occurs inside the venv, such that the approach has access to dependency information.
 
