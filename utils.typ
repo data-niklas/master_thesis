@@ -7,20 +7,14 @@
   supplement: "Example",
 )
 
-#let note(note-text, body) = {
-  let sidenote = footnote(text(stroke: purple, "Note: ") + note-text)
-  underline(
-    stroke: (paint: red, thickness: 2pt, dash: "dashed", cap: "round"),
-    offset: 2pt,
-    body + sidenote,
-  )
-}
-
 #let rq(number) = link(label("rq:" + str(number)))[*RQ#str(number)*]
 #let r(number) = link(label("r:" + str(number)))[*R#str(number)*]
 #let ribms(number) = link(
   label("ribms:" + str(number)),
 )[*R#sub[IBMS]#str(number)*]
+#let rdataset(number) = link(
+  label("rdataset:" + str(number)),
+)[*R#sub[dataset]#str(number)*]
 #let thought(body) = align(
   center,
   block(
@@ -36,21 +30,23 @@
 
 #let todo(text) = {
   show figure.caption: it => []
-  figure(
-    block(
-      fill: rgb("#d7fff1"),
-      stroke: (
-        left: 2pt + rgb("#219d73"),
+  box(
+    figure(
+      box(
+        fill: rgb("#d7fff1"),
+        stroke: (
+          left: 2pt + rgb("#219d73"),
+        ),
+        inset: 4pt,
+        radius: 4pt,
+        align(left, "TODO: " + text),
       ),
-      width: 100%,
-      inset: 4pt,
-      radius: 4pt,
-      align(left, "TODO: " + text),
+      kind: "todo",
+      supplement: "TODO",
+      outlined: true,
+      caption: text,
+      placement: none,
     ),
-    kind: "todo",
-    supplement: "TODO",
-    outlined: true,
-    caption: text,
   )
 }
 

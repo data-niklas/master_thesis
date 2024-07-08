@@ -92,11 +92,8 @@ This section provides details on different design decision for the introduced co
 The first design decision is the selection of sources to suggest fitting code. The previous sections already highlight why the #acr("LSP") is fitting.
 The protocol provides a vast amount of different information.
 We argue that the core information to use are the completion items and the signature help information.
-
 When generating code, the primary source are the completion items, as they dictate the available symbols. The completion items list the attributes of objects and which attributes are deprecated and should be replaced.
-
 After using the completion items to write callable code, the secondary source is the signature help. Likewise, the signature help lists available parameters of a function call and includes documentation.
-
 Both types of information sources allow code generation using up-to-date information. Other features provided through #acr("LSP") may improve code generation, but are not vital, such as diagnostics information. In addition, both sources can be used on partial code and provide suggestions on how to extend the code, aiding the natural #acr("CLM") generation flow.
 Diagnostic information and other information reference code already written, increasing the difficulty to integrate into the natural generation flow.
 

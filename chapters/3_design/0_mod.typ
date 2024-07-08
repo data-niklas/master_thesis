@@ -51,7 +51,7 @@ The following different scenarios between dependency versions can be distinguish
 2. The dependency has a feature, which is deprecated in the new version and will either be removed or replaced.
 3. The dependency has a feature, which is not available in the new version.
 
-It should be notes, that local code bases are a special case of a dependency and should not be treated differently, as many different works do.
+It should be noted, that local code bases are a special case of a dependency and should not be treated differently, as many different works do.
 Locally available code is also imported and used alongside remote dependencies. As such, the *scope* of this thesis includes prediction of all possible code.
 
 === General Correctness <r:2>

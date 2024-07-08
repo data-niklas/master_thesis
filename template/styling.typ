@@ -47,6 +47,24 @@
   show table: set text(spacing: 100%)
   set math.equation(supplement: "Equation", numbering: "(1)")
   set figure(supplement: auto)
+  show figure.where(kind: "listing"): fig => {
+    align(
+      center,
+      {
+        block(
+          width: 100%,
+          breakable: false,
+          {
+            align(center)[#fig.body]
+            v(-0.7em)
+            set align(left)
+            set par(hanging-indent: 0.5cm, justify: true)
+            pad(x: 0.5cm)[#fig.caption]
+          },
+        )
+      },
+    )
+  }
   let heading-align = left
   let cell-align = left
   set table(
@@ -103,7 +121,11 @@
   show heading.where(level: 3): set heading(numbering: none)
   show heading.where(level: 3): set block(above: 1.4em, below: -0.2em)
   show heading.where(level: 4): set heading(numbering: none)
-  show heading.where(level: 4): it => [\ ] + strong(it.body) + [ ]
+  // show heading.where(level: 4): it => [\ ] + strong(it.body) + [ ]
+  show heading.where(level: 4): it => {
+    set text(font: "New Computer Modern Sans", spacing: 150%)
+    [ \ ] + text(weight: "regular", style: "italic", it.body)
+  }
   if not print-mode {
     show link: it => {
       // Workaround for ctheorems package so that its labels keep the default link styling.
