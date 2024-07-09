@@ -69,6 +69,15 @@
                         });
                 });
             });
+        // jump to id if url hash is present and content is loaded
+        setTimeout(() => {
+            if (window.location.hash) {
+                let elem = document.getElementById(window.location.hash.replace('#', ''));
+                if (elem) {
+                    elem.scrollIntoView();
+                }
+            }
+        }, 300);
     </script>
 </body>
 
