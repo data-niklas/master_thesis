@@ -21,6 +21,7 @@
             .header {
                 display: flex;
                 flex-direction: row;
+                align-items: baseline;
             }
         </style>
     <script>
@@ -29,7 +30,7 @@
                 return gridjs.h("div", {
                     class: "header"
                 }, [
-                    gridjs.h("h1", {}, fileName.replace('.csv', '')),
+                    gridjs.h("h2", {}, fileName.replace('.csv', '')),
                     gridjs.h("span", {
                         style: "flex-grow: 1"
                     }),
