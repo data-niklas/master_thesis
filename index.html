@@ -41,6 +41,7 @@
             }
         }
         const hash = window.location.hash.replace("#", "");
+        let foundElem = null;
         fetch('./assets/tables/index.txt')
             .then(response => response.text())
             .then(text => {
@@ -68,7 +69,11 @@
                                 position: gridjs.PluginPosition.Header
                             });
                             if (hash === file.replace('.csv', '')) {
+                                foundElem = elem;
                                 elem.scrollIntoView();
+                            }
+                            else if (foundElem){
+                                foundElem.scrollIntoView();
                             }
                         });
                 });

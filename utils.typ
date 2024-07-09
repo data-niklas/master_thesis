@@ -109,8 +109,10 @@
 #let csvtable(settings: (:), delimiter: ",", file) = {
   let data = csv(delimiter: delimiter, file)
   let header = data.remove(0)
+  let path_parts = file.split("/")
+  let id = path_parts.at(path_parts.len() - 1).split(".").at(0)
   link(
-    "https://data-niklas.github.io/master_thesis/#" + file.split(".").at(0),
+    "https://data-niklas.github.io/master_thesis/#" + id,
     table(
       columns: data.at(0).len(),
       ..settings,
