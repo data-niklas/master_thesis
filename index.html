@@ -5,16 +5,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Table viewer</title>
-  <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
 </head>
 
 <body>
+    <h1>Interactive Data Viewer</h1>
+        <style>
+            body {
+                background: #eaeaea;
+            }
+            body > div {
+                margin: 0 auto 40 pt auto;
+            }
+        </style>
     <script>
-        // load the list of csv files from /assets/tables/index.txt
-        // create a table for each csv file and append it to the body
-        // call let table = new DataTable('#myTable'); for each table
         fetch('./assets/tables/index.txt')
             .then(response => response.text())
             .then(text => {
@@ -23,16 +28,18 @@
                     fetch(`./assets/tables/${file}`)
                         .then(response => response.text())
                         .then(text => {
-                            let table = document.createElement('table');
-                            let id = file.split('.')[0];
-                            table.id = id;
-                            document.body.appendChild(table);
-                            let data = text.split('\n').map(row => row.split(','));
-                            let headers = data.shift();
-                            let dataTable = new DataTable(`#${table.id}`, {
-                                data: data,
-                                columns: headers.map(header => ({name: header }))
-                            });
+                            let t = text.split('\n').map(row => row.split(','));
+                            let elem = document.createElement("div")
+                            document.body.appendChild(elem);
+
+                            new gridjs.Grid({
+                                columns: t.shift(),
+                                data: t,
+                                search: true,
+                                sort: true,
+                                resizable: true
+                            }).render(elem);
+
                         });
                 });
             });
