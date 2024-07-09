@@ -40,8 +40,6 @@
                 ]);
             }
         }
-        const hash = window.location.hash.replace("#", "");
-        let foundElem = null;
         fetch('./assets/tables/index.txt')
             .then(response => response.text())
             .then(text => {
@@ -68,17 +66,18 @@
                                 component: createPlugin(file),
                                 position: gridjs.PluginPosition.Header
                             });
-                            if (hash === file.replace('.csv', '')) {
-                                foundElem = elem;
-                                elem.scrollIntoView();
-                            }
-                            else if (foundElem){
-                                foundElem.scrollIntoView();
-                            }
                         });
                 });
             });
         // jump to id if url hash is present and content is loaded
+        setTimeout(() => {
+            if (window.location.hash) {
+                let elem = document.getElementById(window.location.hash.replace('#', ''));
+                if (elem) {
+                    elem.scrollIntoView({behavior: 'smooth'});
+                }
+            }
+        }, 1500); 
     </script>
 </body>
 
