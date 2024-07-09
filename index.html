@@ -29,7 +29,8 @@
                         .then(response => response.text())
                         .then(text => {
                             let t = text.split('\n').map(row => row.split(','));
-                            let elem = document.createElement("div")
+                            let elem = document.createElement("div");
+                            elem.id = file.replace('.csv', '');
                             document.body.appendChild(elem);
 
                             new gridjs.Grid({
