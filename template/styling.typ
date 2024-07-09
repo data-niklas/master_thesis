@@ -8,6 +8,9 @@
     if type(it.dest) == label and not str(it.dest).starts-with("rq:") {
       return it
     }
+    if it.body.func() == table {
+      return it
+    }
     it
     h(1.6pt)
     super(
@@ -17,6 +20,7 @@
       ),
     )
   }
+  doc
 }
 
 #let style(print-mode, doc) = {
@@ -130,22 +134,7 @@
     [ \ ] + text(weight: "regular", style: "italic", it.body)
   }
   if not print-mode {
-    show link: it => {
-      // Workaround for ctheorems package so that its labels keep the default link styling.
-      // Ignore research question links
-      if type(it.dest) == label and not str(it.dest).starts-with("rq:") {
-        return it
-      }
-      it
-      h(1.6pt)
-      super(
-        box(
-          height: 3.8pt,
-          circle(radius: 1.2pt, stroke: 0.7pt + rgb("#993333")),
-        ),
-      )
-    }
-    doc
+    link-style(doc)
   } else {
     doc
   }

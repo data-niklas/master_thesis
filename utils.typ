@@ -109,10 +109,13 @@
 #let csvtable(settings: (:), delimiter: ",", file) = {
   let data = csv(delimiter: delimiter, file)
   let header = data.remove(0)
-  table(
-    columns: data.at(0).len(),
-    ..settings,
-    table.header(..header.map(strong)),
-    ..data.flatten(),
+  link(
+    "https://data-niklas.github.io/master_thesis/#" + file.split(".").at(0),
+    table(
+      columns: data.at(0).len(),
+      ..settings,
+      table.header(..header.map(strong)),
+      ..data.flatten(),
+    ),
   )
 }
