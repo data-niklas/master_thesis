@@ -16,10 +16,29 @@
                 background: #eaeaea;
             }
             body > div {
-                margin: 0 auto 40 pt auto;
+                margin: 0 auto 60pt auto;
+            }
+            .header {
+                display: flex;
+                flex-direction: row;
             }
         </style>
     <script>
+        function createPlugin(fileName){
+            return () => {
+                return gridjs.h("div", {
+                    class: "header"
+                }, [
+                    gridjs.h("h1", {}, fileName.replace('.csv', '')),
+                    gridjs.h("span", {
+                        style: "flex-grow: 1"
+                    }),
+                    gridjs.h("a", {
+                        href: `./assets/tables/${fileName}`
+                    }, "Download")
+                ]);
+            }
+        }
         fetch('./assets/tables/index.txt')
             .then(response => response.text())
             .then(text => {
@@ -28,19 +47,24 @@
                     fetch(`./assets/tables/${file}`)
                         .then(response => response.text())
                         .then(text => {
-                            let t = text.split('\n').map(row => row.split(','));
+                            let t = text.split('\n').filter(row => row.length > 0).map(row => row.split(','));
                             let elem = document.createElement("div");
                             elem.id = file.replace('.csv', '');
                             document.body.appendChild(elem);
-
-                            new gridjs.Grid({
+                            
+                            let table = new gridjs.Grid({
                                 columns: t.shift(),
                                 data: t,
                                 search: true,
                                 sort: true,
                                 resizable: true
-                            }).render(elem);
-
+                            });
+                            table.render(elem);
+                            table.plugin.add({
+                                id: 'header',
+                                component: createPlugin(file),
+                                position: gridjs.PluginPosition.Header
+                            });
                         });
                 });
             });
