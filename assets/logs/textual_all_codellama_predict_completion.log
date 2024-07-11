@@ -1,0 +1,356 @@
+START:
+```
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+```
+
+INTERRUPT 0
+BEAM 0:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code.
+Hint: The code item has the following signature: TextArea(text: str="", *, language: str | None=None, theme: str="css", soft_wrap: bool=True, tab_behavior: Literal["focus", "indent"]="focus", read_only: bool=False, show_line_numbers: bool=False, max_checkpoints: int=50, name: str | None=None, id: str | None=None, classes: str | None=None, disabled: bool=False)
+The code item has the following documentation:
+	None
+Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(
+```
+BEAM 1:
+```
+[PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD]<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(
+```
+BEAM 2:
+```
+[PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD]<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(
+```
+BEAM 3:
+```
+[PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD]<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(
+```
+
+INTERRUPT 0
+BEAM 0:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code.
+Hint: The code item has the following signature: TextArea(text: str="", *, language: str | None=None, theme: str="css", soft_wrap: bool=True, tab_behavior: Literal["focus", "indent"]="focus", read_only: bool=False, show_line_numbers: bool=False, max_checkpoints: int=50, name: str | None=None, id: str | None=None, classes: str | None=None, disabled: bool=False)
+The code item has the following documentation:
+	None
+Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(
+```
+BEAM 1:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code.
+Hint: The code item has the following signature: TextArea(text: str="", *, language: str | None=None, theme: str="css", soft_wrap: bool=True, tab_behavior: Literal["focus", "indent"]="focus", read_only: bool=False, show_line_numbers: bool=False, max_checkpoints: int=50, name: str | None=None, id: str | None=None, classes: str | None=None, disabled: bool=False)
+The code item has the following documentation:
+	None
+Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(
+```
+BEAM 2:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code.
+Hint: The code item has the following signature: TextArea(text: str="", *, language: str | None=None, theme: str="css", soft_wrap: bool=True, tab_behavior: Literal["focus", "indent"]="focus", read_only: bool=False, show_line_numbers: bool=False, max_checkpoints: int=50, name: str | None=None, id: str | None=None, classes: str | None=None, disabled: bool=False)
+The code item has the following documentation:
+	None
+Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(
+```
+BEAM 3:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code.
+Hint: The code item has the following signature: TextArea(text: str="", *, language: str | None=None, theme: str="css", soft_wrap: bool=True, tab_behavior: Literal["focus", "indent"]="focus", read_only: bool=False, show_line_numbers: bool=False, max_checkpoints: int=50, name: str | None=None, id: str | None=None, classes: str | None=None, disabled: bool=False)
+The code item has the following documentation:
+	None
+Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(
+```
+
+INTERRUPT 0
+BEAM 0:
+```
+[PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD]<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(tab_behavior="indent")
+```
+BEAM 1:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code.
+Hint: The code item has the following signature: TextArea(text: str="", *, language: str | None=None, theme: str="css", soft_wrap: bool=True, tab_behavior: Literal["focus", "indent"]="focus", read_only: bool=False, show_line_numbers: bool=False, max_checkpoints: int=50, name: str | None=None, id: str | None=None, classes: str | None=None, disabled: bool=False)
+The code item has the following documentation:
+	None
+Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(tab_behavior="indent")
+```
+BEAM 2:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code.
+Hint: The code item has the following signature: TextArea(text: str="", *, language: str | None=None, theme: str="css", soft_wrap: bool=True, tab_behavior: Literal["focus", "indent"]="focus", read_only: bool=False, show_line_numbers: bool=False, max_checkpoints: int=50, name: str | None=None, id: str | None=None, classes: str | None=None, disabled: bool=False)
+The code item has the following documentation:
+	None
+Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(tab_behavior="indent")
+```
+BEAM 3:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code.
+Hint: The code item has the following signature: TextArea(text: str="", *, language: str | None=None, theme: str="css", soft_wrap: bool=True, tab_behavior: Literal["focus", "indent"]="focus", read_only: bool=False, show_line_numbers: bool=False, max_checkpoints: int=50, name: str | None=None, id: str | None=None, classes: str | None=None, disabled: bool=False)
+The code item has the following documentation:
+	None
+Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(tab_behavior="indent")
+```
+
+INTERRUPT 0
+BEAM 0:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(tab_behavior="indent")
+```
+BEAM 1:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(tab_behavior="indent")
+```
+BEAM 2:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(tab_behavior="indent")
+```
+BEAM 3:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(tab_behavior="indent")
+```
+
+END:
+```
+from textual.widgets import TextArea
+
+
+def create_textual_text_area_with_indent() -> TextArea:
+    """Create a TextArea widget, which indents its content when tab is pressed.
+
+    Returns:
+        TextArea: New instance of TextArea with indentation on tab press
+    """
+    text_area = TextArea(tab_behavior="indent")
+    return text_area
+```
+

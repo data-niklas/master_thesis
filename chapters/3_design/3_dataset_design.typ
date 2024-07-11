@@ -143,8 +143,6 @@ Each entry in the dataset shall have the following format described in @code:dat
   ),
   caption: "DependencyEval entry format",
 )<code:dataset:format>
-#todo()[Rename PackageEval to DependencyEval in repo]
-#todo()[python-version to python_version]
 As is usual, each entry contains a unique identifier `task_id`.
 Each entry represents a single task, targeting a single external dependency.
 The `task_name` is a name of the task containing the name of the targeted dependency and the index of the task for that dependency, 1-indexed, such as `pytorch_1`.
@@ -187,8 +185,6 @@ The "why" is stored in the `reason` field, detailing why the dependency and feat
 
 The `kind` field contains the code kind targeted by the task, such as a changed `field`, `parameter`, `function`, `method` or `block`.
 The exact type of modification is stored in the `modification_kind` field, such as `addition`, `removal`, `deprecation` or `rename`, where `rename` encompasses all types of changes in which the functionality has moved to a different section of the dependency.
-
-#todo()[rename renaming to rename]
 
 ==== Data sourcing.
 The data is obtained by searching for public Python dependencies on the #acr("PyPI")@PyPIPythonPackage that have a changelog. Repositories are then selected based on the different mentioned scenarios. Additionally only the repositories are kept, for which test cases can easily be written and executed, removing dependencies requiring a complex setup to use the changed functionality.

@@ -1,4 +1,6 @@
 = Implementation <implementation>
+// Heavily using Transformers and Huggingface's libraries
+// Background section showed that huggingface has all needed components, as we will see later
 
 #{
   include "1_interrupt_based_meta_strategy.typ"

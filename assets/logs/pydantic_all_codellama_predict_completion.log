@@ -1,0 +1,447 @@
+START:
+```
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+```
+
+PREDICT CORRECT COMPLETION SYMBOL START:
+```
+<s>[INST] The following symbols are code completion entries. Determine the appropriate symbol to complete the code in the code block: `model_construct`, `model_copy`, `model_dump`, `model_dump_json`, `model_extra`, `model_fields_set`, `model_json_schema`, `model_parametrized_name`, `model_post_init`, `model_rebuild`, `model_validate`, `model_validate_json`, `model_validate_strings`
+
+```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.
+```
+
+Return only the single chosen symbol. Do not provide commentary. Output format:
+`CHOSEN SYMBOL`
+
+Hint: The `dict` method is deprecated; use `model_dump` instead. [/INST]`
+```
+
+PREDICT CORRECT COMPLETION SYMBOL END:
+```
+model_dump
+```
+
+INTERRUPT 0
+BEAM 0:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.model_dump
+```
+BEAM 1:
+```
+[PAD][PAD][PAD]<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.
+```
+
+PREDICT CORRECT COMPLETION SYMBOL START:
+```
+<s>[INST] The following symbols are code completion entries. Determine the appropriate symbol to complete the code in the code block: `model_construct`, `model_copy`, `model_dump`, `model_dump_json`, `model_extra`, `model_fields_set`, `model_json_schema`, `model_parametrized_name`, `model_post_init`, `model_rebuild`, `model_validate`, `model_validate_json`, `model_validate_strings`
+
+```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.
+```
+
+Return only the single chosen symbol. Do not provide commentary. Output format:
+`CHOSEN SYMBOL`
+
+Hint: The `dict` method is deprecated; use `model_dump` instead. [/INST]`
+```
+
+PREDICT CORRECT COMPLETION SYMBOL END:
+```
+model_dump
+```
+
+INTERRUPT 0
+BEAM 0:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.model_dump
+```
+BEAM 1:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.model_dump
+```
+
+INTERRUPT 0
+BEAM 0:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code.
+Hint: The code item has the following signature: model_dump(*, mode: Literal['json', 'python'] | str='python', include: IncEx=None, exclude: IncEx=None, by_alias: bool=False, exclude_unset: bool=False, exclude_defaults: bool=False, exclude_none: bool=False, round_trip: bool=False, warnings: bool=True) -> dict[str, Any]
+Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted. [/INST]```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.model_dump(
+```
+BEAM 1:
+```
+[PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD]<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.model_dump(
+```
+
+INTERRUPT 0
+BEAM 0:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code.
+Hint: The code item has the following signature: model_dump(*, mode: Literal['json', 'python'] | str='python', include: IncEx=None, exclude: IncEx=None, by_alias: bool=False, exclude_unset: bool=False, exclude_defaults: bool=False, exclude_none: bool=False, round_trip: bool=False, warnings: bool=True) -> dict[str, Any]
+Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted. [/INST]```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.model_dump(
+```
+BEAM 1:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code.
+Hint: The code item has the following signature: model_dump(*, mode: Literal['json', 'python'] | str='python', include: IncEx=None, exclude: IncEx=None, by_alias: bool=False, exclude_unset: bool=False, exclude_defaults: bool=False, exclude_none: bool=False, round_trip: bool=False, warnings: bool=True) -> dict[str, Any]
+Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted. [/INST]```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.model_dump(
+```
+
+INTERRUPT 0
+BEAM 0:
+```
+[PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD][PAD]<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.model_dump(include=['name', 'email', 'age'])
+```
+BEAM 1:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code.
+Hint: The code item has the following signature: model_dump(*, mode: Literal['json', 'python'] | str='python', include: IncEx=None, exclude: IncEx=None, by_alias: bool=False, exclude_unset: bool=False, exclude_defaults: bool=False, exclude_none: bool=False, round_trip: bool=False, warnings: bool=True) -> dict[str, Any]
+Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted. [/INST]```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.model_dump(include=['name', 'email', 'age'])
+```
+
+INTERRUPT 0
+BEAM 0:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.model_dump(include=['name', 'email', 'age'])
+```
+BEAM 1:
+```
+<s> [INST] <<SYS>>
+Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+<</SYS>>
+
+Complete the following Python function. Return only code. [/INST]```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.model_dump(include=['name', 'email', 'age'])
+```
+
+END:
+```
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+    return user.model_dump(include=['name', 'email', 'age'])
+```
+
