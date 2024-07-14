@@ -1,4 +1,3 @@
-
 #let title-page(
   title: "",
   author: (),
@@ -30,7 +29,14 @@
           v(2cm)
           text(weight: "bold", size: large)[Master's Thesis]
           v(smallskip)
-          text(size: huge, title)
+          box(
+            width: 300pt,
+            text(
+              size: huge,
+              hyphenate: false,
+              title,
+            ),
+          )
         },
       )
       v(2cm)

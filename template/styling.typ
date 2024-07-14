@@ -1,24 +1,36 @@
 #import "@preview/hydra:0.4.0": hydra
 #import "@preview/equate:0.2.0": equate
 
-#let link-style(doc) = {
+#let link-style(print-mode, doc) = {
   show link: it => {
     // Workaround for ctheorems package so that its labels keep the default link styling.
     // Ignore research question links
     if type(it.dest) == label and not str(it.dest).starts-with("rq:") {
       return it
     }
-    if it.body.func() == table {
+    let ignored-items = (table, figure)
+    if ignored-items.contains(it.body.func()) {
       return it
     }
-    it
-    h(1.6pt)
-    super(
-      box(
-        height: 3.8pt,
-        circle(radius: 1.2pt, stroke: 0.7pt + rgb("#993333")),
-      ),
-    )
+    if print-mode {
+      let body-fields = it.body.fields()
+      if type(it.dest) == str and (
+        "text" not in body-fields or body-fields.at("text") != it.dest
+      ) {
+        it + footnote(link(it.dest))
+      } else {
+        it
+      }
+    } else {
+      it
+      h(1.6pt)
+      super(
+        box(
+          height: 3.8pt,
+          circle(radius: 1.2pt, stroke: 0.7pt + rgb("#993333")),
+        ),
+      )
+    }
   }
   doc
 }
@@ -114,6 +126,7 @@
   show raw: set text(font: "New Computer Modern Mono")
   // Else texttt style text in normal backticks is too small
   show raw.where(lang: none, block: false): set text(size: 11pt)
+
   show par: set block(spacing: 0.55em)
   show heading: set block(above: 1.4em, below: 0.3em)
   show heading: it => {
@@ -133,9 +146,5 @@
     set text(font: "New Computer Modern Sans", spacing: 150%)
     [ \ ] + text(weight: "regular", style: "italic", it.body)
   }
-  if not print-mode {
-    link-style(doc)
-  } else {
-    doc
-  }
+  link-style(print-mode, doc)
 }

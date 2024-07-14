@@ -19,7 +19,7 @@ These many features take a significant effort to implement for a *single* progra
 Providing support for an ever increasing amount of programming languages is hard, but supporting these features for an ever increasing amount of programming languages in every editor is impossible. Many diverse editors exist, such as Emacs@GNUEmacsGNU@LSPModeLanguage, VSCode@VisualStudioCode@LanguageServerExtension, Neovim (modern fork of Vim)@HomeNeovim@LspNeovimDocs, Zed (the successor of Atom)@ZedCodeSpeed@AddingNewLanguages, Jetbrains #acrpl("IDE")@JetBrainsIDEsEnjoy@LanguageServerProtocol, Helix@HelixeditorHelix2024@LanguageSupport and many more.
 // TODO: reference every editor
 
-Thus, a solution is needed to extract thes *common* features from the editors and provide them centrally, such that every editor need only implement an interface to integrate the common features.
+Thus, a solution is needed to extract the *common* features from the editors and provide them centrally, such that every editor need only implement an interface to integrate the common features.
 The #acrl("LSP") is an effort to standardize a common feature set for programming language tooling for use in #acrpl("IDE"). The protocol was designed my Microsoft for use in its Visual Studio Code editor, but is now an open standard. This thesis will focus on version `3.17` of the protocol. The protocol includes many different features, of which the following sections introduce a few important. The full specification may be accessed #link("https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#languageFeatures")[here]@Specification.
 
 === Design
