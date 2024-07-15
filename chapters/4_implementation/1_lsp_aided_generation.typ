@@ -94,6 +94,8 @@ The `predict_correct_completion_symbol` field toggles custom behavior for the co
 
 And lastly the `masked_gen` toggle controls if the logits of "other" token ids are masked during generation, when completion items or signature help is available.
 
+#todo()[Generation config supports max_interrupts]
+
 === Generator
 The `Generator` component is implemented by the class `Generator` in `generator.py`. It is the main component of the approach and orchestrates the generation process.
 The idea is to provide a high-level interface to the user, somewhere between the interace of the `generate` function of #acrpl("CLM") and the `pipeline` abstraction in the `Transformers` library.
@@ -178,13 +180,13 @@ A shortened version of the completion loop is displayed in @code:completion_loop
             input_ids = self.tokenizer(
                 prompt, return_tensors="pt", add_special_tokens=False
             ).input_ids
-            input_ids, _ = self.expand_input_ids(input_ids, config)
-            while True:
-                decoded_text = self.resume_generation(...)
+            input_ids, _ = self.expand_input_ids(input_ids, config)<code_completion_expansion>
+            while True:<code_completion_loop_while_start>
+                decoded_text = self.resume_generation(input_ids, ...)
                 interrupt = lsp_processor.interrupt
                 if interrupt is None:
                     prompt_state = prompt_states[0]
-                    return self.retrieve_final_code(prompt_state)
+                    return self.retrieve_final_code(prompt_state)<code_completion_loop_while_end>
                 stopped_beam_index = self.index_of_beam_to_edit(interrupt.input_ids)
                 prompt_state = prompt_states[stopped_beam_index]
                 if max_interrupts is not None:
@@ -195,43 +197,43 @@ A shortened version of the completion loop is displayed in @code:completion_loop
                 edited_prompt = self.edit_generation_text_for_completion(
                     decoded_text, prompt_state, interrupt, code_util
                 )
-                input_ids = self.edit_input_ids(
+                input_ids = self.edit_input_ids(<code_completion_loop_edit_input_ids_start>
                     interrupt, edited_prompt, stopped_beam_index
-                )
+                )<code_completion_loop_edit_input_ids_end>
                 self.log_interruption(input_ids, interrupt_count)
     ```,
   ),
   caption: [The interrupt loop, which is the core of the `Generator` class and which enables the #acr("IBMS"). Long argument lists are abbreviated by `...`],
 )<code:completion_loop>
 
-1. init objects for generation for each beam (monitor is stateless so only 1 instance)
-2. create lsp for each language
-3. init config and add fixes
-4. expand input ids (normally in generate function)
-5. loop and use custom generation
-  - if no interrupt -> get completion, done
-  - else
-    - edit prompt
-    - insert into beams and edit input ids => add padding to max length of all to left side, then remove as much padding as possible on left (1. equalizes padding, 2. minimizes it)
-    - clear interrupt
-    - adjust config parameters
+The core of the loop consists of @code_completion_loop_while_start - @code_completion_loop_while_end and @code_completion_loop_edit_input_ids_start - @code_completion_loop_edit_input_ids_end.
+The first lines call the `resume_generation` method, which wraps around the modified `Transformers` generation loop. Lines 12 to 15 check if an interrupt occured and return the result if the generation ended with an #acr("EOS").
+Else line 26 edits the changed prompt into the current input token ids for the next call to `resume_generation`.
+
+To further enable introspection, the initial code is logged and the input token ids are logged between interrupts. The logging behavior is detailed further in the introspection section.
+
+At the start of the method, the generation specific objects are initialized, such as the different monitors, the prompt state, code utilities and other objects. While the monitors work on the input token ids as a whole, other objects work on singular beams and are initialized for every beam.
+Thus, the `PromptState`, `PromptFormatter` and `CodeUtil` instances are created as a list for every single beam.
+
+Additionally, the initial input token ids are obtained by creating the initial prompt from the provided code and then tokenizing the result.
+Usually the prompt is tied to a beam and formatted using the `PromptFormatter` instance associated with a beam. At the start of the neural code completion all beams are the same, which is why the first `PromptState` instance is used.
+
+Other parts of the method handle the augmented generation config. Initially, fields supported by the approach, but unsupported by `Transformers` are removed from the `config` dictionary. Then during each iteration, values such as the maximum allowed time (`max_time`) are updated to reflect the then correct values.
+The supported maximum interruptions configuration value is tracked by the `maximum_interrupts` variable.
+
+@code_completion_expansion is further explained in a later section. The same is true for details on editing and resumption.
+#todo()[Later sections editing, resumption and custom generation]
 
 ==== Resumption.
 - same arguments as generate
 
 - reordering of static analysis requires deepcopy, as several objects have the same ancestor, thus branching off (copies)
 
-=== BeamTracker
-- Custom BeamSearchScores to enable beam search + logits processor order tracking and beam retrieval:
-- saves input_ids before returning from the generate function (finalizing the beams)
-- calls the tracker at each step
+==== Tweaked Model Generation.
+- expansion
+- other model
 
-- BeamTracker
-- List of beam selections
-- iterates through the list, reproducing the beam selection process and storing the original ancestor beam index
-- provides to rearrange list of items in the order of the beam search
-
-- "only for beam search"
+==== Editing.
 
 ==== Introspection
 For any type of neural model generation, introspection into the generation flow is crucial. The result determined by the model can be often times unexpected and confusing.
@@ -274,4 +276,14 @@ logits guider
 
 === PromptEditor
 // fixing prompt back and forth
+=== BeamTracker
+- Custom BeamSearchScores to enable beam search + logits processor order tracking and beam retrieval:
+- saves input_ids before returning from the generate function (finalizing the beams)
+- calls the tracker at each step
 
+- BeamTracker
+- List of beam selections
+- iterates through the list, reproducing the beam selection process and storing the original ancestor beam index
+- provides to rearrange list of items in the order of the beam search
+
+- "only for beam search"
