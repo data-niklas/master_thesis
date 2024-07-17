@@ -60,6 +60,8 @@ Lastly, the submodule `interrupts` contains the behavior for the different types
 
 The other files and submodules contain various types of utilities, fixes and configurations needed to enable the approach and make it configurable for evaluation. The next sections will focus on the components introduced in @chapter:design:lsp and then continue on with important details on the various other files and submodules.
 
+#todo()[List all design components and classes in this section, to provide an overview]
+
 === Configuration
 All behavior of the approach can be toggled through fields of the data class `LspGenerationConfig`. This enables the analysis of certain behaviors on the performance of the approach, as well as introspection through logging.
 
@@ -95,6 +97,72 @@ The `predict_correct_completion_symbol` field toggles custom behavior for the co
 And lastly the `masked_gen` toggle controls if the logits of "other" token ids are masked during generation, when completion items or signature help is available.
 
 #todo()[Generation config supports max_interrupts]
+
+=== Enabling the beam search strategy
+As discussed in @chapter:design:ibms, the approach must support generation strategies like the beam search. This requires the following:
+1. Storing the final beams before selecting the single returned sequences.
+2. Storing the beam selections during generation to reproduce reorderings on objects tracking state for each beam.
+
+The classes providing support are the `BeamTracker` and `BeamIndexStoringSearchScores`, found in `generation_utils/beam_tracking.py`.
+The `BeamTracker` class only tracks beam selections. It contains a list of tuples, where each tuple contains an index for each beam.
+It forms a $|"beams"| times s$ matrix $T$, where $s$ is the number of steps and is increasing during the generation loop.
+$T_(j,i)$ denotes that during step $i$ the beam $j$ was selected from the $T_(j,i)$ beam at step $i-1$.
+
+By receiving a list of objects storing state for each beam, the `BeamTracker` can replay the selection process for all steps, reordering the objects. As several beams may be selected from the same previous index, the objects may be duplicated.
+
+#todo()[Show code?]
+
+The second piece of the puzzle is the `BeamIndexStoringSearchScores` class. It is a subclass of the `Transformers` `BeamSearchScorer` class. The `BeamSearchScorer` classes are used internally for the beam search strategy to process a single generation step to choose the next beams and to finalize the selection at the end of the generation process.
+By subclassing the `BeamSearchScorer` class, the `BeamIndexStoringSearchScores` class has access to the indices of selected beams at each step.
+The instance contains an instance of the `BeamTracker` class, tracking the indices at each step.
+Additionally the `BeamIndexStoringSearchScores` class is called with the final beams before the final selection of the singular best beam directly before the generation loop ends. These `input_ids` are stored internally for external access by the `Generator` class.
+Concretely, the class overwrites the two methods `process` and `finalize`, adding the additional behavior for each step and for the final step, then passing all arguments into the method on the superclass:
+#figure(
+  code(
+    lang: "Python",
+    ```python
+    class BeamIndexStoringSearchScores(BeamSearchScorer):
+        def process(self, beam_indices, ...):
+            self.beam_tracker.track_beam_indices(beam_indices)
+            return super().process(...)
+
+        def finalize(self, input_ids, beam_indices, ...):
+            self.input_ids = input_ids
+            self.beam_tracker.track_beam_indices(beam_indices)
+            return super().finalize(...)
+    ```,
+  ),
+  caption: [
+    The `BeamIndexStoringSearchScores` class, which tracks the indices of selected beams at each step and stores the final beams before the final selection of the singular best beam.
+  ],
+)
+
+A later section will detail how the `BeamIndexStoringSearchScores` replaces another instance of the `BeamSearchScorer`.
+
+=== InterruptStoppingCriteria
+The `InterruptStoppingCriteria` class is a utility class, which is used to determine if an interrupt occured inside a monitor and the generation loop should be stopped.
+Coloquially, it propagates the interrupt signal to the interrupt loop.
+It subclasses the `Transformers` `StoppingCriteria` class.
+The class implements the method seen in @code:interrupt_stopping_criteria:
+#todo()[Add interrupt loop and generation loop to design images]
+#figure(
+  code(
+    lang: "Python",
+    ```python
+    class InterruptStoppingCriteria(StoppingCriteria):
+        def __init__(self, interrupt_token_id):
+            self.interrupt_token_id = interrupt_token_id
+
+        def __call__(self, input_ids, scores, **kwargs):
+            # Any batch ends with the interrupt token
+            for i in range(input_ids.shape[0]):
+                if len(input_ids[i]) > 0 and input_ids[i][-1] == self.interrupt_token_id:
+                    return True
+            return False
+    ```,
+  ),
+  caption: [The `InterruptStoppingCriteria` class, which determines that the generation loop should be stopped when the interrupt token id occurs.],
+)<code:interrupt_stopping_criteria>
 
 === Generator
 The `Generator` component is implemented by the class `Generator` in `generator.py`. It is the main component of the approach and orchestrates the generation process.
@@ -186,15 +254,15 @@ A shortened version of the completion loop is displayed in @code:completion_loop
                 interrupt = lsp_processor.interrupt
                 if interrupt is None:
                     prompt_state = prompt_states[0]
-                    return self.retrieve_final_code(prompt_state)<code_completion_loop_while_end>
+                    return self.retrieve_final_code(prompt_state, decoded_text)<code_completion_loop_while_end>
                 stopped_beam_index = self.index_of_beam_to_edit(interrupt.input_ids)
                 prompt_state = prompt_states[stopped_beam_index]
                 if max_interrupts is not None:
                     if max_interrupts == 0:
-                        return self.retrieve_final_code(prompt_state)
+                        return self.retrieve_final_code(prompt_state, decoded_text)
                     max_interrupts = max_interrupts - 1
                 code_util = code_utils[stopped_beam_index]
-                edited_prompt = self.edit_generation_text_for_completion(
+                edited_prompt = self.edit_generation_text_for_completion(<code_completion_prompt_edit_start>
                     decoded_text, prompt_state, interrupt, code_util
                 )
                 input_ids = self.edit_input_ids(<code_completion_loop_edit_input_ids_start>
@@ -203,7 +271,7 @@ A shortened version of the completion loop is displayed in @code:completion_loop
                 self.log_interruption(input_ids, interrupt_count)
     ```,
   ),
-  caption: [The interrupt loop, which is the core of the `Generator` class and which enables the #acr("IBMS"). Long argument lists are abbreviated by `...`],
+  caption: [The interrupt loop, which is the core of the `Generator` class and which enables the #acr("IBMS"). Long argument lists are abbreviated by "`...`"],
 )<code:completion_loop>
 
 The core of the loop consists of @code_completion_loop_while_start - @code_completion_loop_while_end and @code_completion_loop_edit_input_ids_start - @code_completion_loop_edit_input_ids_end.
@@ -225,15 +293,92 @@ The supported maximum interruptions configuration value is tracked by the `maxim
 #todo()[Later sections editing, resumption and custom generation]
 
 ==== Resumption.
-- same arguments as generate
+// 1. Wraps around a generate method, generation loop
+// 1. Properly passes arguments into the wrapped method
+// 1. Handles result
+Although resumption refers to the continuation of the generation process after an interrupt, there is no functional difference between the first generation and generations following an interrupt.
+In each case, the interrupt loop calls the `resume_generation` method.
+It is a wrapper over the tweaked generation loop, which is detailed in the next section.
 
-- reordering of static analysis requires deepcopy, as several objects have the same ancestor, thus branching off (copies)
+Firstly, it resets objects used in the previous generation. Secondly, configuration values are set for the internal generation loop.
+At last, it processes the result of the generation loop, to enable support for different strategies and to handle the special interrupt case.
+
+In particular, the wrapper resets both the `LspProcessor` and the `BeamTracker` instances, both clearing any previous interrupts and resetting the tracked selected beams.
+
+Depending on the passed `LspGenerationConfig`, the different monitors are appended to a list of used `LogitsProcessor` passed to the generation loop.
+Additionally, an `InterruptStoppingCriteria` instance is created and added to the parameters of the internal wrapped `generate` method.
+
+The `resume_generation` method passes the parameters `return_dict_in_generate=True` and `output_scores=True`, influencing the structure of the returned result of the wrapped generation loop.
+The result is a dictionary-like object containing the returned final sequences over all batches, of which there will be a single one in most cases.
+This returned sequence is then processed and returned by the `resume_generation` method. First, any type of custom padding is removed, then any interrupt token is removed if found. At last the sequence is decoded into a text containing only the prompt without other special tokens.
+
+Further steps are necessary to support the beam search strategy. As will be discussed in the `LspProcessor` section, it stores the final `input_ids` of the generation at the time an interrupt is set. These `input_ids` can be used to inject the context and then to resume the generation.
+If the beam search strategy is used, these `input_ids` could have been reordered after the interrupt token has been set. Thus the `input_ids` need to be overwritten with the correct `input_ids` after the beam search strategy has applied its own logic.
+In that case the correct `input_ids` are obtained from the generation result, which contains the value in the field `beam_input_ids`. This is not the default behavior and was added in the patched generation loop and will be discussed in the next section.
+
+Furthermore, the list of `PromptState` and `CodeUtil` are reordered to match the new beam selection, using the `BeamTracker`.
 
 ==== Tweaked Model Generation.
-- expansion
-- other model
+The internal generation loop is implemented in the `resume` method located in the `InterruptMixin` class. The `resume` method is a patched copy `generate` function of the `Transformers` `GenerationMixin`.
+The following patches were applied:
+1. No `input_id` expansion is applied.
+2. Beam search strategy generation loop calls are tweaked to use the `BeamIndexStoringSearchScores` class and return the final beam search `input_ids`.
+
+Usually the `generate` function receives `input_ids`, which are expanded to fit the number of beams required by the decoding strategy. At the end of the strategy these beams are then reduced to a single result. For an #acr("IBMS") to work, the method must receive all beams upfront and return all beams at the end.
+Thus, the expansion of the `input_ids` is extracted into the additional method `expand_input_ids`. It will be called at the start of the *interrupt loop*, instead of the start of the generation loop.
+
+Secondly, every beam search strategy must use an instance of `BeamIndexStoringSearchScores` as discussed before. Instances of `BeamSearchScorer` are replaced with `BeamIndexStoringSearchScores`, additionally forwarding the instance of the `BeamTracker` into the instance, enabling the tracking of the beam selection process.
+After the generation loop has finished for a beam search strategy, the stored `input_ids` are extracted from the instance and set in the generation result in the `beam_input_ids` field.
 
 ==== Editing.
+#todo()[Streamline `input_ids` and other variable names, etc]
+This section details how the prompt and then `input_ids` are edited to inject the new context. The behavior is located in the `TokenSequenceEditMixin` class and is called in @code_completion_prompt_edit_start and @code_completion_loop_edit_input_ids_start.
+
+The first method `edit_generation_text_for_completion` is called with the decoded text and the context to inject.
+The decoded text is the prompt of the interrupted beam, as that interrupt token led to the selection of the beam as the result.
+The context to inject was retrieved from the instance of the `LspProcessor`.
+The method performs one of the following two steps:
+1. Inject the context into the `PromptState`.
+2. If the option `predict_correct_completion_symbol` is enabled and a completion is present: Determine the next symbol from the given completions and insert it directly into the prompt.
+
+In any case, the methods starts by retrieving the generated code from the prompt, using the `PromptState` instance. And finally, the generated code is formatted into the edited prompt using a maybe changed `PromptState`.
+
+// Case 1
+In the first case, the interrupt is used to format the retrieved context into a textual representation, insertable into the prompt, called "comment". The exact steps are discussed in the later section `Interrupt Types`.
+The comment is then added into the `PromptState` with the interrupt type.
+
+// Case 2
+The second case is an experimental method to try and find the correct completion from the list of completion items directly, without inserting the list of completions and implicitly letting the model complete the item.
+The method `determine_next_symbol_from_completions` is called, which starts a separate normal model generation. The model is provided the following:
+1. The current completed code.
+2. The list of non deprecated completions.
+3. A comment created from the deprecated completions.
+
+While the first two points are expected, the third point is added to counteract biased completions by the model towards deprecated items.
+The format of the prompt can be seen in @figure:prompt_formatting:completion:
+#figure(
+  prompt()[
+    The following symbols are code completion entries. Determine the appropriate symbol to complete the code in the code block: \`completion_1\`, \`completion_2\`, ..., \`completion_n\`\
+    \
+    #code(
+      ```py
+      def input_task(obj):
+          """Docstring"""
+          return obj.
+      ```,
+      lang: "Python",
+    )
+    \
+    Return only the single chosen symbol. Do not provide commentary. Output format:\
+    \`CHOSEN SYMBOL\`\
+    \
+    Hint: method `a` is deprecated. Use method `b` instead.
+  ],
+  caption: [The format of the prompt used to predict the next symbol from the list of non deprecated completions directly.],
+)<figure:prompt_formatting:completion>
+
+// raw markdown
+The output is expected to be the completion item wrapped in backticks, as usual for raw markdown text. If the model did not return a result in the expected format, the empty string is returned. Else the predicted completion is returned. The predicted completion is then directly appended to the generated code.
 
 ==== Introspection
 For any type of neural model generation, introspection into the generation flow is crucial. The result determined by the model can be often times unexpected and confusing.
@@ -274,16 +419,14 @@ logits guider
 - self.interrupt = Interrupt object
 -
 
+=== PromptState
+
 === PromptEditor
 // fixing prompt back and forth
-=== BeamTracker
-- Custom BeamSearchScores to enable beam search + logits processor order tracking and beam retrieval:
-- saves input_ids before returning from the generate function (finalizing the beams)
-- calls the tracker at each step
-
-- BeamTracker
-- List of beam selections
-- iterates through the list, reproducing the beam selection process and storing the original ancestor beam index
-- provides to rearrange list of items in the order of the beam search
-
 - "only for beam search"
+
+=== Interrupt Types
+
+=== Language Server
+// 1. Initialization
+// 2. Communication

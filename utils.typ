@@ -41,9 +41,9 @@
         stroke: (
           left: 2pt + rgb("#219d73"),
         ),
-        inset: 4pt,
-        radius: 4pt,
-        align(left, "TODO: " + text),
+        inset: 2pt,
+        radius: (top-left: 1pt, bottom-left: 1pt, rest: 4pt),
+        align(left, strong(smallcaps("todo: ")) + text),
       ),
       kind: "todo",
       supplement: "TODO",
@@ -51,7 +51,7 @@
       caption: text,
       placement: none,
     ),
-    baseline: 4pt,
+    baseline: 2pt,
   )
 }
 
