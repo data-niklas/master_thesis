@@ -65,7 +65,10 @@
   set math.equation(supplement: "Equation", numbering: "(1.1)")
   show: equate.with(breakable: true, sub-numbering: true)
 
-  set figure(supplement: auto)
+  show figure.where(kind: table): set figure.caption(position: top)
+  show figure.where(kind: image): set figure.caption(position: bottom)
+  show figure.where(kind: "listing"): set figure.caption(position: top)
+  set figure(supplement: auto, placement: auto)
   show figure.where(kind: "listing"): fig => {
     align(
       center,
@@ -81,6 +84,17 @@
             pad(x: 0.5cm)[#fig.caption]
           },
         )
+      },
+    )
+  }
+  show figure.caption: caption => {
+    let text-width = page.width - page.margin.inside - page.margin.outside
+    let caption-width = calc.min(text-width, measure(caption).width)
+    block(
+      width: caption-width,
+      {
+        set par(hanging-indent: 0.5cm, justify: true)
+        align(left, caption)
       },
     )
   }

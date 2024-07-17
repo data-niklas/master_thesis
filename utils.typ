@@ -59,7 +59,7 @@
   set text(size: 11pt, font: "New Computer Modern Mono")
   block(
     stroke: 1pt + luma(180),
-    fill: luma(250),
+    fill: luma(246), // Darker than code blocks by luma of 5
     inset: 5pt,
     radius: 6pt,
     align(left, body),
