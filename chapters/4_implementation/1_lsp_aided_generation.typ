@@ -392,7 +392,7 @@ At its core, the `LogMixin` provides two methods: `log_interruption` and `log_co
 The method `log_code` is used to log initial and final code states of singular provided and returned code.
 Between interrupts the second method `log_interruption` is used to list the contents of each beam. For readability, the token id sequences are converted back to tokens through the `tokenizer.batch_decode` method.
 
-Generally, the methods have the structure displayed in @code:log_mixin:
+Generally, the methods have their structure displayed in @code:log_mixin:
 #figure(
   code(
     lang: "Python",
@@ -400,7 +400,6 @@ Generally, the methods have the structure displayed in @code:log_mixin:
     def log(self, text: str):
         with open(self.config.chat_history_log_file, "a") as f:
             f.write(text)
-
     def log_interruption(self, input_ids, interrupt_index):
         if self.config.chat_history_log_file is None:
             return
