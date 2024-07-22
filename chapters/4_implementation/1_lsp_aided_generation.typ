@@ -80,6 +80,9 @@ The `LspGenerationConfig` is defined as in @code:lsp_generation_config:
         force_custom_pad: bool = False
         predict_correct_completion_symbol: bool = True
         masked_gen: bool = True
+        use_completion_context: bool = False
+        use_deprecation_context: bool = True
+        use_signature_context: bool = True
     ```,
   ),
   caption: [The `LspGenerationConfig` data class, enabling customizable behavior.],
@@ -94,8 +97,9 @@ During the initialization of the tokenizer and model, the `Generator` may add a 
 The `predict_correct_completion_symbol` field toggles custom behavior for the completion item context injection. If enabled, the list of retrieved completions is presented to the model, to directly predict the correct completion item. Then the predicted completion item is directly inserted into the prompt, before resuming the generation.
 #todo()[Maybe explain later]
 
-And lastly the `masked_gen` toggle controls if the logits of "other" token ids are masked during generation, when completion items or signature help is available.
+The next toggle `masked_gen` controls if the logits of "other" token ids are masked during generation, when completion items or signature help is available.
 
+The final three toggles `use_completion_context`, `use_deprecation_context` and `use_signature_context` control the behavior of the `LSP Processor`. If disabled, the respective context is not injected into the prompt, as the monitor will not cause the respective interrupts.
 #todo()[Generation config supports max_interrupts]
 
 === Enabling the beam search strategy
@@ -413,10 +417,138 @@ Generally, the methods have their structure displayed in @code:log_mixin:
 The logging mechanism is optional and can be enabled as discussed in the configuration section.
 If disabled, the methods are no-ops.
 
-=== Monitor
-logits guider
-- self.interrupt = Interrupt object
--
+=== Monitors
+After discussing the complicated details of the interruption loop and prompt editing, this section provides details on the different monitors `LSP Processor`, `Boundary Processor` and `Comments Processor`.
+These classes receive and use state objects created in the `Generator` class. The following sections will only list further created objects and and the state objects will not be listed explicitly.
+
+==== LSP Processor Overview.
+All processors implement the `LogitsProcessor` interface of the `Transformers` library through the `__call__` method. They receive the `input_ids` for each beam and the current scores of the next predicted token id.
+The implementation of the `__call__` method is found in @code:lsp_processor:
+#figure(
+  code(
+    lang: "Python",
+    ```py
+    def __call__(self, input_ids: LongTensor, scores: FloatTensor) -> FloatTensor:
+        """Returns a 2d FloatTensor which has scores for every batch"""
+        if not self.config.lsp_processor or not self.config.enabled:
+            return scores
+        for i in range(input_ids.shape[0]):
+            try:
+                scores[i] = self.scores_for_batch(i, input_ids[i], scores[i])
+            except InterruptGeneration as ig:
+                scores[i][self.interrupt_token_id] = INTERRUPT_LOGITS_SCORE
+                self.interrupt = Interrupt(
+                    input_ids=input_ids,
+                    interrupt_context=ig.context,
+                    interrupt_type_name=ig.interrupt_type_name,
+                )
+                return scores
+        return scores
+    ```,
+  ),
+  caption: [The `__call__` method of the `LSPProcessor` class.],
+)<code:lsp_processor>
+
+#todo[Maybe some algorithmic library]
+The general flow is as follows:
+1. If the `LSP Processor` is disabled through the configuration, the unchanged scores are returned.
+2. Each beam is processed individually, after which the updated scores are returned.
+3. For the current completed code in each beam, the following occurs:
+  1. Static analysis is performed on the code.
+  2. Heavy filtering is applied to the retrieved completions and signature help.
+  3. An interrupt may be triggered, if context is available, throwing an `InterruptGeneration` exception.
+  4. The scores are reranked using the available context, if no interrupt is triggered.
+4. If an interrupt is triggered, the interrupt token id will be forced and the context saved in an interrupt object.
+
+To perform these actions, in special the static analysis, filtering and reranking, the monitor requires a few additional attributes.
+
+// Signature cache, current interrupt and objects for each beam, filename, expand size
+The first additional attribute is the `signature_cache`, which overlays the plentiful information from the completion items with the signature help to enable complex filtering on the signature help items. By default this is initialized to an empty dictionary, which grows during the generation.
+
+The second attribute is the `interrupt`, which is set to `None` at the start of the generation. If an interrupt is triggered, the interrupt object is set in the interrupt attribute. The method `resume` sets this object to `None`, effectively clearing the interrupt information.
+#todo[Cross-reference resume to perivous mention in generate?]
+
+The third attribute `file_names` contains a file name per code to complete. This name serves is used to create a temporary file containing the partial code for static analysis. It is a direct result of the `file_name` argument of the `_complete` method in the `Generator` and is relevant if code in a project file is to be completed.
+
+Lastly, the `expand_size` attribute is used to determine the link between the number of total beams, beams per batch and batch count. Usually the different functions use flat lists which contain entries for all batch entries. To determine the batch index from an index of such a flat list, the `expand_size` contains the number of beams per batch.
+
+==== LSP Processor Context Retrieval.
+This section and the following section on the `LSP Processor` will provide details on the behavior of the `scores_for_batch` method, which contains the retrieval, filtering, interrupt triggering and reranking of scores.
+
+The method starts with the following logic seen in @code:scores_for_batch_start:
+#figure(
+  code(
+    lang: "Python",
+    ```py
+    def scores_for_batch(
+        self, i, input_ids: LongTensor, scores: FloatTensor
+    ) -> FloatTensor:
+        """Returns a 1d FloatTensor for a single batch"""
+        current_code = self.current_code(i, input_ids)
+        file_name = self.file_name(i)
+        with LspCodeFile(
+            file_name, current_code, self.lsp_clients[i // self.expand_size]
+        ) as lsp_code_file:
+            if self.should_complete(current_code):
+                completions = lsp_code_file.ask_completions()
+                completions = lsp_code_file.resolve_completions(completions)
+            else:
+                completions = []
+            trigger_phrase = re.search(r"[A-Za-z_]*$", current_code).group(0)
+            signature_help = lsp_code_file.ask_signature()
+            self.increase_signature_cache(signature_help, completions)
+    ```,
+  ),
+  caption: [Start of the `scores_for_batch` method, listing how the context retrieved from a language server.],
+)<code:scores_for_batch_start>
+
+The method starts by determining the partially completed code of the current beam using the `current_code` method. The `current_code` method reuses the `PromptState` abstraction to do so. The only new difficulty lies in finding the correct `PromptState` instance, as the `LSPProcessor` stores an instance per beam and the ordering of the stored instances and the passed `input_ids` could be different due to beam search reordering. Generally, the class uses the `BeamTracker` to determine the reordered indices, then retrieve the correct object of the current beam and then use the object to perform the action.
+
+Similarily, the file name of the current batch is retrieved using the `file_name` method.
+#todo[`file_name` to `get_file_name_for_batch` method]
+
+Lastly, the abstraction `LspCodeFile` is used to interact with the language server. The `LspCodeFile` abstraction is detailed in the `Language Server` section.
+The returned `lsp_code_file` object is used to firstly retrieve the completion items and then the signature help items.
+As detailed in @chapter:bg:lsp, retrieving the completions is a two-step process, as the completions must be resolved to include detailed information needed for filtering.
+
+To prevent the use of completion items, if the completion is not needed, the method `should_complete` is called. If the current code ends in one of the following symbols, the completions are not needed: ")", "\\n", " ", "\\t", "]", "}". This effectively limits the use of completion items to the following scenarios:
+- Completion of a symbol.
+- Start of the dereference operator.
+, and reduces model confusion after completing a single function call and reduces completion of unneeded symbols everywhere.
+// TODO: reformulate?
+
+To prepare for the filtering, a `trigger_phrase` is determined. The trigger phrase is used to determine if a completion item is already partially completed, the current code ends in a prefix of a completion item. This trigger phrase is obtained by finding any symbol the code ends with through the regular expression `[A-Za-z_]*$`.
+
+#todo[Could be better, find all completion items that are builtin and extract keyword from there]
+Lastly, the signature cache is increased using the retrieved completion items and signature help items. The method `increase_signature_cache` matches completion items to signature help items through the to be inserted text of the completion items and the keyword of the signature item. If a match occurs, the completion item is assigned to the keyword in the `builtin_cache` attribute.
+
+==== LSP Processor Filtering.
+First the signature help items are filtered, after which the completion items are filtered.
+Each filtering is performed through a chain of methods, each taking at least a list of items and returning the filtered list.
+
+From the signature help items, the following filters are applied:
+1. Remove signature help items of builtin functions.
+2. Remove items without parameters.
+
+The method should improve completion of functions with changed parameters and complex signatures. As such the second filter ignores the case in which a function does not have parameters. The first filter reduces the model confusion by completing probably known functions unchanged.
+To obtain the information if a signature help item is a builtin function, the signature cache is used, as the information is stored in the completion items. If a matching completion items is a builtin item, the signature help item is skipped.
+
+#todo[Remove kind, as kind and postfix are merged]
+From the completion items, the following filters are applied:
+1. Remove builtin completion items.
+2. Constrain completion items to relevant #link(label("code:completion_item_kind"), "Kinds").
+3. Remove items from the current partial completion.
+4. Constrain to public items (no private methods).
+5. Remove items which are already fully completed.
+
+The steps are as described in @chapter:design:lsp. Most filtering steps are straightforward, as they only require fields directly present in the completion items, or simple string matching.
+The following minor details are required:
+- Builtins are recognized by matching the value `"builtins"` in the `detail` field..
+- Private methods are recognized through the name starting with an underscore.
+
+==== LSP Processor Interrupt Triggering.
+
+==== LSP Processor Reranking.
 
 === PromptState
 
@@ -429,3 +561,5 @@ logits guider
 === Language Server
 // 1. Initialization
 // 2. Communication
+// -> file abstraction
+==== Sync vs Async
