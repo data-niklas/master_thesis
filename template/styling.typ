@@ -50,6 +50,7 @@
         align(left, smallcaps(hydra(2, book: true)))
       }
       line(length: 100%)
+      counter(footnote).update(0)
     },
   )
   set par(
