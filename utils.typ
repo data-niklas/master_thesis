@@ -41,7 +41,7 @@
         stroke: (
           left: 2pt + rgb("#219d73"),
         ),
-        inset: 2pt,
+        inset: 2.5pt,
         radius: (top-left: 1pt, bottom-left: 1pt, rest: 4pt),
         align(left, strong(smallcaps("todo: ")) + text),
       ),
@@ -51,7 +51,7 @@
       caption: text,
       placement: none,
     ),
-    baseline: 2pt,
+    baseline: 2.5pt,
   )
 }
 
@@ -61,7 +61,7 @@
     stroke: 1pt + luma(180),
     fill: luma(246), // Darker than code blocks by luma of 5
     inset: 5pt,
-    radius: 6pt,
+    radius: 4pt,
     align(left, body),
   )
 }
@@ -192,7 +192,21 @@
     stroke: 1pt + luma(180),
     fill: background,
     inset: 5pt,
-    radius: 6pt,
+    radius: 4pt,
     body,
   )
 }
+
+#let sys = box(raw("<<SYS>>"))
+#let sys- = box(raw("<</SYS>>"))
+#let inst = box(raw("[INST]"))
+#let inst- = box(raw("[/INST]"))
+#let bos = box(raw("<s>"))
+#let eos = box(raw("</s>"))
+
+#let bar(fill-angle, width) = context box(
+  width: width,
+  fill: color.hsv(fill-angle, 100%, 70%, 20%),
+  height: 1em,
+  baseline: (1em - measure([T]).height) / 2,
+)

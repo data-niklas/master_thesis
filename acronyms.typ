@@ -1,4 +1,5 @@
 #let acronyms = (
+  "ABC": ("Abstract Base Class"),
   "BOS": ("Begin of Sequence"),
   "BPE": ("Byte Pair Encoding"),
   "Code LLM": (
@@ -16,11 +17,13 @@
   "JSON-RPC": ("JavaScript Object Notation-Remote Procedure Call"),
   "LM": ("Language Model"),
   "LLM": ("Large Language Models"),
+  "LRU": ("Least Recently Used"),
   "LSP": ("Language Server Protocol"),
   "MBPP": ("Mostly Basic Python Problems"),
   "MGD": ("Monitor-Guided Decoding"),
   "MIME": ("Multipurpose Internet Mail Extensions"),
   "PAD": ("Padding"),
+  "PEP": ("Python Enhancement Proposal"),
   "PyPI": ("Python Package Index"),
   "RAG": ("Retrieval Augmented Generation"),
   "RPC": ("Remote Procedure Call"),

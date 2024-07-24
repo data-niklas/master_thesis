@@ -547,16 +547,222 @@ The following minor details are required:
 - Private methods are recognized through the name starting with an underscore.
 
 ==== LSP Processor Interrupt Triggering.
+As described in the design section, the filtered completion items are split into deprecated and non-deprecated items. After splitting, the code checks if completion items, deprecation items and signature help items are to be inserted (in that specific order).
+
+The #acr("LSP") defines that completion items include a list of associated tags, which include the information if the item is deprecated. In theory this enables easy splitting of completion items into deprecated and non-deprecated items. In practice not every language server correctly detects deprecated items.
+The widely used language server for Python, `python-lsp-server`, does not correctly detect deprecated items.
+
+Thus, this work implements the custom function `is_deprecated`, to properly detect deprecated items. The function relies on the behavior described in #acr("PEP") 702@PEP702Marking and reads the meta-attribute `__deprecated__` of the item, which is present in deprecated items.
+The function is implemented in @code:is_deprecated:
+
+#figure(
+  code(
+    lang: "Python",
+    ```python
+    @lru_cache
+    def is_deprecated(item):
+        module_name, variable_parts = module_name_and_variable_parts(item)
+        try:
+            module = importlib.import_module(module_name)
+        except ModuleNotFoundError:
+            return False
+        except ValueError:
+            # empty module name
+            return False
+        variable = module
+        for variable_part in variable_parts:
+            if not hasattr(variable, variable_part):
+                return False
+            variable = getattr(variable, variable_part)
+        return hasattr(variable, "__deprecated__")
+    ```,
+  ),
+  caption: [The `is_deprecated` function, which determines if a completion item is deprecated. For speed, the results are memoized using a #acr("LRU") cache.],
+)<code:is_deprecated>
+
+@code:is_deprecated loads the module a value is stored in, retrieves the value from the module and then checks for the meta-attribute `__deprecated__`. If the field is present, the value is deprecated, in any other case it is not.
+As importing from packages may be slow and the function is called repeatedly, the results are memoized using the `lru_cache` decorator.
+
+To use the function in the `LSP Processor`, the import path of the value is constructed, by concatenating the module path from the `detail` field with the name of the symbol in the following format: `is_deprecated(completion.detail + "." + completion.insert_text)`.
+
+#todo[Talk about scope, so when can items be removed? in design]
+After splitting the items, each of the three interrupt types completion, deprecation and signature help checks if context needs to be inserted. Each of the three checks works similarly:
+1. If the interrupt type is disabled in the configuration, the check is skipped.
+2. If no items were found, no interrupt is triggered.
+3. If items were found, they are compared to the already inserted context.
+  1. If no context of the interrupt type is present, the interrupt is triggered.
+  2. If context of the interrupt type is present, but different from the items, the interrupt is triggered.
+  3. Else, no interrupt is triggered.
+
+To check for inserted context, the `LSP Processor` uses the `PromptState` instance of the current beam. To account for reordering of beams, the `BeamTracker` instance is used to retrieve the correct instance of the `PromptState` instance.
+
+The interrupt is thrown through the `trigger_interrupt` method, which raises the custom `InterruptGeneration` exception. It includes the interrupt type and associated context.
+The outer loop of the `LSP Processor` then catches the exception, sets the interrupt token id in the scores and sets the interrupt object in the `interrupt` attribute.
+The interrupt object has the structure seen in @code:interrupt_object:
+#figure(
+  code(
+    lang: "Python",
+    ```py
+    @dataclass
+    class Interrupt:
+        # Tensor of (return_count * beams * batched_items_count) x currently_generated_tokens
+        input_ids: Tensor
+        interrupt_context: Any
+        interrupt_token_id: int
+    ```,
+  ),
+  caption: [The `Interrupt` dataclass, which is used to store the interrupt context and the interrupt token id.],
+)<code:interrupt_object>
+
+The object additionally contains the current `input_ids` at time of interrupt, which will be used to inject the context and for resumption.
+The thrown exception is strictly not needed, as the method `scores_for_batch` could have returned a tuple of the scores and maybe set interrupt.
+As the interrupt itself is passed through the generation through the custom interrupt token, this approach is compatible with other runtimes which do not support these types of exceptions.
 
 ==== LSP Processor Reranking.
+As described in the design section, token ids which are prefixes of a non-deprecated completion item should be ranked higher than token ids that are prefixes of deprecated completion items. Other token ids should be masked.
+Token ids which are prefixes of tokenized non-deprecated completions will henceforth be called `non-deprecated token ids`, and similarly `deprecated token ids` for deprecated completions.
+
+For the reranking, the `LSP Processor` first applies a constant adjustment to the scores using the method `apply_constant_adjustments`. Then deprecated tokens ids are ensured to stay below non-deprecated token ids in the method `ensure_deprecated_below_non_deprecated`. Finally, masking occurs in the method #todo[Masking].
+
+`apply_constant_adjustments` applies a delta to the score of the token ids. A positive delta is applied to non-deprecated token ids, a negative delta to deprecated token ids. As shortly mentioned in the design section, the delta was empirically fixed to $7.0$.
+
+In contrast `ensure_deprecated_below_non_deprecated` determines the minimum non-deprecated token score. Then any scores of deprecated token ids above the minimum are fixed to the delta value below the minimum, to ensure a gap of at least the delta.
+
+The masking is skipped if masking is disabled in the `LspGenerationConfig`. The implementation was adapted from the masked generation in Agrawal et al.@agrawalMonitorGuidedDecodingCode. For details see #link("https://github.com/microsoft/monitors4codegen/blob/022c65efb19cf6046d0b67960ca232ae7a351af4/src/monitors4codegen/monitor_guided_decoding/hf_gen.py#L30C15-L30C49", "their logits processor").
+#footnote[While the design of the strategy was developed independently of Agrawal et al, the implementation was retrofitted to support masked generation.]
 
 === PromptState
+The `PromptState` class is contained in `prompt_state.py` and is a direct implementation of the `PromptState` component.
+At its core, it contains a list of inserted instructions of the beam it is assigned to.
+#todo[Streamline instructions / comments]
+#todo[Rename beam index to sequence index]
+Next to the instructions, the `PromptState` uses the tokenizer to convert between the prompt and token ids. Additionally it requires a `PromptFormatter` instance to format the prompt into the appropiate format.
 
-=== PromptEditor
-// fixing prompt back and forth
-- "only for beam search"
+The `PromptState` is initialized with the initial given code and empty instructions. Then the private method `_create_completion_prompt` creates the initial prompt to the model through the following steps:
+1. All instructions are joined into a single string using newlines.
+2. The `PromptFormatter` instance is used to create a list of messages, given the initial text and instruction text.
+3. The messages are formatted into a prompt, using the tokenizer method `apply_chat_template`, into the model specific prompt format.
+
+The method is called whenever the list of instructions is changed, to update the initial prompt. The initial prompt is only used for generation initially.
+It is used to track the prefix of the prompt including the instructions, which is then used to determine the completed code without instructions, or to create a new prompt with edited instructions.
+The instructions are changed through the `add_comment` method, which takes a comment of an interrupt type and adds it to the list of instructions.
+In a previous steps all instructions of the same interrupt type are removed, ensuring that only the most recent instruction of an interrupt type is present.
+This limits the scope of the context to the next context instance. For function signature context, the context would stay included until the next function call is completed.
+If the comment is empty, no instruction is added, effectively removing the previous instruction of the interrupt type.
+
+After adding instructions, the method `format` takes the current completed code, wraps it into Markdown code block and appends it to the initial prompt, which contains the instructions.
+This results in the following prompt format:
+#figure(
+  prompt()[
+    <s>[INST] \<\<SYS>>\
+    system prompt\
+    <</SYS>>\
+    instruction 1.\
+    instruction 2.\
+    user prompt\
+    [/INST]\
+    #code(
+      lang: "Python",
+      ```py
+      def initial_code():
+          return current_completed_code_at_interrupt.
+      ```,
+    )
+  ],
+)
+#todo[Somewhere show full prompt format, and explain why code block etc]
+#todo[Specify exact prompt format]
+
+A full sample prompt can be seen in @figure:prompt_formatting:full:
+#figure(
+  prompt()[
+    #bos#inst #sys\
+    Return only the completion of the given function. Follow the instructions in the code comments for additional instructions on how to complete the code. Generate readable and simple code.
+    #sys-\
+    Complete the following Python function. Return only code.\
+    Hint: The method `dict` is deprecated. Use `model_dump` instead.
+    #inst-\
+    #code(
+      lang: "Python",
+      ```py
+      def convert_user_to_dict(user):
+          return user.
+      ```,
+    )
+  ],
+  caption: [A full sample prompt, including system and user prompt, instructions and initial code.],
+)<figure:prompt_formatting:full>
+
+To read only the generated code or the full code sample, the methods `get_generated_code` and `get_full_code` are used.
+`get_generated_code` receives a decoded text, removes the initial prompt using simple string processing, then extracts the code from the Markdown code block. It then removes the initially provided code from the full code.
+#todo[fix get_whole_code, swap the roles]
+
+==== Tokenization Issues.
+This class heavily relies on simple string processing of the prompt, i.e. removing a known prefix from the completed prompt.
+This works under the assumption that tokenization is reversible, that $x = "detokenize"("tokenize"(x))$ for all prompts $x$.
+In practice this is not true. As investigated by Imgrund@imgrundLocatingEditingKnowledge2024, 31% of tokenized then detokenized tokens yield a different token.
+This especially affects this work when using CodeLlama in the following example:
+"#bos#inst" will be tokenized then detokenized to "#bos #inst".
+This affects every single generation and is a critical problem. Other issues were observed infrequently.
+To address this issues, the method `get_generated_code` first fixes the received prompt by applying several string replacements to fix the issues. It for example replaces "#bos " with "#bos".
+#todo[Check all components are mentioned]
 
 === Interrupt Types
+The approach uses the two context sources completion items and signature help items to provide the three types of interrupts "completion", "deprecation" and "signature".
+Each of the interrupt types is used to inform the model about available completions, deprecated completions which it should not use and signatures of functions.
+
+Each interrupt type is implemented through a subclass from the #acr("ABC") `InterruptType`, which is located in `interrupts/__init__.py`.
+The implementation of the base class is shown in @code:interrupt_type:
+#figure(
+  code(
+    lang: "Python",
+    ```python
+    class InterruptType(ABC):
+        @abstractmethod
+        def type_name(self) -> str:
+            pass
+
+        @abstractmethod
+        def create_comment(self, context: Any, code_util: CodeUtil) -> Optional[Comment]:
+            pass
+    ```,
+  ),
+  caption: [The `InterruptType` abstract base class, which is used to implement the different interrupt types.],
+)<code:interrupt_type>
+
+As can be seen in @code:interrupt_type, each subclass must provide a (unique) type name through the method `type_name`, and must be able to create a comment, given a context and a `CodeUtil` instance.
+#todo[Define process from retrieval, context, comment, prompt clearly]
+The created comment is optional. In the case that no comment is returned, the `PromptState` will remove previous instructions as described in the previous section.
+
+In the case of the "completion", the created comment will have the following structure:
+#figure(
+  prompt()[
+    Hint: The following symbols are code completion entries. Use the appropriate symbol to complete the current code: #bar(300deg, 3em), #bar(340deg, 3em), ..., #bar(370deg, 3em)
+  ],
+  caption: [The structure of the comment created by the "completion" interrupt type. The insert texts of all items are joined with ",", similar to the colored bars.],
+)
+
+For deprecation items, the comment will have the following structure:
+#figure(
+  prompt()[
+    Hint: #bar(300deg, 5em)\
+    Hint: #bar(340deg, 5em)\
+    Hint: #bar(370deg, 5em)
+  ],
+  caption: [The structure of the comment created by the "deprecation" interrupt type. For each item, a line with a hint is created, where the deprecation message is inserted at the position of the colored bar.],
+)
+
+For signature help items, the comment will have the following structure:
+#figure(
+  prompt()[
+    Hint: The code item has the following signature: #bar(120deg, 5em)\
+    The code item has the following documentation:\
+    #h(2em)#bar(300deg, 5em)\
+    Provide as few arguments as possible and as many as needed. Provide arguments as positional arguments instead of as named arguments if possible. Often times optional arguments can be omitted
+  ],
+  caption: [The structure of the comment created by the "signature" interrupt type. The green bar is replaced by the signature text of the item, while the pink text is replaced by the shortened documentation string.],
+)
+#todo[Change to example of docstring, or highlight areas that are changeable]
 
 === Language Server
 // 1. Initialization

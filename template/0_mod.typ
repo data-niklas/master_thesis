@@ -155,6 +155,8 @@
   )
 
   pagebreak(weak: true)
+  set figure(supplement: auto, placement: none)
+  show figure.where(kind: table): set figure.caption(position: bottom)
   appendix
   pagebreak(weak: true)
   if thesis-repo != none {
