@@ -1,5 +1,5 @@
-= Master thesis
+# Master thesis
 
-== Requirements
+## Requirements
 - `typst`
 - `FiraCode` font
