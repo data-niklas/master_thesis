@@ -762,10 +762,79 @@ For signature help items, the comment will have the following structure:
   ],
   caption: [The structure of the comment created by the "signature" interrupt type. The green bar is replaced by the signature text of the item, while the pink text is replaced by the shortened documentation string.],
 )
-#todo[Change to example of docstring, or highlight areas that are changeable]
 
 === Language Server
-// 1. Initialization
-// 2. Communication
-// -> file abstraction
-==== Sync vs Async
+The final section of the implementation of the approach describes any details on interacting with a language server.
+The following paragraphs start with the initialization of a language server, how the static analysis is triggered and how issues between synchronous and asynchronous code have been resolved.
+
+==== Initialization.
+As described above, generation specific state is initialized in the `initialize_generation_state` method. There a language server is initialized for the programming language of the code provided.
+The programming language is detected by the file type.
+The function `create_lsp_for_language` in `lsp/__init__.py` calls the correct function for the specific language.
+In the case of Python, `create_python_lsp` is called.
+
+The dependency `pygls` provides the class `BaseLanguageClient`, which abstracts the creation and protocol communication. By calling the method `start_io("pylsp")` with the binary of the language server, the binary is executed in a separate process and communication occurs via standard streams.
+Now different method can be called, which each provide a different feature of the #acr("LSP").
+As described in the protocol, the initialization flow is the following:
+1. Client sends a `initialize` request, the server responds with its capabilities.
+2. Client sends a `initialized` notification.
+3. Client can now send further requests to configure the server or retrieve information.
+
+Respectively, the methods `initialize_async` and `initialized` are called to fulfill the first two steps. The first method has the `_async` postfix, as it awaits a responds using asynchronous Python code, while the second is only a notification and does not require a response.
+The code passes several important initialization parameters to the language server:
+/ `root_path`: The path to the root directory of the project. This is important to correctly determine project specific settings, such as virtual environments with dependencies.
+/ `capabilities`: All used capabilities are registered, such as completion and signature help requests:
+  / `tag_support`: Enable support for the deprecation tag on completion items.
+  / `resolve_support`: Enable support to receive detailed information on completion items, enabling complex filtering.
+
+Additionally, the `workspace_did_change_configuration` method sends the similarly named notification to inform the language server about workspace configurations.
+In particular, the following configuration is essential to find installed dependencies:
+```json
+{
+    "pylsp.plugins.jedi.environment": "/path/to/venv/bin/python"
+}
+```
+The code automatically finds the virtual environment from the project root path and sets it for the language server to use.
+
+==== Temporary Code File.
+The completion and signature help on partially completed code is abstracted through the `LspCodeFile` class in `lsp/file.py`.
+The language server operates on files stored on disk, while the generated code is stored in memory. To bridge this gap, the `LspCodeFile` creates a temporary unique file for each partially completed code.
+It then notifies the language server about the new file, and then provides the completion and signature help on the file.
+
+To determine a unique file path, the `LspCodeFile` uses a given path to a file as a base, which could be the origin file of the code in completion. It then appends a unique identifier to the path, by generating a UUID1. The temporary file is then stored next to the original file, thus allowing imports to behave normally.
+If the code completion occurs on a singular file, the exact directory the temporary is stored in is not important.
+
+Then a `TextDocumentItem` instance is created, representing the code file for the #acr("LSP").
+The two methods `__enter__` and `__close__` are used to create and delete the file. In addition, the server is notified that the file is opened or closed through the `text_document_did_open` and `text_document_did_close` methods.
+By defining `__enter__` and `__close__`, the class can be used as a context manager (i.e. `with` statement), ensuring correct cleanup of the temporary file.
+
+The language features, such as completion and signature help, occur at a certain `Position` in the document. In the case of the approach, the position is always at the end of the document.
+The method `char_line_of_code` takes the current code and returns the line and character position of the last character in the code. It first splits the code into lines, counts the last line, then counts the characters in the last line.
+
+The three methods `ask_completions`, `resolve_completions` and `ask_signature` first determine the last position, then call the language server with the respective language feature request.
+One peculiarity is `ask_completions`, as the completion response may be in one of two formats. The server either returns a list of completion items or a `CompletionList` object, which contains the completion list in the `items` field.
+In the latter case, the completion list is extracted from the field and returned.
+The method `resolve_completions` iterates over the completion items and calls `completionItem/resolve` for each item separately.
+
+==== Sync vs Async.
+The initialization and communication with the language server is highly asynchronous, as two different processes communicate through standard streams.
+After sending a request, the server may respond at any time, which yields an awaitable to the client.
+Thus, the `pygls` library depends on `asyncio` to handle the asynchronous communication.
+This requires the whole code to be asynchronous, such that the outer program initializes an event loop and runs the asynchronous code.
+Therefore, the `complete` method of the `Generator` is asynchronous, propagating the asynchronous nature into inner methods, such as the language server initialization.
+
+The Transformers library, however, is synchronous. All implemented subclasses of Transformers classes contain synchronous methods, such as the `__call__` method of the `LSPProcessor`.
+Thus, the asynchronous nature is not progragated through the generation loop to the `LSPProcessor`.
+To use the completion and signature help features, the `LSPProcessor` now requires access to the outer event loop, to run the asynchronous functions.
+To solve this problem, the asynchronous code, nested in synchronous code, nested in asynchronous code, retrieves the current event loop and calls `run_until_complete` on every called asynchronous function:
+#figure(
+  code(
+    lang: "Python",
+    ```py
+     completions = asyncio.get_event_loop().run_until_complete(completion_awaitable)
+    ```,
+  ),
+  caption: [Waiting on to be returned completions from the language server. The asynchronous code is run in the synchronous code by retrieving the current outer event loop.],
+)
+
+By default, `asyncio` does not allow the use of such nested asynchronous code. The implementation uses the dependency `nest_asyncio` to patch the `asyncio` library to allow nested asynchronous code.
