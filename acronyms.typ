@@ -6,6 +6,7 @@
     "Large Language Model for Code",
     "Large Language Models for Code",
   ),
+  "CLI": ("Command Line Interface"),
   "CLM": ("Causal Language Model"),
   "EOS": ("End of Sequence"),
   "IBMS": ("Interrupt-based meta-strategy"),
