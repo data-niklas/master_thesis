@@ -14,6 +14,7 @@
     "Integrated Development Environment",
     "Integrated Development Environments",
   ),
+  "IPC": ("Inter Process Communication"),
   "JSON": ("JavaScript Object Notation"),
   "JSON-RPC": ("JavaScript Object Notation-Remote Procedure Call"),
   "LM": ("Language Model"),

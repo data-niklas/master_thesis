@@ -142,3 +142,106 @@ While the metadata could have been embedded in the code directly, e.g. as a Pyth
 When distributing the dataset, these three information sources are combined to form the different task entries. This has both the benefit of an easy to extend dataset for humans, while enabling easy distribution and use by machines. 
 
 === Unit Tests
+As introduced in the design section and quickly described in the last section, each entry requires two test cases.
+The first test case tests the functional correctness, while the second test tests the approach correctness.
+
+The tests are implemented as standard Python unit tests. This simplifies the testing as the built-in unit test framework can be reused through the `unittest` package.
+The test setup requires three components to fit together:
+1. Starting the unit tests from the running Python code and
+2. disabling logging to access and log the test results, while
+3. mocking used objects to introspect the used approach.
+
+Typically unit tests are either run through the command line using the unit test module:
+```bash
+python -m unittest path/to/file.py
+```,
+or by running the Python script directly and calling the function `unittest.main`.
+In either case, all defined unit tests are found and executed, after which the result is printed to the standard output. The result looks similar to @terminal:unittest:
+#figure(
+  terminal(```terminal
+...
+----------------------------------------------------------------------
+Ran 2 tests in 0.200s
+
+OK
+```),
+caption: [Typical console output when executing two Python unit tests. Parsing the output is error prone and unneeded, as the results can be accessed directly.]
+)<terminal:unittest>
+
+The script accesses the test results directly through the `results` field, which contains the number of failures, tests with errors and the total number of tests run.
+The list of errors, failures and total tests is serialized using the #acr("JSON") format and sent to the controlling process through standard output.
+This simplifies the parsing process and easily yields the desired information and is extensible if more information is needed.
+// IPC
+
+As this approach relies on standard output for #acr("IPC"), all other output must be suppressed, as it complicates the parsing of the results in the controlling process.
+Printing of the unit test results is suppressed by setting the test log verbosity to $0$ and redirecting the output of the test runner to the `/dev/null` stream, effectively voiding the output.
+
+Other output is suppressed, by setting the logging level of the logger to critical.
+
+// Approach correctness
+Each unit test is carefully crafted, by mocking the objects of the gold solution and of probable deprecated functions.
+Tests can then be failed directly, if the deprecated function is used instead of the gold solution. Even if the gold solution function is used, the passed parameters can be introspected, enabling complex test scenarios. Each test scenarios tests certain properties.
+For the scenario in @code:dataset:textual_1_tests the tests assert that the parameter `tab_behavior` is used, while `tab_behaviour` is incorrect, as it is deprecated.
+
+=== Evaluation Loop
+At the heart of the evaluation pipeline lies the evaluation loop, which is located in `dependency_eval/loop.py`. It is abstractly defined in @code:dataset:loop:
+
+#figure(
+  code(
+    lang: "Python",
+```py
+def run_loop(
+    model_configurations: List[ModelConfiguration],
+    dataset: Dataset,
+    model_configuration_finished_cb: Callable[[ModelConfiguration], None],
+    item_cb: Callable[[ModelConfiguration, Dict[str, Any]], None],
+):
+    for model_configuration in tqdm(model_configurations):
+        tqdm.write(f"Running for {model_configuration.name}")
+        for item in tqdm(dataset.items):
+            item_cb(model_configuration, item)
+        model_configuration_finished_cb(model_configuration)
+```
+  ), caption: [The general evaluation loop, which combines several each model configuration with a dataset task.]
+)<code:dataset:loop>
+
+The loop combines every model configuration with every dataset task.
+The progress is displayed using the `tqdm` dependency, which provides an estimate of the remaining run time, as seen in @terminal:tqdm:
+#figure(
+  terminal(```terminal
+76%|████████████████████████        | 1/4 [00:33<00:10, 229.00it/s]
+76%|████████████████████████        | 7568/22 [00:33<00:10, 229.00it/s]
+```),
+caption: todo[Sample output]
+)<terminal:tqdm>
+
+The passed item callback is called for every different combination. By abstracting the content of the item callback, several scenarios are possible, such as only running the neural code completion, evaluation, or both.
+After the whole dataset for a single model configuration was processed, the model configuration finished callback is called, running any finishing task, such as saving the results for the configuration.
+
+=== Robust Neural Code Completion
+The completion is located in `dependency_eval/generate.py`. It requires a project directory with a virtual environment, in which all dependencies are installed.
+// In venv section
+
+The code for the passed task is built, excluding the gold solution and then written to the file `code.py` in the project directory.
+In addition, a `LSPGenerationConfig` object is created and serialized into #acr("JSON").
+Depending on if the code should be completed using the approach or not, the field `enabled` is toggled.
+Then a subprocess runs the Python binary of the project virtual environment, calling the file `dependency_eval/eval_prompt.py` and passing the `LSPGenerationConfig`, the name of the model and the path to the `code.py` file as arguments.
+This trick enables running the neural code completion inside the exact environment as defined in the dataset. This ensures that only these dependencies are found and used, without contamination by the evaluation pipeline dependencies.
+#footnote[The language server might be able to find the virtual environment, based on the passed code file alone. But the custom logic to determine if a symbol is deprecated uses `importlib`, reusing the dependencies available in the currently running Python instance.]
+
+Similar to before, `eval_prompt.py` suppressed the standard output, as it prints the completed code into the standard output.
+
+Isolating the generation from the evaluation pipeline process increases the robustness, which is vital as the pipeline may run for several hours. Ff the generation should fail due to out of memory issues, issues in the communication with the language server or other places, the evaluation pipeline can resume.
+
+=== Code Evaluation Sandbox
+To securely evaluate foreign code, a special evaluation sandbox is created using Docker.
+The implementation currently only uses plain Docker. As Docker is a containerization tool, it is a vast improvement over the reliability guard of e.g. `HumanEval+`. But improvements can still be made by adding a tool such as #link("https://github.com/google/gvisor"), to further secure the kernel.
+
+#acr("IPC") with the evaluation sandbox again relies on sending #acr("JSON") serialized messages over the standard output stream. 
+
+=== Test Metric Calculation
+
+=== Virtual Environment Management
+
+=== Main
+#todo[Somehow main]

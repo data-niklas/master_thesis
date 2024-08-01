@@ -235,6 +235,9 @@ Each entry in the dataset shall have the following format described in @code:dat
   ),
   caption: "DependencyEval entry format",
 )<code:dataset:format>
+#todo[
+  Fix code not spanning multiple pages
+]
 As is usual, each entry contains a unique identifier `task_id`. Each entry represents a single task, targeting a single
 external dependency. The `task_name` is a name of the task containing the name of the targeted dependency and the index
 of the task for that dependency, 1-indexed, such as `pytorch_1`.
