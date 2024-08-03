@@ -65,6 +65,7 @@ One base is the `data/tasks` directory, which includes a single code file for ea
   code(
     lang: "Python",
     ```py
+# data/tasks/textual_1.py
 from textual.widgets import TextArea
 
 
@@ -90,6 +91,7 @@ To keep the tests as simple to run as possible, they do not rely on external tes
   code(
     lang: "Python",
     ```py
+# data/tests/textual_1.py
 from importlib import reload
 from unittest import TestCase, TextTestRunner, main
 from unittest.mock import MagicMock
@@ -190,6 +192,7 @@ At the heart of the evaluation pipeline lies the evaluation loop, which is locat
   code(
     lang: "Python",
 ```py
+# dependency_eval/loop.py
 def run_loop(
     model_configurations: List[ModelConfiguration],
     dataset: Dataset,
@@ -238,10 +241,148 @@ To securely evaluate foreign code, a special evaluation sandbox is created using
 The implementation currently only uses plain Docker. As Docker is a containerization tool, it is a vast improvement over the reliability guard of e.g. `HumanEval+`. But improvements can still be made by adding a tool such as #link("https://github.com/google/gvisor"), to further secure the kernel.
 
 #acr("IPC") with the evaluation sandbox again relies on sending #acr("JSON") serialized messages over the standard output stream. 
+Similar to running the code completion, the evaluation starts a subprocess, passes all arguments and handles errors. Finally, all dangling resources are removed.
+
+The Docker container is started with the following arguments seen in @code:evaluation:docker.
+
+#figure(
+  code(
+    lang: "Python",
+```py
+# dependency_eval/eval.py
+def get_docker_cmd(item: Dict[str, Any], code_file: str, requirements_file: str):
+    return [
+        "docker",
+        "run",
+        "-it",
+        "--rm",
+        "--name",
+        "dev_dataset_eval_item",
+        "-v",
+        f"{requirements_file}:/tool/requirements.txt",
+        "-v",
+        f"{code_file}:/code/llm_lsp_code.py",
+        "-w",
+        "/code",
+        "--cpus",
+        "1",
+        # "--network", "none", # TODO: use docker build
+        get_docker_image(item["python_version"]),
+        "sh",
+        "-c",
+        "python -m venv /tool/venv && /tool/venv/bin/pip install -r /tool/requirements.txt 2>error.log >/dev/null && /tool/venv/bin/python llm_lsp_code.py || cat error.log",
+    ]
+```
+  ),
+  caption: [Arguments to Docker run, which starts the evaluation in a Docker container.]
+)<code:evaluation:docker>
+
+The Docker container image is an official Python image, where the Python version is set from the task.
+Ultimatively this creates the specific environment needed for the task. The Python package dependencies are installed inside of the container, before running the evaluation.
+The code to evaluate is mounted into the container, next to the requirements file.
+The compute is limited to a single CPU.
+#todo[Storage limitation?] 
+
+#todo[salt]
+The container execution time is limited to two minutes, which is enough time to install larger dependencies, such as PyTorch.
+After the two minutes have elapsed, the container is forcefully removed if it still runs.
+To reference the container, it is given the name `dev_dataset_eval_item`.
 
 === Test Metric Calculation
+#todo[Move to evaluation?]
 
 === Virtual Environment Management
+Running the neural code completion requires a whole Python virtual environment per task, as each task has its own pinned dependencies.
+As creating each environment may take several minutes, especially when installing larger dependencies, the environments are cached and reused.
+
+The dependencies are first sorted, then hashed using SHA256, to further enable reuse between tasks.
+The hash is used as a name for the virtual environment.
+If the environment does not exist yet, it is created using the `venv` package.
+Instead of the typical #acr("CLI") use, the following Python functions are used, as seen in @code:dataset:venv_creation:
+
+#figure(
+  code(
+    lang: "Python",
+  ```py
+# dependency_eval/venv_cache.py
+from venv import EnvBuilder
+def create_venv(venv_directory: str, requirements: str):
+    tqdm.write("Creating new venv in cache")
+    builder = EnvBuilder(
+        system_site_packages=False,
+        clear=False,
+        symlinks=False,  # Important for the Docker container!
+        upgrade=False,
+        with_pip=True,
+        prompt=None,
+        upgrade_deps=False,
+    )
+    builder.create(venv_directory)
+    context = builder.ensure_directories(venv_directory)
+    with open(REQUIREMENTS_FILE, "w") as f:
+        f.write(requirements)
+    cmd = [context.env_exec_cmd, "-m", "pip", "install", "packaging", "wheel"]
+    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    cmd = [context.env_exec_cmd, "-m", "pip", "install", "-r", REQUIREMENTS_FILE]
+    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    os.remove(REQUIREMENTS_FILE)  
+  ```
+  ),
+  caption: [Creating a virtual environment programmatically in Python.]
+)<code:dataset:venv_creation>
+
+The `EnvBuilder` in @code:dataset:venv_creation creates the base environment without further dependencies. After manually installing `packaging` and `wheel`, the remaining dependencies can be installed using a regular `pip install`, using the Python installation of the virtual environment.
+
+If the virtual environment exists yet, it is cloned into the code directory, such that the neural code completion can find the environment.
+As virtual environments contain links, copying is non trivial and involves more than copying the directory.
+Thus, the dependency `clonevirtualenv` is used to clone the cached environment.
+
+The environments may be prepopulated once before evaluation, by running the subcommand `create_venvs`.
 
 === Main
-#todo[Somehow main]
+#todo[add file path to top of every code block]
+The main file has the following structure, as seen in @code:dataset:main:
+
+#figure(
+  code(
+    lang: "Python",
+```py
+# dependency_eval/__main.py__
+import click
+
+@click.group()
+@click.version_option(VERSION)
+@click.pass_context
+def cli(ctx):
+    ctx.obj = None
+
+
+@cli.command()
+@click.option("--dataset-file", default=DEFAULT_DATASET_PATH)
+@click.option("--llm-lsp-directory", required=True)
+@click.option("--venv-cache-directory", default=DEFAULT_VENV_CACHE_DIRECTORY)
+@click.pass_obj
+def create_venvs(
+    args, dataset_file: str, llm_lsp_directory: str, venv_cache_directory: str
+):
+    dataset = load_dataset(dataset_file)
+    for item in tqdm(dataset.items):
+        tqdm.write(item["task_name"])
+        get_venv_for_item(venv_cache_directory, None, llm_lsp_directory, item)
+
+
+if __name__ == "__main__":
+    cli()
+```
+  ),
+  caption: [Structure of the DependencyEval main file, which includes the #acr("CLI") commands.]
+)<code:dataset:main>
+
+The #acr("CLI") is defined through the `click` dependency and invoked by calling the `cli` function.
+By using the function decorator `click.group`, the general #acr("CLI") is defined, with the given version `VERSION`. It automatically detects the package name and sets it as the program name.
+
+Subcommands are registered, by using the `cli.command` decorator on single functions, where each function then represents a single subcommand.
+Single arguments are defined through the `click.option` decorator.
+
+The `create_venvs` function defined in @code:dataset:main defines a subcommand with the same name, taking three arguments, of which two have a default value.
+All uppercase variables are constants either defined in `dependnecy_eval/constants.py`, or in other parts of the file.
