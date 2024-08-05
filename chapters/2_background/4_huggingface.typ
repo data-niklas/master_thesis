@@ -4,7 +4,6 @@
 // TODO: @rabanserIntroductionTensorDecompositions2017
 Torch is a widely used machine learning library in Python. It enables the creation and manipulation of tensors in different precisions. The Transformers provides high level abstractions which base on Pytorch. // TODO as an example, other models are also possible
 This section shortly introduces a few core concepts of Pytorch, which are used in the Transformers library. It will focus on version #link("https://pytorch.org/docs/2.2/")[`2.2`] of PyTorch.
-#todo()[Show full link URL in print version]
 // TODO: übergang
 // TODO: introduce motivation
 // What is a tensor

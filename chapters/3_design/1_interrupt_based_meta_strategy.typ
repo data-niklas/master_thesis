@@ -56,7 +56,7 @@ An overview over the strategy is given in @fig:ibms-components. All components i
   caption: [Components of the #acr("IBMS")],
 )<fig:ibms-components>
 
-In summary, the components `Generator`, `PromptEditor`, `Monitor` and `Static Analysis` allow context interruption through a custom interrupt special token, prompt edits and resumption through a controlled model generation loop.
+In summary, the components `Generator`, `Prompt Editor`, `Monitor` and `Static Analysis` allow context interruption through a custom interrupt special token, prompt edits and resumption through a controlled model generation loop.
 
 The first main component is the `Generator`. It is the main component initializing and orchestrating the different components. To generate a response using the #acr("IBMS"), first a `Generator` must be initialized.
 It in turn will initialize the `Monitor`, the `Prompt Editor` and a connection to external `Static Analysis` tooling.
@@ -65,12 +65,12 @@ In addition, it will initialize the tokenizer and model, adding a custom special
 The new special token is called the interrupt token and only be used during the approach. No further training with the token is necessary, as the model will not need to predict the tokens, as the `Monitor` component will force the prediction of the interrupt token.
 
 The `Generator` will start the model generation process, providing the initial prompt to the model. After the model finishes the whole generation, it will check the final token.
-If the final token is *not* an interrupt token, the generation process finished normally and the final generation result can be obtained by removing any remaining injected context through the `PromptEditor`.
-Else the generation was interrupted with additional context and the `PromptEditor` can edit the prompt with the context. To allow the continuation of the generation, the final interrupt token is removed from the generated token sequence.
+If the final token is *not* an interrupt token, the generation process finished normally and the final generation result can be obtained by removing any remaining injected context through the `Prompt Editor`.
+Else the generation was interrupted with additional context and the `Prompt Editor` can edit the prompt with the context. To allow the continuation of the generation, the final interrupt token is removed from the generated token sequence.
 
-Then the next component, the `PromptEditor` is called. It will read the retrieved context and edit the prompt in any way.
-To edit the prompt, the `PromptEditor` must work on the textual prompt, by detokenizing the prompt, applying any edits and tokenizing the prompt again.
-To perform edits such as deletions, the `PromptEditor` must be aware of the location and type of inserted context.
+Then the next component, the `Prompt Editor` is called. It will read the retrieved context and edit the prompt in any way.
+To edit the prompt, the `Prompt Editor` must work on the textual prompt, by detokenizing the prompt, applying any edits and tokenizing the prompt again.
+To perform edits such as deletions, the `Prompt Editor` must be aware of the location and type of inserted context.
 Thus, it stores a list of injected context, each with their location and type.
 
 To inject context, the editor inserts the textual representation of the context at a location, then saving the location and type of the context. If the location is before any other injected context, the locations of the following contexts shift forward by the length of the textual representation of the injected context and must be changed accordingly.
@@ -99,13 +99,16 @@ Inside the model generation, the component `Monitor` watches the generation proc
 The `Monitor` is called for each token prediction, receiving the previous token sequence and the next token prediction and optionally modifying the prediction logits.
 In its functionality it is similar to the monitor in Agrawal et al.@agrawalMonitorGuidedDecodingCode, but with the difference that it only controls the prediction of the special interrupt token.
 If an interrupt is necessary, the `Monitor` will force the prediction of the interrupt token.
-In addition, it will store the retrieved context for access by the `Generator` and `PromptEditor` after interruption.
+In addition, it will store the retrieved context for access by the `Generator` and `Prompt Editor` after interruption.
 
 To decide if an interrupt is necessary, the `Monitor` will call an external `Static Analysis` tool. The `Static Analysis` component represents any form of external tooling that can analyze the current generation and provide additional context. This could include a web search of named entities, a keyword search in local documents or #acr("LSP") tooling. If no additional context was found, the model generation proceeds normally.
 Next to deciding if an interrupt is necessary to add context, the `Monitor` may also decide to remove old context. The interruption process is similar, with the difference in the stored context information.
 
 To reduce the number of interruptions, the `Monitor` will only interrupt the generation if the additional context is not yet present in the prompt.
 To allow interruption of the model generation, the `Generator` adds a stop condition to the model generation loop. The stop condition checks for the existence of the interrupt token in the generated token sequence. As soon as the `Monitor` forces an interruption, the stop condition stops the model generation.
+
+// loop terminology
+The #acr("IBMS") adds a new loop to the model generation process, the interrupt loop. While the generation loop encompasses steps 2-4 in @fig:ibms-components, the interrupt loop additionally encompasses the steps 5-6.
 
 === Generation Strategy Support
 // Meta-strategy with differences
@@ -125,7 +128,7 @@ When the stop condition is met, the *singular* top hypothesis is selected as the
 The `Generator` must ensure that the interrupted generation returns the current top-k hypothesis and is resumed with the edited top-k hypothesis.
 
 To support complex decoding strategies, the `Generator` must use an edited model generation loop, that can store all beams currently in the generation process and which can resume the generation process with existing beams.
-Additionally, interrupts occur on a single beam, not affecting other beams. Each component storing state must store the state for each beam separately. E.g. the `PromptEditor` will store the injected context for each beam separately.
+Additionally, interrupts occur on a single beam, not affecting other beams. Each component storing state must store the state for each beam separately. E.g. the `Prompt Editor` will store the injected context for each beam separately.
 
 Furthermore, the `Generator` must ensure the correct order of beams, as the order of beams can change during the generation process, e.g. in the top-k selection process in the beam search, as it may keep the top-k beams sorted descending.
 After interruption, the then current top-k beams originate from $l lt.eq k$ original beams, where $l$ depends on the spread of selected beams. If each of the $k$ beams is continued at each step, then $l = k$.

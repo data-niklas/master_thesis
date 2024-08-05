@@ -15,10 +15,14 @@ exact requirements are listed in @table:dataset:requirements.
   table(
     columns: 2,
     table.header([Identifier], [Keyword]),
-    [*R#sub[dataset]1*], [Captures exact environment],
-    [*R#sub[dataset]2*], [Test functional and approach correctness],
-    [*R#sub[dataset]3*], [Include examples of deprecated code],
-    [*R#sub[dataset]4*], [Secure evaluation pipeline],
+    [*R#sub[dataset]1*],
+    [Captures exact environment],
+    [*R#sub[dataset]2*],
+    [Test functional and approach correctness],
+    [*R#sub[dataset]3*],
+    [Include examples of deprecated code],
+    [*R#sub[dataset]4*],
+    [Secure evaluation pipeline],
   ),
   caption: [Special requirements of the dataset],
 )<table:dataset:requirements>
@@ -141,103 +145,6 @@ specific Python dependencies.
 
 ==== Structure.
 Each entry in the dataset shall have the following format described in @code:dataset:format.
-#figure(
-  code(
-    lang: "JSON Schema",
-    ```json
-    {
-        "$schema": "https://json-schema.org/draft/2020-12/json-schema-core",
-        "type": "object",
-        "properties": {
-          "task_id": {
-            "type": "string",
-            "pattern": "^PackageEval_\\d+$"
-          },
-          "task_name": {
-            "type": "string",
-            "pattern": "^.*_\\d+$"
-          },
-          "test_code": {
-            "type": "string"
-          },
-          "import_statements": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "package_dependencies": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "context": {
-            "type": "string"
-          },
-          "function_signature": {
-            "type": "string"
-          },
-          "function_documentation": {
-            "type": "string"
-          },
-          "entry_point": {
-            "type": "string"
-          },
-          "solution": {
-            "type": "string"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "kind": {
-            "type": "string"
-          },
-          "date": {
-            "type": "string",
-            "format": "date"
-          },
-          "code_kind": {
-            "type": "string"
-          },
-          "modification_kind": {
-            "type": "string"
-          },
-          "changelog": {
-            "type": "string",
-            "format": "uri"
-          },
-          "python_version": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "task_id",
-          "task_name",
-          "test_code",
-          "import_statements",
-          "package_dependencies",
-          "context",
-          "function_signature",
-          "function_documentation",
-          "entry_point",
-          "solution",
-          "reason",
-          "kind",
-          "date",
-          "code_kind",
-          "modification_kind",
-          "changelog",
-          "python_version"
-        ]
-      }
-    ```,
-  ),
-  caption: "DependencyEval entry format",
-)<code:dataset:format>
-#todo[
-  Fix code not spanning multiple pages
-]
 As is usual, each entry contains a unique identifier `task_id`. Each entry represents a single task, targeting a single
 external dependency. The `task_name` is a name of the task containing the name of the targeted dependency and the index
 of the task for that dependency, 1-indexed, such as `pytorch_1`.
@@ -259,11 +166,11 @@ The following fields are combined to form the full solution:
 The `import_statements` contains a list of import statements to be performed at the start of the code snippet. The
 `context` field contains additional definitions of classes, functions or variables that are required for the code
 snippet to run. The remaining three fields form the function body. By combining the fields without the `solution`, the
-code snippet can be used as input to a neural code completion model, to compare against the gold standard solution. Each
-`docstring` is a Python docstring in the Google docstring format@Styleguide, which was chosen over the many other
+code snippet can be used as input to a neural code completion model, to compare against the gold standard solution.
+Each `docstring` is a Python docstring in the Google docstring format@Styleguide, which was chosen over the many other
 docstring formats, such as ReST@PEP287ReStructuredText, as it is widely used and has a compact layout.
-#todo()[Cite anything for widely used docstring]
 // other are sphinx and numpy style
+// no reference for widely used
 
 // Maybe mention the format name==major.minor.patch
 To reproduce the exact environment, the `package_dependencies` field contains a list of all external dependencies used
@@ -298,7 +205,10 @@ Currently, the dataset contains 22 entries for 14 different dependencies:
 #{
   show figure: set block(breakable: true)
   figure(
-    box(columns(2, csvtable("/assets/tables/dataset_dependencies.csv")), height: 150pt),
+    box(
+      columns(2, csvtable("/assets/tables/dataset_dependencies.csv")),
+      height: 150pt,
+    ),
     caption: "Dependencies in DependencyEval",
   )
 }<table:dataset:dependencies>
@@ -394,5 +304,3 @@ number of CPUs@DockerRunDocker.
 
 To ensure that the pipeline is robust, all calls to the containerized evaluation or neural code completion are wrapped
 in a timeout and errors are caught and logged.
-#todo()[Summary]
-#todo()[Timeout for codegen and catch errors for codegen]

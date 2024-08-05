@@ -19,12 +19,9 @@ The two main dependencies are `click` and `virtualenv-clone`.
 `click` helps in creating #acr("CLI") applications, as it allows to create such applications declaratively.
 In addition, it automatically creates a help page of the commands and subcommands.
 `virtualenv-clone` is another fundamental package in enabling reproducable and fast workflows, as it can duplicate a Python virtual environment. It is used to duplicate a virtual environment from a cache into a working directory.
-#todo[Explain later several GB large]
 Other dependencies are `openpyxl` to export stats into Excel sheets, `matplotlib` to create beautiful charts and `sankeyflow` to create Sankey diagrams of the results without and with the approach.
-#todo[Requires textual for table?!, tqdm]
-All other features use the standard library for operations like working with files and processes. 
-
-#todo[ref to click and other dependencies]
+`textual` is used to display results interactively in a table, while the dependency `tqdm` is used to display progress bars for long evaluation runs.
+All other features use the standard library for operations like working with files and processes.
 
 === Structure
 
@@ -32,7 +29,7 @@ All other features use the standard library for operations like working with fil
   "https://github.com/data-niklas/DependencyEval/tree/main",
   [#figure(
       terminal(```terminal
-      [green,black]❯[text,medium] tree --dirsfirst 
+      [green,black]❯[text,medium] tree --dirsfirst
       [subtext1]├── [sapphire,bold]data
       [subtext1]│   ├── [sapphire,bold]dist
       [subtext1]│   ├── [sapphire,bold]tasks
@@ -65,19 +62,20 @@ One base is the `data/tasks` directory, which includes a single code file for ea
   code(
     lang: "Python",
     ```py
-# data/tasks/textual_1.py
-from textual.widgets import TextArea
+    # data/tasks/textual_1.py
+    from textual.widgets import TextArea
 
 
-def create_textual_text_area_with_indent() -> TextArea:
-    """Create a TextArea widget, which indents its content when tab is pressed.
+    def create_textual_text_area_with_indent() -> TextArea:
+        """Create a TextArea widget, which indents its content when tab is pressed.
 
-    Returns:
-        TextArea: New instance of TextArea with indentation on tab press
-    """
-    return TextArea(tab_behavior="indent")
-    ```
-  ), caption: [The contents of the `data/tasks/textual_1.py` file, which is used to create the task `textual_1` in the DependencyEval dataset. The file is split to obtain the imports, additional context, the function definition, function documentation string and gold standard completion.]
+        Returns:
+            TextArea: New instance of TextArea with indentation on tab press
+        """
+        return TextArea(tab_behavior="indent")
+    ```,
+  ),
+  caption: [The contents of the `data/tasks/textual_1.py` file, which is used to create the task `textual_1` in the DependencyEval dataset. The file is split to obtain the imports, additional context, the function definition, function documentation string and gold standard completion.],
 )<code:dataset:textual_1>
 
 As described in the design section, the fields in @prompt:dataset:fields are combined to form the whole code with or without completion, depending on the use case.
@@ -91,47 +89,48 @@ To keep the tests as simple to run as possible, they do not rely on external tes
   code(
     lang: "Python",
     ```py
-# data/tests/textual_1.py
-from importlib import reload
-from unittest import TestCase, TextTestRunner, main
-from unittest.mock import MagicMock
+    # data/tests/textual_1.py
+    from importlib import reload
+    from unittest import TestCase, TextTestRunner, main
+    from unittest.mock import MagicMock
 
 
-class Test(TestCase):
-    def test_approach_correctness(self):
-        import textual.widgets
-        TextArea = reload(textual.widgets).TextArea
-        globals()["TextArea"] = TextArea
-        from textual.app import App
-        app = App()
-        out = create_textual_text_area_with_indent()
-        assert isinstance(out, TextArea)
-        assert hasattr(out, "tab_behavior")
-        assert out.tab_behavior == "indent"
+    class Test(TestCase):
+        def test_approach_correctness(self):
+            import textual.widgets
+            TextArea = reload(textual.widgets).TextArea
+            globals()["TextArea"] = TextArea
+            from textual.app import App
+            app = App()
+            out = create_textual_text_area_with_indent()
+            assert isinstance(out, TextArea)
+            assert hasattr(out, "tab_behavior")
+            assert out.tab_behavior == "indent"
 
-    def test_output_correctness(self):
-        import textual.widgets
-        TextArea = reload(textual.widgets).TextArea
-        from textual.app import App
-        app = App()
-        TextArea = MagicMock(TextArea)
-        globals()["TextArea"] = TextArea
-        out = create_textual_text_area_with_indent()
-        assert TextArea.call_count == 1
-        kwargs = TextArea.call_args.kwargs
-        assert "tab_behavior" in kwargs
-        assert "tab_behaviour" not in kwargs
-        assert kwargs["tab_behavior"] == "indent"
+        def test_output_correctness(self):
+            import textual.widgets
+            TextArea = reload(textual.widgets).TextArea
+            from textual.app import App
+            app = App()
+            TextArea = MagicMock(TextArea)
+            globals()["TextArea"] = TextArea
+            out = create_textual_text_area_with_indent()
+            assert TextArea.call_count == 1
+            kwargs = TextArea.call_args.kwargs
+            assert "tab_behavior" in kwargs
+            assert "tab_behaviour" not in kwargs
+            assert kwargs["tab_behavior"] == "indent"
 
-if __name__ == "__main__":
-    import logging
-    logging.disable(logging.CRITICAL)
-    import json
-    import os
-    result = main(exit=False, verbosity=0, testRunner=TextTestRunner(verbosity=0, stream=open(os.devnull,"w"))).result
-    print(json.dumps([len(result.errors), len(result.failures), result.testsRun]))
-    ```
-  ), caption: [The unit tests for the `textual_1` task. The contents are stored in `data/tests/textual_1.py`. Next to the tested dependency, only the built-in unit test framework is used. The results are communicated via standard streams.]
+    if __name__ == "__main__":
+        import logging
+        logging.disable(logging.CRITICAL)
+        import json
+        import os
+        result = main(exit=False, verbosity=0, testRunner=TextTestRunner(verbosity=0, stream=open(os.devnull,"w"))).result
+        print(json.dumps([len(result.errors), len(result.failures), result.testsRun]))
+    ```,
+  ),
+  caption: [The unit tests for the `textual_1` task. The contents are stored in `data/tests/textual_1.py`. Next to the tested dependency, only the built-in unit test framework is used. The results are communicated via standard streams.],
 )<code:dataset:textual_1_tests>
 
 The unit tests for the `textual_1` task can be found in @code:dataset:textual_1_tests.
@@ -141,7 +140,7 @@ The final piece needed to form the distributable dataset is the additional metad
 While the metadata could have been embedded in the code directly, e.g. as a Python comment at the top of `data/tasks/textual_1.py`, a separate metadata file such as `data/metadata.json` simplifies the parsing process and reduces format driven errors.
 `metadata.json` does not use any special format. It contains a list for dictionaries, where each dictionary contains additional metadata in the same schema as the final dataset, including a field `task_name`. The task name is the same task name used for the code file, unit test file and helps associate the different informations.
 
-When distributing the dataset, these three information sources are combined to form the different task entries. This has both the benefit of an easy to extend dataset for humans, while enabling easy distribution and use by machines. 
+When distributing the dataset, these three information sources are combined to form the different task entries. This has both the benefit of an easy to extend dataset for humans, while enabling easy distribution and use by machines.
 
 === Unit Tests
 As introduced in the design section and quickly described in the last section, each entry requires two test cases.
@@ -161,13 +160,13 @@ or by running the Python script directly and calling the function `unittest.main
 In either case, all defined unit tests are found and executed, after which the result is printed to the standard output. The result looks similar to @terminal:unittest:
 #figure(
   terminal(```terminal
-...
-----------------------------------------------------------------------
-Ran 2 tests in 0.200s
+  ...
+  ----------------------------------------------------------------------
+  Ran 2 tests in 0.200s
 
-OK
-```),
-caption: [Typical console output when executing two Python unit tests. Parsing the output is error prone and unneeded, as the results can be accessed directly.]
+  OK
+  ```),
+  caption: [Typical console output when executing two Python unit tests. Parsing the output is error prone and unneeded, as the results can be accessed directly.],
 )<terminal:unittest>
 
 The script accesses the test results directly through the `results` field, which contains the number of failures, tests with errors and the total number of tests run.
@@ -191,31 +190,34 @@ At the heart of the evaluation pipeline lies the evaluation loop, which is locat
 #figure(
   code(
     lang: "Python",
-```py
-# dependency_eval/loop.py
-def run_loop(
-    model_configurations: List[ModelConfiguration],
-    dataset: Dataset,
-    model_configuration_finished_cb: Callable[[ModelConfiguration], None],
-    item_cb: Callable[[ModelConfiguration, Dict[str, Any]], None],
-):
-    for model_configuration in tqdm(model_configurations):
-        tqdm.write(f"Running for {model_configuration.name}")
-        for item in tqdm(dataset.items):
-            item_cb(model_configuration, item)
-        model_configuration_finished_cb(model_configuration)
-```
-  ), caption: [The general evaluation loop, which combines several each model configuration with a dataset task.]
+    ```py
+    # dependency_eval/loop.py
+    def run_loop(
+        model_configurations: List[ModelConfiguration],
+        dataset: Dataset,
+        model_configuration_finished_cb: Callable[[ModelConfiguration], None],
+        item_cb: Callable[[ModelConfiguration, Dict[str, Any]], None],
+    ):
+        for model_configuration in tqdm(model_configurations):
+            tqdm.write(f"Running for {model_configuration.name}")
+            for item in tqdm(dataset.items):
+                item_cb(model_configuration, item)
+            model_configuration_finished_cb(model_configuration)
+    ```,
+  ),
+  caption: [The general evaluation loop, which combines several each model configuration with a dataset task.],
 )<code:dataset:loop>
 
 The loop combines every model configuration with every dataset task.
 The progress is displayed using the `tqdm` dependency, which provides an estimate of the remaining run time, as seen in @terminal:tqdm:
 #figure(
   terminal(```terminal
-76%|████████████████████████        | 1/4 [00:33<00:10, 229.00it/s]
-76%|████████████████████████        | 7568/22 [00:33<00:10, 229.00it/s]
-```),
-caption: todo[Sample output]
+  [green,black]❯[text,medium] python dependency_eval all
+   67%|██████████████████████████████        |  2/ 3 [1:44:02<34:24, 2064.64s/it]
+  100%|██████████████████████████████████████| 22/22 [  42:46<00:00,  116.65s/it]
+
+  ```),
+  caption: [Sample output of the running evaluation. The first progress bar displays the progress in evaluation whole model configurations. The lower progress bar shows the progress of a single model configuration, showing the progress in evaluation a single task.],
 )<terminal:tqdm>
 
 The passed item callback is called for every different combination. By abstracting the content of the item callback, several scenarios are possible, such as only running the neural code completion, evaluation, or both.
@@ -240,7 +242,7 @@ Isolating the generation from the evaluation pipeline process increases the robu
 To securely evaluate foreign code, a special evaluation sandbox is created using Docker.
 The implementation currently only uses plain Docker. As Docker is a containerization tool, it is a vast improvement over the reliability guard of e.g. `HumanEval+`. But improvements can still be made by adding a tool such as #link("https://github.com/google/gvisor"), to further secure the kernel.
 
-#acr("IPC") with the evaluation sandbox again relies on sending #acr("JSON") serialized messages over the standard output stream. 
+#acr("IPC") with the evaluation sandbox again relies on sending #acr("JSON") serialized messages over the standard output stream.
 Similar to running the code completion, the evaluation starts a subprocess, passes all arguments and handles errors. Finally, all dangling resources are removed.
 
 The Docker container is started with the following arguments seen in @code:evaluation:docker.
@@ -248,45 +250,58 @@ The Docker container is started with the following arguments seen in @code:evalu
 #figure(
   code(
     lang: "Python",
-```py
-# dependency_eval/eval.py
-def get_docker_cmd(item: Dict[str, Any], code_file: str, requirements_file: str):
-    return [
-        "docker",
-        "run",
-        "-it",
-        "--rm",
-        "--name",
-        "dev_dataset_eval_item",
-        "-v",
-        f"{requirements_file}:/tool/requirements.txt",
-        "-v",
-        f"{code_file}:/code/llm_lsp_code.py",
-        "-w",
-        "/code",
-        "--cpus",
-        "1",
-        # "--network", "none", # TODO: use docker build
-        get_docker_image(item["python_version"]),
-        "sh",
-        "-c",
-        "python -m venv /tool/venv && /tool/venv/bin/pip install -r /tool/requirements.txt 2>error.log >/dev/null && /tool/venv/bin/python llm_lsp_code.py || cat error.log",
-    ]
-```
+    ```py
+    # dependency_eval/eval.py
+    def get_docker_cmd(item: Dict[str, Any], code_file: str, requirements_file: str):
+        return [
+            "docker",
+            "run",
+            "-it",
+            "--rm",
+            "--name",
+            "dev_dataset_eval_item_" + SALT,
+            "-v",
+            f"{requirements_file}:/tool/requirements.txt",
+            "-v",
+            f"{code_file}:/code/llm_lsp_code.py",
+            "-w",
+            "/code",
+            "--cpus",
+            "1",
+            # "--network", "none", # TODO: use docker build
+            get_docker_image(item["python_version"]),
+            "sh",
+            "-c",
+            "python -m venv /tool/venv && /tool/venv/bin/pip install -r /tool/requirements.txt 2>error.log >/dev/null && /tool/venv/bin/python llm_lsp_code.py || cat error.log",
+        ]
+    ```,
   ),
-  caption: [Arguments to Docker run, which starts the evaluation in a Docker container.]
+  caption: [Arguments to Docker run, which starts the evaluation in a Docker container.],
 )<code:evaluation:docker>
 
 The Docker container image is an official Python image, where the Python version is set from the task.
 Ultimatively this creates the specific environment needed for the task. The Python package dependencies are installed inside of the container, before running the evaluation.
 The code to evaluate is mounted into the container, next to the requirements file.
 The compute is limited to a single CPU.
-#todo[Storage limitation?] 
 
-#todo[salt]
+Docker supports a filesystem size limit using the `--storage-opt` flag, which could be used to limit the size of the filesystem. In practice, this requires support by the Docker storage driver, of which filesystems like `btrfs` and `zfs` are favoured@DockerRunDocker.
+This implementation does not limit the filesystem size for compatibility reasons.
+
 The container execution time is limited to two minutes, which is enough time to install larger dependencies, such as PyTorch.
 After the two minutes have elapsed, the container is forcefully removed if it still runs.
-To reference the container, it is given the name `dev_dataset_eval_item`.
+To reference the container, it is given the name `dev_dataset_eval_item_`, followed by a salt.
+The salt is unique to the run and obtained by taking the first 8 characters of a random UUID4:
+#figure(
+  code(
+    lang: "Python",
+    ```py
+    # dependency_eval/constants.py
+    SALT = str(uuid4())[:8]
+    ```,
+  ),
+  caption: [The salt is a unique identifier appended to any name used during the evaluation.],
+)<code:evaluation:salt>
+This allows for multiple evaluations to run in parallel, without interfering with each other.
 
 === Test Metric Calculation
 #todo[Move to evaluation?]
@@ -294,6 +309,33 @@ To reference the container, it is given the name `dev_dataset_eval_item`.
 === Virtual Environment Management
 Running the neural code completion requires a whole Python virtual environment per task, as each task has its own pinned dependencies.
 As creating each environment may take several minutes, especially when installing larger dependencies, the environments are cached and reused.
+
+#figure(
+  terminal(```terminal
+  [green,black]❯[text,medium] ncdu .venv-cache
+  [medium]ncdu 1.15.1 ~ Use the arrow keys to navigate, press ? for help
+  --- .venv-cache -----------------------------------------------------
+     5.5 GiB [##########] /2f6047e131995d68dafa2008945d7273e...
+     5.4 GiB [######### ] /1bd45cb310f62185156a456a81d82330b...
+     5.4 GiB [######### ] /e364c14c308dd832c2b81578a97832956...
+     5.3 GiB [######### ] /ffbe7261e69b4907732e7ae3703238a2f...
+     5.3 GiB [######### ] /6d9e208d9fcaa2c0e5d01c5445940ca59...
+     5.3 GiB [######### ] /b1eaec1a8fc60ab556d0956740c5efb2f...
+     5.3 GiB [######### ] /fafdab0ca240001968800f4cec74e74e7...
+     5.3 GiB [######### ] /def6538d1fbe60c84db770d2a0eb1409d...
+     5.3 GiB [######### ] /8e366a4d6499d4161b4de858297c95800...
+     5.3 GiB [######### ] /4b54a3e088f036ffce13fc33266e54896...
+     5.3 GiB [######### ] /431dcf3698ac8ebf3daa17806ca307690...
+     5.3 GiB [######### ] /18985a70f9fca803b0611deac5a5da771...
+     5.3 GiB [######### ] /5e80e6718a50c85b6f542793145cdde4c...
+     5.3 GiB [######### ] /d537a621b87055e720f03f58d51e76f9a...
+     5.3 GiB [######### ] /596f23bf62197f5329237fa8d69c9cc32...
+     5.2 GiB [######### ] /4f36555d40130595a483d45ed8fa3f422...
+
+  Total disk usage:  84.8 GiB  Apparent size:  83.6 GiB  Items: 597956
+  ```),
+  caption: [Space used by the virtual environments in the cache. Results obtained using `ncdu`. Each directory is a Python virtual environment containing specific dependencies and the installed approach.],
+)<terminal:venv_cache>
 
 The dependencies are first sorted, then hashed using SHA256, to further enable reuse between tasks.
 The hash is used as a name for the virtual environment.
@@ -303,32 +345,32 @@ Instead of the typical #acr("CLI") use, the following Python functions are used,
 #figure(
   code(
     lang: "Python",
-  ```py
-# dependency_eval/venv_cache.py
-from venv import EnvBuilder
-def create_venv(venv_directory: str, requirements: str):
-    tqdm.write("Creating new venv in cache")
-    builder = EnvBuilder(
-        system_site_packages=False,
-        clear=False,
-        symlinks=False,  # Important for the Docker container!
-        upgrade=False,
-        with_pip=True,
-        prompt=None,
-        upgrade_deps=False,
-    )
-    builder.create(venv_directory)
-    context = builder.ensure_directories(venv_directory)
-    with open(REQUIREMENTS_FILE, "w") as f:
-        f.write(requirements)
-    cmd = [context.env_exec_cmd, "-m", "pip", "install", "packaging", "wheel"]
-    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-    cmd = [context.env_exec_cmd, "-m", "pip", "install", "-r", REQUIREMENTS_FILE]
-    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-    os.remove(REQUIREMENTS_FILE)  
-  ```
+    ```py
+    # dependency_eval/venv_cache.py
+    from venv import EnvBuilder
+    def create_venv(venv_directory: str, requirements: str):
+        tqdm.write("Creating new venv in cache")
+        builder = EnvBuilder(
+            system_site_packages=False,
+            clear=False,
+            symlinks=False,  # Important for the Docker container!
+            upgrade=False,
+            with_pip=True,
+            prompt=None,
+            upgrade_deps=False,
+        )
+        builder.create(venv_directory)
+        context = builder.ensure_directories(venv_directory)
+        with open(REQUIREMENTS_FILE, "w") as f:
+            f.write(requirements)
+        cmd = [context.env_exec_cmd, "-m", "pip", "install", "packaging", "wheel"]
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        cmd = [context.env_exec_cmd, "-m", "pip", "install", "-r", REQUIREMENTS_FILE]
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        os.remove(REQUIREMENTS_FILE)
+    ```,
   ),
-  caption: [Creating a virtual environment programmatically in Python.]
+  caption: [Creating a virtual environment programmatically in Python.],
 )<code:dataset:venv_creation>
 
 The `EnvBuilder` in @code:dataset:venv_creation creates the base environment without further dependencies. After manually installing `packaging` and `wheel`, the remaining dependencies can be installed using a regular `pip install`, using the Python installation of the virtual environment.
@@ -340,42 +382,41 @@ Thus, the dependency `clonevirtualenv` is used to clone the cached environment.
 The environments may be prepopulated once before evaluation, by running the subcommand `create_venvs`.
 
 === Main
-#todo[add file path to top of every code block]
 The main file has the following structure, as seen in @code:dataset:main:
 
 #figure(
   code(
     lang: "Python",
-```py
-# dependency_eval/__main.py__
-import click
+    ```py
+    # dependency_eval/__main.py__
+    import click
 
-@click.group()
-@click.version_option(VERSION)
-@click.pass_context
-def cli(ctx):
-    ctx.obj = None
-
-
-@cli.command()
-@click.option("--dataset-file", default=DEFAULT_DATASET_PATH)
-@click.option("--llm-lsp-directory", required=True)
-@click.option("--venv-cache-directory", default=DEFAULT_VENV_CACHE_DIRECTORY)
-@click.pass_obj
-def create_venvs(
-    args, dataset_file: str, llm_lsp_directory: str, venv_cache_directory: str
-):
-    dataset = load_dataset(dataset_file)
-    for item in tqdm(dataset.items):
-        tqdm.write(item["task_name"])
-        get_venv_for_item(venv_cache_directory, None, llm_lsp_directory, item)
+    @click.group()
+    @click.version_option(VERSION)
+    @click.pass_context
+    def cli(ctx):
+        ctx.obj = None
 
 
-if __name__ == "__main__":
-    cli()
-```
+    @cli.command()
+    @click.option("--dataset-file", default=DEFAULT_DATASET_PATH)
+    @click.option("--llm-lsp-directory", required=True)
+    @click.option("--venv-cache-directory", default=DEFAULT_VENV_CACHE_DIRECTORY)
+    @click.pass_obj
+    def create_venvs(
+        args, dataset_file: str, llm_lsp_directory: str, venv_cache_directory: str
+    ):
+        dataset = load_dataset(dataset_file)
+        for item in tqdm(dataset.items):
+            tqdm.write(item["task_name"])
+            get_venv_for_item(venv_cache_directory, None, llm_lsp_directory, item)
+
+
+    if __name__ == "__main__":
+        cli()
+    ```,
   ),
-  caption: [Structure of the DependencyEval main file, which includes the #acr("CLI") commands.]
+  caption: [Structure of the DependencyEval main file, which includes the #acr("CLI") commands.],
 )<code:dataset:main>
 
 The #acr("CLI") is defined through the `click` dependency and invoked by calling the `cli` function.

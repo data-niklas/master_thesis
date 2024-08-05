@@ -70,6 +70,7 @@ The `LspGenerationConfig` is defined as in @code:lsp_generation_config:
   code(
     lang: "Python",
     ```python
+    # llm_lsp/config.py
     @dataclass
     class LspGenerationConfig:
         boundary_processor: bool = True
@@ -100,7 +101,8 @@ The `predict_correct_completion_symbol` field toggles custom behavior for the co
 The next toggle `masked_gen` controls if the logits of "other" token ids are masked during generation, when completion items or signature help is available.
 
 The final three toggles `use_completion_context`, `use_deprecation_context` and `use_signature_context` control the behavior of the `LSP Processor`. If disabled, the respective context is not injected into the prompt, as the monitor will not cause the respective interrupts.
-#todo()[Generation config supports max_interrupts]
+
+The implementation additionally extends the Huggingface generation config, adding support for the field `max_interrupts`. If specified, the generation will terminate after at most `max_interrupts` interruptions.
 
 === Enabling the beam search strategy
 As discussed in @chapter:design:ibms, the approach must support generation strategies like the beam search. This requires the following:
@@ -114,7 +116,19 @@ $T_(j,i)$ denotes that during step $i$ the beam $j$ was selected from the $T_(j,
 
 By receiving a list of objects storing state for each beam, the `BeamTracker` can replay the selection process for all steps, reordering the objects. As several beams may be selected from the same previous index, the objects may be duplicated.
 
-#todo()[Show code?]
+#figure(
+  code(
+    lang: "Python",
+    ```py
+        def rearrange_according_to_beams(self, items):
+            indices = self.get_final_beam_indices()
+            if indices is None:
+                indices = list(range(len(items)))
+            return [items[indices[i]] for i in range(len(items))]
+    ```,
+  ),
+  caption: [The `rearrange_according_to_beams` method of the `BeamTracker` class, which reorders the items according to the beam selections.],
+)<code:rearrange_according_to_beams>
 
 The second piece of the puzzle is the `BeamIndexStoringSearchScores` class. It is a subclass of the `Transformers` `BeamSearchScorer` class. The `BeamSearchScorer` classes are used internally for the beam search strategy to process a single generation step to choose the next beams and to finalize the selection at the end of the generation process.
 By subclassing the `BeamSearchScorer` class, the `BeamIndexStoringSearchScores` class has access to the indices of selected beams at each step.
@@ -125,6 +139,7 @@ Concretely, the class overwrites the two methods `process` and `finalize`, addin
   code(
     lang: "Python",
     ```python
+    # llm_lsp/generation_utils/beam_tracking.py
     class BeamIndexStoringSearchScores(BeamSearchScorer):
         def process(self, beam_indices, ...):
             self.beam_tracker.track_beam_indices(beam_indices)
@@ -148,11 +163,11 @@ The `InterruptStoppingCriteria` class is a utility class, which is used to deter
 Coloquially, it propagates the interrupt signal to the interrupt loop.
 It subclasses the `Transformers` `StoppingCriteria` class.
 The class implements the method seen in @code:interrupt_stopping_criteria:
-#todo()[Add interrupt loop and generation loop to design images]
 #figure(
   code(
     lang: "Python",
     ```python
+    # llm_lsp/interrupts/__init__.py
     class InterruptStoppingCriteria(StoppingCriteria):
         def __init__(self, interrupt_token_id):
             self.interrupt_token_id = interrupt_token_id
@@ -205,14 +220,14 @@ The toggle allows for a seamless switch between a baseline and the approach itse
 Another form of implicit initialization is the control of the default device placement. The device placement regulates on which physical device `PyTorch` tensors are placed on initialization.
 It is important that all tensors used during the approach are placed on the same device, else the generation fails.
 
-To control the device placement, the `Generator` class implements a context manager, which changes the default device to the device the model was initialized on. The context manager is implemented through the method `device_placement` in the mixin `PipelineMixin`. It sets default device through the `torch.device` function and is inspired by the same behavior occuring in the high level abstraction `pipeline` in the `Transformers` library.
-#todo()[Ref to https://docs.python.org/3/library/contextlib.html]
+To control the device placement, the `Generator` class implements a context manager@ContextlibUtilitiesWithstatement, which changes the default device to the device the model was initialized on. The context manager is implemented through the method `device_placement` in the mixin `PipelineMixin`. It sets default device through the `torch.device` function and is inspired by the same behavior occuring in the high level abstraction `pipeline` in the `Transformers` library.
 
 Before starting the neural code completion, the context manager is entered to ensure that all tensors are placed on the correct device. The context manager is exited after the neural code completion is finished:
 #figure(
   code(
     lang: "Python",
     ```python
+    # llm_lsp/generator.py
     async def completion(...):
         with self.device_placement():
             return await self._completion(...)
@@ -244,6 +259,7 @@ A shortened version of the completion loop is displayed in @code:completion_loop
   code(
     lang: "Python",
     ```python
+    # llm_lsp/generator.py
     async def _complete(self, code: str, repo_root: str, file_name: str) -> str:
             self.log_code(code, "START")
             (...) = self.initialize_generation_state(code, repo_root, file_name)
@@ -401,6 +417,7 @@ Generally, the methods have their structure displayed in @code:log_mixin:
   code(
     lang: "Python",
     ```python
+    # llm_lsp/mixins/log_mixin.py
     def log(self, text: str):
         with open(self.config.chat_history_log_file, "a") as f:
             f.write(text)
@@ -428,6 +445,7 @@ The implementation of the `__call__` method is found in @code:lsp_processor:
   code(
     lang: "Python",
     ```py
+    # llm_lsp/lsp/lsp_processor.py
     def __call__(self, input_ids: LongTensor, scores: FloatTensor) -> FloatTensor:
         """Returns a 2d FloatTensor which has scores for every batch"""
         if not self.config.lsp_processor or not self.config.enabled:
@@ -449,24 +467,26 @@ The implementation of the `__call__` method is found in @code:lsp_processor:
   caption: [The `__call__` method of the `LSPProcessor` class.],
 )<code:lsp_processor>
 
-#todo[Maybe some algorithmic library]
 The general flow is as follows:
-1. If the `LSP Processor` is disabled through the configuration, the unchanged scores are returned.
-2. Each beam is processed individually, after which the updated scores are returned.
-3. For the current completed code in each beam, the following occurs:
-  1. Static analysis is performed on the code.
-  2. Heavy filtering is applied to the retrieved completions and signature help.
-  3. An interrupt may be triggered, if context is available, throwing an `InterruptGeneration` exception.
-  4. The scores are reranked using the available context, if no interrupt is triggered.
-4. If an interrupt is triggered, the interrupt token id will be forced and the context saved in an interrupt object.
-
+// Using Python for pseudo code and mentioning the same using bullet points
+// TODO: ask for opinion on this, maybe move code to appendix and list bullet points here
+#block(breakable: false)[
+  1. If the `LSP Processor` is disabled through the configuration, the unchanged scores are returned.
+  2. Each beam is processed individually, after which the updated scores are returned.
+  3. For the current completed code in each beam, the following occurs:
+    1. Static analysis is performed on the code.
+    2. Heavy filtering is applied to the retrieved completions and signature help.
+    3. An interrupt may be triggered, if context is available, throwing an `InterruptGeneration` exception.
+    4. The scores are reranked using the available context, if no interrupt is triggered.
+  4. If an interrupt is triggered, the interrupt token id will be forced and the context saved in an interrupt object.
+]
 To perform these actions, in special the static analysis, filtering and reranking, the monitor requires a few additional attributes.
 
 // Signature cache, current interrupt and objects for each beam, filename, expand size
 The first additional attribute is the `signature_cache`, which overlays the plentiful information from the completion items with the signature help to enable complex filtering on the signature help items. By default this is initialized to an empty dictionary, which grows during the generation.
 
 The second attribute is the `interrupt`, which is set to `None` at the start of the generation. If an interrupt is triggered, the interrupt object is set in the interrupt attribute. The method `resume` sets this object to `None`, effectively clearing the interrupt information.
-#todo[Cross-reference resume to perivous mention in generate?]
+#todo[Cross-reference resume to previous mention in generate?]
 
 The third attribute `file_names` contains a file name per code to complete. This name serves is used to create a temporary file containing the partial code for static analysis. It is a direct result of the `file_name` argument of the `_complete` method in the `Generator` and is relevant if code in a project file is to be completed.
 
@@ -480,6 +500,7 @@ The method starts with the following logic seen in @code:scores_for_batch_start:
   code(
     lang: "Python",
     ```py
+    # llm_lsp/lsp/lsp_processor.py
     def scores_for_batch(
         self, i, input_ids: LongTensor, scores: FloatTensor
     ) -> FloatTensor:
@@ -504,8 +525,7 @@ The method starts with the following logic seen in @code:scores_for_batch_start:
 
 The method starts by determining the partially completed code of the current beam using the `current_code` method. The `current_code` method reuses the `PromptState` abstraction to do so. The only new difficulty lies in finding the correct `PromptState` instance, as the `LSPProcessor` stores an instance per beam and the ordering of the stored instances and the passed `input_ids` could be different due to beam search reordering. Generally, the class uses the `BeamTracker` to determine the reordered indices, then retrieve the correct object of the current beam and then use the object to perform the action.
 
-Similarily, the file name of the current batch is retrieved using the `file_name` method.
-#todo[`file_name` to `get_file_name_for_batch` method]
+Similarily, the file name of the current batch is retrieved using the `get_file_name_for_batch` method.
 
 Lastly, the abstraction `LspCodeFile` is used to interact with the language server. The `LspCodeFile` abstraction is detailed in the `Language Server` section.
 The returned `lsp_code_file` object is used to firstly retrieve the completion items and then the signature help items.
@@ -533,7 +553,6 @@ From the signature help items, the following filters are applied:
 The method should improve completion of functions with changed parameters and complex signatures. As such the second filter ignores the case in which a function does not have parameters. The first filter reduces the model confusion by completing probably known functions unchanged.
 To obtain the information if a signature help item is a builtin function, the signature cache is used, as the information is stored in the completion items. If a matching completion items is a builtin item, the signature help item is skipped.
 
-#todo[Remove kind, as kind and postfix are merged]
 From the completion items, the following filters are applied:
 1. Remove builtin completion items.
 2. Constrain completion items to relevant #link(label("code:completion_item_kind"), "Kinds").
@@ -559,6 +578,7 @@ The function is implemented in @code:is_deprecated:
   code(
     lang: "Python",
     ```python
+    # llm_lsp/interrupts/deprecation.py
     @lru_cache
     def is_deprecated(item):
         module_name, variable_parts = module_name_and_variable_parts(item)
@@ -603,6 +623,7 @@ The interrupt object has the structure seen in @code:interrupt_object:
   code(
     lang: "Python",
     ```py
+    # llm_lsp/interrupts/__init__.py
     @dataclass
     class Interrupt:
         # Tensor of (return_count * beams * batched_items_count) x currently_generated_tokens
@@ -622,7 +643,7 @@ As the interrupt itself is passed through the generation through the custom inte
 As described in the design section, token ids which are prefixes of a non-deprecated completion item should be ranked higher than token ids that are prefixes of deprecated completion items. Other token ids should be masked.
 Token ids which are prefixes of tokenized non-deprecated completions will henceforth be called `non-deprecated token ids`, and similarly `deprecated token ids` for deprecated completions.
 
-For the reranking, the `LSP Processor` first applies a constant adjustment to the scores using the method `apply_constant_adjustments`. Then deprecated tokens ids are ensured to stay below non-deprecated token ids in the method `ensure_deprecated_below_non_deprecated`. Finally, masking occurs in the method #todo[Masking].
+For the reranking, the `LSP Processor` first applies a constant adjustment to the scores using the method `apply_constant_adjustments`. Then deprecated tokens ids are ensured to stay below non-deprecated token ids in the method `ensure_deprecated_below_non_deprecated`. Finally, masking occurs in the method `mask_other_tokens`.
 
 `apply_constant_adjustments` applies a delta to the score of the token ids. A positive delta is applied to non-deprecated token ids, a negative delta to deprecated token ids. As shortly mentioned in the design section, the delta was empirically fixed to $7.0$.
 
@@ -630,6 +651,16 @@ In contrast `ensure_deprecated_below_non_deprecated` determines the minimum non-
 
 The masking is skipped if masking is disabled in the `LspGenerationConfig`. The implementation was adapted from the masked generation in Agrawal et al.@agrawalMonitorGuidedDecodingCode. For details see #link("https://github.com/microsoft/monitors4codegen/blob/022c65efb19cf6046d0b67960ca232ae7a351af4/src/monitors4codegen/monitor_guided_decoding/hf_gen.py#L30C15-L30C49", "their logits processor").
 #footnote[While the design of the strategy was developed independently of Agrawal et al, the implementation was retrofitted to support masked generation.]
+
+When an interrupt should occur, the score of the interrupt token is fixed to $1000.0$.
+This score was picked empirically, as all other observed scores were below $1000.0$ and it is unlikely for scores to be higher.
+While the design section stated to use the highest possible value, the highest value $oo$ did not work in practice, as the model would produce the following error:
+#figure(
+  terminal(```terminal
+  RuntimeError: probability tensor contains either `inf`, `nan` or element < 0
+  ```),
+  caption: [The error message produced by PyTorch when the score of the interrupt token is set to the highest possible value.],
+)<code:cuda_error>
 
 === PromptState
 The `PromptState` class is contained in `prompt_state.py` and is a direct implementation of the `PromptState` component.
@@ -694,8 +725,8 @@ A full sample prompt can be seen in @figure:prompt_formatting:full:
 )<figure:prompt_formatting:full>
 
 To read only the generated code or the full code sample, the methods `get_generated_code` and `get_full_code` are used.
-`get_generated_code` receives a decoded text, removes the initial prompt using simple string processing, then extracts the code from the Markdown code block. It then removes the initially provided code from the full code.
-#todo[fix get_whole_code, swap the roles]
+`get_whole_code` receives a decoded text, removes the initial prompt using simple string processing, then extracts the code from the Markdown code block.
+`get_generated_code` builds on top of `get_whole_code` and removes the initially provided code from the full code.
 
 ==== Tokenization Issues.
 This class heavily relies on simple string processing of the prompt, i.e. removing a known prefix from the completed prompt.
@@ -717,6 +748,7 @@ The implementation of the base class is shown in @code:interrupt_type:
   code(
     lang: "Python",
     ```python
+    # llm_lsp/interrupts/__init__.py
     class InterruptType(ABC):
         @abstractmethod
         def type_name(self) -> str:
@@ -831,6 +863,7 @@ To solve this problem, the asynchronous code, nested in synchronous code, nested
   code(
     lang: "Python",
     ```py
+    # llm_lsp/lsp/file.py
      completions = asyncio.get_event_loop().run_until_complete(completion_awaitable)
     ```,
   ),
