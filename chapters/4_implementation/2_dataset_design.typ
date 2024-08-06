@@ -215,7 +215,6 @@ The progress is displayed using the `tqdm` dependency, which provides an estimat
   [green,black]❯[text,medium] python dependency_eval all
    67%|██████████████████████████████        |  2/ 3 [1:44:02<34:24, 2064.64s/it]
   100%|██████████████████████████████████████| 22/22 [  42:46<00:00,  116.65s/it]
-
   ```),
   caption: [Sample output of the running evaluation. The first progress bar displays the progress in evaluation whole model configurations. The lower progress bar shows the progress of a single model configuration, showing the progress in evaluation a single task.],
 )<terminal:tqdm>

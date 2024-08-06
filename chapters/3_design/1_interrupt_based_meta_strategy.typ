@@ -118,19 +118,19 @@ Each prompt to the model is an edited version of the previous prompt, with the o
 
 Moreover, the strategy has a tighter control over the model generation, through the use of the interrupt token *and* support for model generation strategies.
 The previous section simplified the resumption of the model generation behavior, suggesting that the model generation can be resumed directly after interruption and context injection.
-This is the case for simple decoding strategies like greedy decoding, which generate on a single `beam`.
+This is the case for simple decoding strategies like greedy decoding, which generate on a single sequence.
 
-Complex decoding strategies like beam search require complex handling, as they operate on multiple beams.
+Complex decoding strategies like beam search require complex handling, as they operate on multiple sequences.
 At the start of a typical generation process using beam search, firstly $k$ hypothesis of the input prompt are initialized.
 Then the generation process is started, with each hypothesis predicting the next token to form $k*V$ combinations, of which the top-k combinations are kept.
 
 When the stop condition is met, the *singular* top hypothesis is selected as the generation result.
 The `Generator` must ensure that the interrupted generation returns the current top-k hypothesis and is resumed with the edited top-k hypothesis.
 
-To support complex decoding strategies, the `Generator` must use an edited model generation loop, that can store all beams currently in the generation process and which can resume the generation process with existing beams.
-Additionally, interrupts occur on a single beam, not affecting other beams. Each component storing state must store the state for each beam separately. E.g. the `Prompt Editor` will store the injected context for each beam separately.
+To support complex decoding strategies, the `Generator` must use an edited model generation loop, that can store all sequences currently in the generation process and which can resume the generation process with existing sequences.
+Additionally, interrupts occur on a single sequence, not affecting other sequences. Each component storing state must store the state for each sequence separately. E.g. the `Prompt Editor` will store the injected context for each sequence separately.
 
-Furthermore, the `Generator` must ensure the correct order of beams, as the order of beams can change during the generation process, e.g. in the top-k selection process in the beam search, as it may keep the top-k beams sorted descending.
-After interruption, the then current top-k beams originate from $l lt.eq k$ original beams, where $l$ depends on the spread of selected beams. If each of the $k$ beams is continued at each step, then $l = k$.
-If the top-k beams all originate from a single beam, then $l = 1$.
+Furthermore, the `Generator` must ensure the correct order of sequences, as the order of sequences can change during the generation process, e.g. in the top-k selection process in the beam search, as it may keep the top-k sequences sorted descending.
+After interruption, the then current top-k sequences originate from $l lt.eq k$ original sequences, where $l$ depends on the spread of selected sequences. If each of the $k$ sequences is continued at each step, then $l = k$.
+If the top-k sequences all originate from a single sequence, then $l = 1$.
 

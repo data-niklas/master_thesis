@@ -9,7 +9,6 @@ The general implementation of the proposed approach is versioned through Git and
 The project contains the installable Python package `llm_lsp`, which enables the usage of the proposed approach in any Python project, such as an evaluation pipeline.
 
 To further simplify the installation, this repository includes a Dockerfile, which can be used to build a Docker image containing all necessary dependencies, to run the approach on GPUs.
-#todo()[README with run instructions and installation instructions]
 
 // Dependencies
 
@@ -96,7 +95,6 @@ To enable logging, the `chat_history_log_file` field can be set to a file path. 
 During the initialization of the tokenizer and model, the `Generator` may add a custom padding token, if no padding token is present. Setting `force_custom_pad` to `True` can force the addition of the padding token.
 
 The `predict_correct_completion_symbol` field toggles custom behavior for the completion item context injection. If enabled, the list of retrieved completions is presented to the model, to directly predict the correct completion item. Then the predicted completion item is directly inserted into the prompt, before resuming the generation.
-#todo()[Maybe explain later]
 
 The next toggle `masked_gen` controls if the logits of "other" token ids are masked during generation, when completion items or signature help is available.
 
@@ -106,15 +104,15 @@ The implementation additionally extends the Huggingface generation config, addin
 
 === Enabling the beam search strategy
 As discussed in @chapter:design:ibms, the approach must support generation strategies like the beam search. This requires the following:
-1. Storing the final beams before selecting the single returned sequences.
-2. Storing the beam selections during generation to reproduce reorderings on objects tracking state for each beam.
+1. Storing the final sequences before selecting the single returned sequences.
+2. Storing the sequence selections during generation to reproduce reorderings on objects tracking state for each sequence.
 
 The classes providing support are the `BeamTracker` and `BeamIndexStoringSearchScores`, found in `generation_utils/beam_tracking.py`.
-The `BeamTracker` class only tracks beam selections. It contains a list of tuples, where each tuple contains an index for each beam.
-It forms a $|"beams"| times s$ matrix $T$, where $s$ is the number of steps and is increasing during the generation loop.
-$T_(j,i)$ denotes that during step $i$ the beam $j$ was selected from the $T_(j,i)$ beam at step $i-1$.
+The `BeamTracker` class only tracks sequence selections. It contains a list of tuples, where each tuple contains an index for each sequence.
+It forms a $|"sequences"| times s$ matrix $T$, where $s$ is the number of steps and is increasing during the generation loop.
+$T_(j,i)$ denotes that during step $i$ the sequence $j$ was selected from the $T_(j,i)$ sequence at step $i-1$.
 
-By receiving a list of objects storing state for each beam, the `BeamTracker` can replay the selection process for all steps, reordering the objects. As several beams may be selected from the same previous index, the objects may be duplicated.
+By receiving a list of objects storing state for each sequence, the `BeamTracker` can replay the selection process for all steps, reordering the objects. As several sequences may be selected from the same previous index, the objects may be duplicated.
 
 #figure(
   code(
@@ -127,13 +125,13 @@ By receiving a list of objects storing state for each beam, the `BeamTracker` ca
             return [items[indices[i]] for i in range(len(items))]
     ```,
   ),
-  caption: [The `rearrange_according_to_beams` method of the `BeamTracker` class, which reorders the items according to the beam selections.],
+  caption: [The `rearrange_according_to_beams` method of the `BeamTracker` class, which reorders the items according to the sequence selections.],
 )<code:rearrange_according_to_beams>
 
-The second piece of the puzzle is the `BeamIndexStoringSearchScores` class. It is a subclass of the `Transformers` `BeamSearchScorer` class. The `BeamSearchScorer` classes are used internally for the beam search strategy to process a single generation step to choose the next beams and to finalize the selection at the end of the generation process.
-By subclassing the `BeamSearchScorer` class, the `BeamIndexStoringSearchScores` class has access to the indices of selected beams at each step.
+The second piece of the puzzle is the `BeamIndexStoringSearchScores` class. It is a subclass of the `Transformers` `BeamSearchScorer` class. The `BeamSearchScorer` classes are used internally for the sequence search strategy to process a single generation step to choose the next sequences and to finalize the selection at the end of the generation process.
+By subclassing the `BeamSearchScorer` class, the `BeamIndexStoringSearchScores` class has access to the indices of selected sequences at each step.
 The instance contains an instance of the `BeamTracker` class, tracking the indices at each step.
-Additionally the `BeamIndexStoringSearchScores` class is called with the final beams before the final selection of the singular best beam directly before the generation loop ends. These `input_ids` are stored internally for external access by the `Generator` class.
+Additionally the `BeamIndexStoringSearchScores` class is called with the final sequences before the final selection of the singular best sequence directly before the generation loop ends. These `input_ids` are stored internally for external access by the `Generator` class.
 Concretely, the class overwrites the two methods `process` and `finalize`, adding the additional behavior for each step and for the final step, then passing all arguments into the method on the superclass:
 #figure(
   code(
@@ -152,7 +150,7 @@ Concretely, the class overwrites the two methods `process` and `finalize`, addin
     ```,
   ),
   caption: [
-    The `BeamIndexStoringSearchScores` class, which tracks the indices of selected beams at each step and stores the final beams before the final selection of the singular best beam.
+    The `BeamIndexStoringSearchScores` class, which tracks the indices of selected sequences at each step and stores the final sequences before the final selection of the singular best sequence.
   ],
 )
 
@@ -201,7 +199,6 @@ Additional special tokens are added to the tokenizer through the `add_special_to
 
 Not every model has a padding token. As the approach relies on padding tokens to pad the token sequences, the initialization adds a custom padding token to the additional special tokens, if no padding token is present.
 In addition to adding the new padding token, the custom padding must be specified as the used padding token through the `pad_token_id` attribute of the tokenizer. The padding token id can be obtained from the tokenizer through the `convert_tokens_to_ids` method after adding the new token.
-#todo()[Maybe show code]
 #todo()[Reference codellama tokenizer -> llama2 tokenizer -> llama1 tokenizer -> sentencepiece implementation: https://arxiv.org/pdf/2307.09288, https://arxiv.org/pdf/1808.06226]
 
 The `Generator` performs two distinct types of explicit initialization: the general initialization and generation specific initialization.
@@ -300,17 +297,16 @@ Else line 26 edits the changed prompt into the current input token ids for the n
 
 To further enable introspection, the initial code is logged and the input token ids are logged between interrupts. The logging behavior is detailed further in the introspection section.
 
-At the start of the method, the generation specific objects are initialized, such as the different monitors, the prompt state, code utilities and other objects. While the monitors work on the input token ids as a whole, other objects work on singular beams and are initialized for every beam.
-Thus, the `PromptState`, `PromptFormatter` and `CodeUtil` instances are created as a list for every single beam.
+At the start of the method, the generation specific objects are initialized, such as the different monitors, the prompt state, code utilities and other objects. While the monitors work on the input token ids as a whole, other objects work on singular sequences and are initialized for every sequences separately.
+Thus, the `PromptState`, `PromptFormatter` and `CodeUtil` instances are created as a list for every single sequence.
 
 Additionally, the initial input token ids are obtained by creating the initial prompt from the provided code and then tokenizing the result.
-Usually the prompt is tied to a beam and formatted using the `PromptFormatter` instance associated with a beam. At the start of the neural code completion all beams are the same, which is why the first `PromptState` instance is used.
+Usually the prompt is tied to a sequence and formatted using the `PromptFormatter` instance associated with a sequence. At the start of the neural code completion all sequences are the same, which is why the first `PromptState` instance is used.
 
 Other parts of the method handle the augmented generation config. Initially, fields supported by the approach, but unsupported by `Transformers` are removed from the `config` dictionary. Then during each iteration, values such as the maximum allowed time (`max_time`) are updated to reflect the then correct values.
 The supported maximum interruptions configuration value is tracked by the `maximum_interrupts` variable.
 
 @code_completion_expansion is further explained in a later section. The same is true for details on editing and resumption.
-#todo()[Later sections editing, resumption and custom generation]
 
 ==== Resumption.
 // 1. Wraps around a generate method, generation loop
@@ -323,7 +319,7 @@ It is a wrapper over the tweaked generation loop, which is detailed in the next 
 Firstly, it resets objects used in the previous generation. Secondly, configuration values are set for the internal generation loop.
 At last, it processes the result of the generation loop, to enable support for different strategies and to handle the special interrupt case.
 
-In particular, the wrapper resets both the `LspProcessor` and the `BeamTracker` instances, both clearing any previous interrupts and resetting the tracked selected beams.
+In particular, the wrapper resets both the `LspProcessor` and the `BeamTracker` instances, both clearing any previous interrupts and resetting the tracked selected sequences.
 
 Depending on the passed `LspGenerationConfig`, the different monitors are appended to a list of used `LogitsProcessor` passed to the generation loop.
 Additionally, an `InterruptStoppingCriteria` instance is created and added to the parameters of the internal wrapped `generate` method.
@@ -336,7 +332,7 @@ Further steps are necessary to support the beam search strategy. As will be disc
 If the beam search strategy is used, these `input_ids` could have been reordered after the interrupt token has been set. Thus the `input_ids` need to be overwritten with the correct `input_ids` after the beam search strategy has applied its own logic.
 In that case the correct `input_ids` are obtained from the generation result, which contains the value in the field `beam_input_ids`. This is not the default behavior and was added in the patched generation loop and will be discussed in the next section.
 
-Furthermore, the list of `PromptState` and `CodeUtil` are reordered to match the new beam selection, using the `BeamTracker`.
+Furthermore, the list of `PromptState` and `CodeUtil` are reordered to match the new sequence selection, using the `BeamTracker`.
 
 ==== Tweaked Model Generation.
 The internal generation loop is implemented in the `resume` method located in the `InterruptMixin` class. The `resume` method is a patched copy `generate` function of the `Transformers` `GenerationMixin`.
@@ -344,10 +340,10 @@ The following patches were applied:
 1. No `input_id` expansion is applied.
 2. Beam search strategy generation loop calls are tweaked to use the `BeamIndexStoringSearchScores` class and return the final beam search `input_ids`.
 
-Usually the `generate` function receives `input_ids`, which are expanded to fit the number of beams required by the decoding strategy. At the end of the strategy these beams are then reduced to a single result. For an #acr("IBMS") to work, the method must receive all beams upfront and return all beams at the end.
+Usually the `generate` function receives `input_ids`, which are expanded to fit the number of sequences required by the decoding strategy. At the end of the strategy these sequences are then reduced to a single result. For an #acr("IBMS") to work, the method must receive all sequences upfront and return all sequences at the end.
 Thus, the expansion of the `input_ids` is extracted into the additional method `expand_input_ids`. It will be called at the start of the *interrupt loop*, instead of the start of the generation loop.
 
-Secondly, every beam search strategy must use an instance of `BeamIndexStoringSearchScores` as discussed before. Instances of `BeamSearchScorer` are replaced with `BeamIndexStoringSearchScores`, additionally forwarding the instance of the `BeamTracker` into the instance, enabling the tracking of the beam selection process.
+Secondly, every beam search strategy must use an instance of `BeamIndexStoringSearchScores` as discussed before. Instances of `BeamSearchScorer` are replaced with `BeamIndexStoringSearchScores`, additionally forwarding the instance of the `BeamTracker` into the instance, enabling the tracking of the sequence selection process.
 After the generation loop has finished for a beam search strategy, the stored `input_ids` are extracted from the instance and set in the generation result in the `beam_input_ids` field.
 
 ==== Editing.
@@ -355,7 +351,7 @@ After the generation loop has finished for a beam search strategy, the stored `i
 This section details how the prompt and then `input_ids` are edited to inject the new context. The behavior is located in the `TokenSequenceEditMixin` class and is called in @code_completion_prompt_edit_start and @code_completion_loop_edit_input_ids_start.
 
 The first method `edit_generation_text_for_completion` is called with the decoded text and the context to inject.
-The decoded text is the prompt of the interrupted beam, as that interrupt token led to the selection of the beam as the result.
+The decoded text is the prompt of the interrupted sequence, as that interrupt token led to the selection of the sequence as the result.
 The context to inject was retrieved from the instance of the `LspProcessor`.
 The method performs one of the following two steps:
 1. Inject the context into the `PromptState`.
@@ -406,11 +402,11 @@ For complex approaches further manipulating the generation flow, introspection i
 
 To enable understanding on how additional context affects the generation flow, the `Generator` class implements a logging mechanism in the `LogMixin` class. The core idea is to log the generated token sequences to an append-only log between interrupts.
 This enables the user to understand how previous interrupts led the model to the token sequences logged in following interrupts.
-Additionally, reordering of beams can be observed.
+Additionally, reordering of sequences can be observed.
 
 At its core, the `LogMixin` provides two methods: `log_interruption` and `log_code`.
 The method `log_code` is used to log initial and final code states of singular provided and returned code.
-Between interrupts the second method `log_interruption` is used to list the contents of each beam. For readability, the token id sequences are converted back to tokens through the `tokenizer.batch_decode` method.
+Between interrupts the second method `log_interruption` is used to list the contents of each sequence. For readability, the token id sequences are converted back to tokens through the `tokenizer.batch_decode` method.
 
 Generally, the methods have their structure displayed in @code:log_mixin:
 #figure(
@@ -439,7 +435,7 @@ After discussing the complicated details of the interruption loop and prompt edi
 These classes receive and use state objects created in the `Generator` class. The following sections will only list further created objects and and the state objects will not be listed explicitly.
 
 ==== LSP Processor Overview.
-All processors implement the `LogitsProcessor` interface of the `Transformers` library through the `__call__` method. They receive the `input_ids` for each beam and the current scores of the next predicted token id.
+All processors implement the `LogitsProcessor` interface of the `Transformers` library through the `__call__` method. They receive the `input_ids` for each sequence and the current scores of the next predicted token id.
 The implementation of the `__call__` method is found in @code:lsp_processor:
 #figure(
   code(
@@ -472,8 +468,8 @@ The general flow is as follows:
 // TODO: ask for opinion on this, maybe move code to appendix and list bullet points here
 #block(breakable: false)[
   1. If the `LSP Processor` is disabled through the configuration, the unchanged scores are returned.
-  2. Each beam is processed individually, after which the updated scores are returned.
-  3. For the current completed code in each beam, the following occurs:
+  2. Each sequence is processed individually, after which the updated scores are returned.
+  3. For the current completed code in each sequence, the following occurs:
     1. Static analysis is performed on the code.
     2. Heavy filtering is applied to the retrieved completions and signature help.
     3. An interrupt may be triggered, if context is available, throwing an `InterruptGeneration` exception.
@@ -482,15 +478,14 @@ The general flow is as follows:
 ]
 To perform these actions, in special the static analysis, filtering and reranking, the monitor requires a few additional attributes.
 
-// Signature cache, current interrupt and objects for each beam, filename, expand size
+// Signature cache, current interrupt and objects for each sequence, filename, expand size
 The first additional attribute is the `signature_cache`, which overlays the plentiful information from the completion items with the signature help to enable complex filtering on the signature help items. By default this is initialized to an empty dictionary, which grows during the generation.
 
 The second attribute is the `interrupt`, which is set to `None` at the start of the generation. If an interrupt is triggered, the interrupt object is set in the interrupt attribute. The method `resume` sets this object to `None`, effectively clearing the interrupt information.
-#todo[Cross-reference resume to previous mention in generate?]
 
 The third attribute `file_names` contains a file name per code to complete. This name serves is used to create a temporary file containing the partial code for static analysis. It is a direct result of the `file_name` argument of the `_complete` method in the `Generator` and is relevant if code in a project file is to be completed.
 
-Lastly, the `expand_size` attribute is used to determine the link between the number of total beams, beams per batch and batch count. Usually the different functions use flat lists which contain entries for all batch entries. To determine the batch index from an index of such a flat list, the `expand_size` contains the number of beams per batch.
+Lastly, the `expand_size` attribute is used to determine the link between the number of total sequences, sequences per batch and batch count. Usually the different functions use flat lists which contain entries for all batch entries. To determine the batch index from an index of such a flat list, the `expand_size` contains the number of sequences per batch.
 
 ==== LSP Processor Context Retrieval.
 This section and the following section on the `LSP Processor` will provide details on the behavior of the `scores_for_batch` method, which contains the retrieval, filtering, interrupt triggering and reranking of scores.
@@ -523,7 +518,7 @@ The method starts with the following logic seen in @code:scores_for_batch_start:
   caption: [Start of the `scores_for_batch` method, listing how the context retrieved from a language server.],
 )<code:scores_for_batch_start>
 
-The method starts by determining the partially completed code of the current beam using the `current_code` method. The `current_code` method reuses the `PromptState` abstraction to do so. The only new difficulty lies in finding the correct `PromptState` instance, as the `LSPProcessor` stores an instance per beam and the ordering of the stored instances and the passed `input_ids` could be different due to beam search reordering. Generally, the class uses the `BeamTracker` to determine the reordered indices, then retrieve the correct object of the current beam and then use the object to perform the action.
+The method starts by determining the partially completed code of the current sequence using the `current_code` method. The `current_code` method reuses the `PromptState` abstraction to do so. The only new difficulty lies in finding the correct `PromptState` instance, as the `LSPProcessor` stores an instance per sequence and the ordering of the stored instances and the passed `input_ids` could be different due to beam search reordering. Generally, the class uses the `BeamTracker` to determine the reordered indices, then retrieve the correct object of the current sequence and then use the object to perform the action.
 
 Similarily, the file name of the current batch is retrieved using the `get_file_name_for_batch` method.
 
@@ -539,8 +534,7 @@ To prevent the use of completion items, if the completion is not needed, the met
 
 To prepare for the filtering, a `trigger_phrase` is determined. The trigger phrase is used to determine if a completion item is already partially completed, the current code ends in a prefix of a completion item. This trigger phrase is obtained by finding any symbol the code ends with through the regular expression `[A-Za-z_]*$`.
 
-#todo[Could be better, find all completion items that are builtin and extract keyword from there]
-Lastly, the signature cache is increased using the retrieved completion items and signature help items. The method `increase_signature_cache` matches completion items to signature help items through the to be inserted text of the completion items and the keyword of the signature item. If a match occurs, the completion item is assigned to the keyword in the `builtin_cache` attribute.
+Lastly, the signature cache is increased using the retrieved completion items. The method `increase_signature_cache` extracts the keyword from builtin completion items. If no item is stored in the cache under that keyword, the completion item is assigned to the keyword in the `builtin_cache` attribute.
 
 ==== LSP Processor Filtering.
 First the signature help items are filtered, after which the completion items are filtered.
@@ -614,7 +608,7 @@ After splitting the items, each of the three interrupt types completion, depreca
   2. If context of the interrupt type is present, but different from the items, the interrupt is triggered.
   3. Else, no interrupt is triggered.
 
-To check for inserted context, the `LSP Processor` uses the `PromptState` instance of the current beam. To account for reordering of beams, the `BeamTracker` instance is used to retrieve the correct instance of the `PromptState` instance.
+To check for inserted context, the `LSP Processor` uses the `PromptState` instance of the current sequence. To account for reordering of sequences, the `BeamTracker` instance is used to retrieve the correct instance of the `PromptState` instance.
 
 The interrupt is thrown through the `trigger_interrupt` method, which raises the custom `InterruptGeneration` exception. It includes the interrupt type and associated context.
 The outer loop of the `LSP Processor` then catches the exception, sets the interrupt token id in the scores and sets the interrupt object in the `interrupt` attribute.
@@ -664,47 +658,23 @@ While the design section stated to use the highest possible value, the highest v
 
 === PromptState
 The `PromptState` class is contained in `prompt_state.py` and is a direct implementation of the `PromptState` component.
-At its core, it contains a list of inserted instructions of the beam it is assigned to.
-#todo[Streamline instructions / comments]
-#todo[Rename beam index to sequence index]
-Next to the instructions, the `PromptState` uses the tokenizer to convert between the prompt and token ids. Additionally it requires a `PromptFormatter` instance to format the prompt into the appropiate format.
+At its core, it contains a list of inserted comments of the sequence index it is assigned to.
+Next to the comments, the `PromptState` uses the tokenizer to convert between the prompt and token ids. Additionally it requires a `PromptFormatter` instance to format the prompt into the appropiate format.
 
-The `PromptState` is initialized with the initial given code and empty instructions. Then the private method `_create_completion_prompt` creates the initial prompt to the model through the following steps:
-1. All instructions are joined into a single string using newlines.
+The `PromptState` is initialized with the initial given code and no comments. Then the private method `_create_completion_prompt` creates the initial prompt to the model through the following steps:
+1. All comments are joined into a single string using newlines.
 2. The `PromptFormatter` instance is used to create a list of messages, given the initial text and instruction text.
 3. The messages are formatted into a prompt, using the tokenizer method `apply_chat_template`, into the model specific prompt format.
 
-The method is called whenever the list of instructions is changed, to update the initial prompt. The initial prompt is only used for generation initially.
-It is used to track the prefix of the prompt including the instructions, which is then used to determine the completed code without instructions, or to create a new prompt with edited instructions.
-The instructions are changed through the `add_comment` method, which takes a comment of an interrupt type and adds it to the list of instructions.
-In a previous steps all instructions of the same interrupt type are removed, ensuring that only the most recent instruction of an interrupt type is present.
+The method is called whenever the list of comments is changed, to update the initial prompt. The initial prompt is only used for generation initially.
+It is used to track the prefix of the prompt including the comments, which is then used to determine the completed code without comments, or to create a new prompt with edited comments.
+The comments are changed through the `add_comment` method, which takes a comment of an interrupt type and adds it to the list of comments.
+In a previous steps all comments of the same interrupt type are removed, ensuring that only the most recent instruction of an interrupt type is present.
 This limits the scope of the context to the next context instance. For function signature context, the context would stay included until the next function call is completed.
 If the comment is empty, no instruction is added, effectively removing the previous instruction of the interrupt type.
 
-After adding instructions, the method `format` takes the current completed code, wraps it into Markdown code block and appends it to the initial prompt, which contains the instructions.
-This results in the following prompt format:
-#figure(
-  prompt()[
-    <s>[INST] \<\<SYS>>\
-    system prompt\
-    <</SYS>>\
-    instruction 1.\
-    instruction 2.\
-    user prompt\
-    [/INST]\
-    #code(
-      lang: "Python",
-      ```py
-      def initial_code():
-          return current_completed_code_at_interrupt.
-      ```,
-    )
-  ],
-)
-#todo[Somewhere show full prompt format, and explain why code block etc]
-#todo[Specify exact prompt format]
-
-A full sample prompt can be seen in @figure:prompt_formatting:full:
+After adding comments, the method `format` takes the current completed code, wraps it into Markdown code block and appends it to the initial prompt, which contains the comments.
+This results in the following prompt format seen in @figure:prompt_formatting:full:
 #figure(
   prompt()[
     #bos#inst #sys\
@@ -721,7 +691,7 @@ A full sample prompt can be seen in @figure:prompt_formatting:full:
       ```,
     )
   ],
-  caption: [A full sample prompt, including system and user prompt, instructions and initial code.],
+  caption: [A full sample prompt, including system and user prompt, comments and initial code.],
 )<figure:prompt_formatting:full>
 
 To read only the generated code or the full code sample, the methods `get_generated_code` and `get_full_code` are used.
@@ -736,7 +706,6 @@ This especially affects this work when using CodeLlama in the following example:
 "#bos#inst" will be tokenized then detokenized to "#bos #inst".
 This affects every single generation and is a critical problem. Other issues were observed infrequently.
 To address this issues, the method `get_generated_code` first fixes the received prompt by applying several string replacements to fix the issues. It for example replaces "#bos " with "#bos".
-#todo[Check all components are mentioned]
 
 === Interrupt Types
 The approach uses the two context sources completion items and signature help items to provide the three types of interrupts "completion", "deprecation" and "signature".
@@ -764,7 +733,7 @@ The implementation of the base class is shown in @code:interrupt_type:
 
 As can be seen in @code:interrupt_type, each subclass must provide a (unique) type name through the method `type_name`, and must be able to create a comment, given a context and a `CodeUtil` instance.
 #todo[Define process from retrieval, context, comment, prompt clearly]
-The created comment is optional. In the case that no comment is returned, the `PromptState` will remove previous instructions as described in the previous section.
+The created comment is optional. In the case that no comment is returned, the `PromptState` will remove previous comments as described in the previous section.
 
 In the case of the "completion", the created comment will have the following structure:
 #figure(
