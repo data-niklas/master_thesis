@@ -104,8 +104,10 @@ The implementation additionally extends the Huggingface generation config, addin
 
 === Enabling the beam search strategy
 As discussed in @chapter:design:ibms, the approach must support generation strategies like the beam search. This requires the following:
-1. Storing the final sequences before selecting the single returned sequences.
-2. Storing the sequence selections during generation to reproduce reorderings on objects tracking state for each sequence.
+#block(breakable: false)[
+  1. Storing the final sequences before selecting the single returned sequences.
+  2. Storing the sequence selections during generation to reproduce reorderings on objects tracking state for each sequence.
+]
 
 The classes providing support are the `BeamTracker` and `BeamIndexStoringSearchScores`, found in `generation_utils/beam_tracking.py`.
 The `BeamTracker` class only tracks sequence selections. It contains a list of tuples, where each tuple contains an index for each sequence.
@@ -337,8 +339,10 @@ Furthermore, the list of `PromptState` and `CodeUtil` are reordered to match the
 ==== Tweaked Model Generation.
 The internal generation loop is implemented in the `resume` method located in the `InterruptMixin` class. The `resume` method is a patched copy `generate` function of the `Transformers` `GenerationMixin`.
 The following patches were applied:
-1. No `input_id` expansion is applied.
-2. Beam search strategy generation loop calls are tweaked to use the `BeamIndexStoringSearchScores` class and return the final beam search `input_ids`.
+#block(breakable: false)[
+  1. No `input_id` expansion is applied.
+  2. Beam search strategy generation loop calls are tweaked to use the `BeamIndexStoringSearchScores` class and return the final beam search `input_ids`.
+]
 
 Usually the `generate` function receives `input_ids`, which are expanded to fit the number of sequences required by the decoding strategy. At the end of the strategy these sequences are then reduced to a single result. For an #acr("IBMS") to work, the method must receive all sequences upfront and return all sequences at the end.
 Thus, the expansion of the `input_ids` is extracted into the additional method `expand_input_ids`. It will be called at the start of the *interrupt loop*, instead of the start of the generation loop.
@@ -354,8 +358,10 @@ The first method `edit_generation_text_for_completion` is called with the decode
 The decoded text is the prompt of the interrupted sequence, as that interrupt token led to the selection of the sequence as the result.
 The context to inject was retrieved from the instance of the `LspProcessor`.
 The method performs one of the following two steps:
-1. Inject the context into the `PromptState`.
-2. If the option `predict_correct_completion_symbol` is enabled and a completion is present: Determine the next symbol from the given completions and insert it directly into the prompt.
+#block(breakable: false)[
+  1. Inject the context into the `PromptState`.
+  2. If the option `predict_correct_completion_symbol` is enabled and a completion is present: Determine the next symbol from the given completions and insert it directly into the prompt.
+]
 
 In any case, the methods starts by retrieving the generated code from the prompt, using the `PromptState` instance. And finally, the generated code is formatted into the edited prompt using a maybe changed `PromptState`.
 
@@ -366,9 +372,11 @@ The comment is then added into the `PromptState` with the interrupt type.
 // Case 2
 The second case is an experimental method to try and find the correct completion from the list of completion items directly, without inserting the list of completions and implicitly letting the model complete the item.
 The method `determine_next_symbol_from_completions` is called, which starts a separate normal model generation. The model is provided the following:
-1. The current completed code.
-2. The list of non deprecated completions.
-3. A comment created from the deprecated completions.
+#block(breakable: false)[
+  1. The current completed code.
+  2. The list of non deprecated completions.
+  3. A comment created from the deprecated completions.
+]
 
 While the first two points are expected, the third point is added to counteract biased completions by the model towards deprecated items.
 The format of the prompt can be seen in @figure:prompt_formatting:completion:
@@ -541,18 +549,22 @@ First the signature help items are filtered, after which the completion items ar
 Each filtering is performed through a chain of methods, each taking at least a list of items and returning the filtered list.
 
 From the signature help items, the following filters are applied:
-1. Remove signature help items of builtin functions.
-2. Remove items without parameters.
+#block(breakable: false)[
+  1. Remove signature help items of builtin functions.
+  2. Remove items without parameters.
+]
 
 The method should improve completion of functions with changed parameters and complex signatures. As such the second filter ignores the case in which a function does not have parameters. The first filter reduces the model confusion by completing probably known functions unchanged.
 To obtain the information if a signature help item is a builtin function, the signature cache is used, as the information is stored in the completion items. If a matching completion items is a builtin item, the signature help item is skipped.
 
 From the completion items, the following filters are applied:
-1. Remove builtin completion items.
-2. Constrain completion items to relevant #link(label("code:completion_item_kind"), "Kinds").
-3. Remove items from the current partial completion.
-4. Constrain to public items (no private methods).
-5. Remove items which are already fully completed.
+#block(breakable: false)[
+  1. Remove builtin completion items.
+  2. Constrain completion items to relevant #link(label("code:completion_item_kind"), "Kinds").
+  3. Remove items from the current partial completion.
+  4. Constrain to public items.
+  5. Remove items which are already fully completed.
+]
 
 The steps are as described in @chapter:design:lsp. Most filtering steps are straightforward, as they only require fields directly present in the completion items, or simple string matching.
 The following minor details are required:
@@ -601,12 +613,14 @@ To use the function in the `LSP Processor`, the import path of the value is cons
 
 #todo[Talk about scope, so when can items be removed? in design]
 After splitting the items, each of the three interrupt types completion, deprecation and signature help checks if context needs to be inserted. Each of the three checks works similarly:
-1. If the interrupt type is disabled in the configuration, the check is skipped.
-2. If no items were found, no interrupt is triggered.
-3. If items were found, they are compared to the already inserted context.
-  1. If no context of the interrupt type is present, the interrupt is triggered.
-  2. If context of the interrupt type is present, but different from the items, the interrupt is triggered.
-  3. Else, no interrupt is triggered.
+#block(breakable: false)[
+  1. If the interrupt type is disabled in the configuration, the check is skipped.
+  2. If no items were found, no interrupt is triggered.
+  3. If items were found, they are compared to the already inserted context.
+    1. If no context of the interrupt type is present, the interrupt is triggered.
+    2. If context of the interrupt type is present, but different from the items, the interrupt is triggered.
+    3. Else, no interrupt is triggered.
+]
 
 To check for inserted context, the `LSP Processor` uses the `PromptState` instance of the current sequence. To account for reordering of sequences, the `BeamTracker` instance is used to retrieve the correct instance of the `PromptState` instance.
 
@@ -662,10 +676,12 @@ At its core, it contains a list of inserted comments of the sequence index it is
 Next to the comments, the `PromptState` uses the tokenizer to convert between the prompt and token ids. Additionally it requires a `PromptFormatter` instance to format the prompt into the appropiate format.
 
 The `PromptState` is initialized with the initial given code and no comments. Then the private method `_create_completion_prompt` creates the initial prompt to the model through the following steps:
-1. All comments are joined into a single string using newlines.
-2. The `PromptFormatter` instance is used to create a list of messages, given the initial text and instruction text.
-3. The messages are formatted into a prompt, using the tokenizer method `apply_chat_template`, into the model specific prompt format.
 
+#block(breakable: false)[
+  1. All comments are joined into a single string using newlines.
+  2. The `PromptFormatter` instance is used to create a list of messages, given the initial text and instruction text.
+  3. The messages are formatted into a prompt, using the tokenizer method `apply_chat_template`, into the model specific prompt format.
+]
 The method is called whenever the list of comments is changed, to update the initial prompt. The initial prompt is only used for generation initially.
 It is used to track the prefix of the prompt including the comments, which is then used to determine the completed code without comments, or to create a new prompt with edited comments.
 The comments are changed through the `add_comment` method, which takes a comment of an interrupt type and adds it to the list of comments.
@@ -777,10 +793,11 @@ In the case of Python, `create_python_lsp` is called.
 The dependency `pygls` provides the class `BaseLanguageClient`, which abstracts the creation and protocol communication. By calling the method `start_io("pylsp")` with the binary of the language server, the binary is executed in a separate process and communication occurs via standard streams.
 Now different method can be called, which each provide a different feature of the #acr("LSP").
 As described in the protocol, the initialization flow is the following:
-1. Client sends a `initialize` request, the server responds with its capabilities.
-2. Client sends a `initialized` notification.
-3. Client can now send further requests to configure the server or retrieve information.
-
+#block(breakable: false)[
+  1. Client sends a `initialize` request, the server responds with its capabilities.
+  2. Client sends a `initialized` notification.
+  3. Client can now send further requests to configure the server or retrieve information.
+]
 Respectively, the methods `initialize_async` and `initialized` are called to fulfill the first two steps. The first method has the `_async` postfix, as it awaits a responds using asynchronous Python code, while the second is only a notification and does not require a response.
 The code passes several important initialization parameters to the language server:
 / `root_path`: The path to the root directory of the project. This is important to correctly determine project specific settings, such as virtual environments with dependencies.
