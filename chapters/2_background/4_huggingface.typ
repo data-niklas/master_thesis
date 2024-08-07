@@ -15,8 +15,8 @@ Each tensor typically only contains values of the same type, such as value from 
 One of the applications for tensors is to represent multi-relational data@rabanserIntroductionTensorDecompositions2017. In that case each dimension represents a single relation.
 
 // example: first dimension: generated tokens, second dimension: batch
-For #acr("CLM") inference different types of tensors are used. For example, the token sequence during parallel text generation is a two-dimensional tensors of the following relations: `(batch, token)`.
-The second dimension represents a single token sequence, while the first dimension enables parallel text generation for `n` token sequences.
+For #acr("CLM") inference different types of tensors are used. For example, the token id sequence during parallel text generation is a two-dimensional tensors of the following relations: `(batch, token)`.
+The second dimension represents a single token id sequence, while the first dimension enables parallel text generation for `n` token id sequences.
 
 // TODO: reference
 // other example: first dimension: batch, second dimension: prediction in shape of vocabulary

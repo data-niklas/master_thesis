@@ -351,7 +351,6 @@ Secondly, every beam search strategy must use an instance of `BeamIndexStoringSe
 After the generation loop has finished for a beam search strategy, the stored `input_ids` are extracted from the instance and set in the generation result in the `beam_input_ids` field.
 
 ==== Editing.
-#todo()[Streamline `input_ids` and other variable names, etc]
 This section details how the prompt and then `input_ids` are edited to inject the new context. The behavior is located in the `TokenSequenceEditMixin` class and is called in @code_completion_prompt_edit_start and @code_completion_loop_edit_input_ids_start.
 
 The first method `edit_generation_text_for_completion` is called with the decoded text and the context to inject.

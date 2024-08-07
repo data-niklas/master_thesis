@@ -152,6 +152,5 @@ These design choices try to ramify the problem of overlapping tokens in deprecat
 - Other token ids should be masked
 
 The exact delta score is fixed to $7.0$ empirically. For each token id, the delta score will be added once for each completion item it is a prefix of.
-#todo()[Token vs token id]
 
 The score of the interrupt token is fixed to the maximum possible logits value, if an interrupt should occur.

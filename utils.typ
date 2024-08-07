@@ -9,6 +9,7 @@
   caption: caption,
   kind: "example",
   supplement: "Example",
+  placement: none,
 )
 
 #let rq(number) = link(label("rq:" + str(number)))[*RQ#str(number)*]

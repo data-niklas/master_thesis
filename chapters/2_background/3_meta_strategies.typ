@@ -4,7 +4,7 @@
 #acrpl("CLM") suffer from many problems, such as outdated knowledge, insufficient knowledge and insufficient capabilities. Most of these problems can be adressed by fine-tuning the model on further data, such as up-to-date information.
 The problem with fine-tuning is the need for a large amount of up-to-date data, which might not exist yet. In addition. fine-tuning is resource intensive and must be performed continously, to stay up-to-date.
 
-This section will showcase different ways to control the generation of the model, without the need to perform fine-tuning. The text generation is complex and there are many different strategies and components, which may be controlled. Guided generation will focus in strategies to control the prediction of a single next token, while the chapter prompting strategies will focus on prompting techniques.
+This section will showcase different ways to control the generation of the model, without the need to perform fine-tuning. The text generation is complex and there are many different strategies and components, which may be controlled. Guided generation will focus in strategies to control the prediction of a single next token id, while the chapter prompting strategies will focus on prompting techniques.
 
 === Guided Generation <chapter:bg:guided_generation>
 The #acr("CLM") generates a text, by iteratively choosing the next token ids. The decision on which token ids is the next token id, depends on two factors, as discussed in @chapter:bg:llms. It depends on the logits produced through the raw next token prediction function $f_"rntpf"$ and a decoding strategy.
@@ -14,9 +14,9 @@ Consider the following example:
 #example(caption: "Enforcing \"yes\" or \"no\" answers")[
   A model is tasked with answering a "yes" or "no" question. The model should only respond with either of both words, without discussing any details or making small talk.
 
-  The rules for the guided generation are to set the logits of all tokens to $-oo$, except when the tokens contribute to a "yes" or "no" answer.
+  The rules for the guided generation are to set the logits of all token ids to $-oo$, except when the token ids contribute to a "yes" or "no" answer.
 
-  Given the prompt "Is the sun shining?" and the previous tokens "Ye", the guided generation will set all logits to $-oo$, except for the token "s". In the next step only the #acr("EOS") token will be permitted.
+  Given the prompt "Is the sun shining?" and the previous token ids of the token "Ye", the guided generation will set all logits to $-oo$, except for the token id of the token "s". In the next step only the #acr("EOS") token will be permitted.
   Thus, the model will respond with "Yes".
 ]
 
