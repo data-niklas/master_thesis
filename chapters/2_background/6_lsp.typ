@@ -57,16 +57,7 @@ To define the other message types, additional TypeScript types are introduced:
 // Request
 Request objects have the following #acr("JSON") format, as defined by the following Typescript interface:
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface RequestMessage extends Message {
-        method: string;
-        params?: any;
-        id: string | number | null;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_request.ts"),
   caption: "Request object format",
 )
 The `jsonrpc` field contains the version used and must be set to `2.0`. The `method` field contains the name of the remote procedure to be called.
@@ -77,22 +68,7 @@ At last, the `id` field identifies the message and thus allows correlation betwe
 
 Each request must be answered by a response. The response object has the following format:
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface ResponseMessage extends Message {
-        result?: any;
-        error?: ResponseError;
-        id: string | number | null;
-    }
-
-    interface ResponseError {
-        code: number;
-        message: string;
-        data?: any;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_response.ts"),
   caption: "Response object format",
 )
 Similar to the request object, the `jsonrpc` field must be set to `2.0`.
@@ -129,15 +105,7 @@ In addition, the protocol allows custom error codes.
 
 The final type of message is the notification. Notifications are a special type of request, as they do not contain an `id`. Notifications do not require a response from the server:
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface NotificationMessage extends Message {
-        method: string;
-        params?: any;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_notification.ts"),
   caption: "Notification object format",
 )
 
@@ -164,32 +132,14 @@ The first important structure is the #acr("URI"), as defined by rfc3986@berners-
 // Position
 To identify a position inside such a file, the protocol defines the `Position` structure:
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface Position {
-        line: uinteger;
-        character: uinteger;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_position.ts"),
   caption: "Position structure",
 )<code:position>
 Line and character define the position in the file starting at `0`.
 
 The last structure is `TextDocumentItem`, which represents an editable text document:
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface TextDocumentItem {
-        uri: DocumentUri;
-        languageId: string;
-        version: integer;
-        text: string;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_text_document_item.ts"),
   caption: "TextDocumentItem structure",
 )<code:text_document_item>
 In addition to the unique identifier of the document, the `uri`, the structure contains the content of the document in the field `text`. The `languageId` field defines the language of the document. This is needed especially when the language server processes documents of different languages. Passing the `languageId` prevents re-interpreting the file extension. The possible language ids are defined in the specification and can be seen in @table:language_ids in full.
@@ -201,16 +151,7 @@ After defining the basic structures, this section introduces the first messages 
 The first message the client sends the server, is the `initialize` message. No other communication will occur, until the server acknowledges the initialization with the response. The connection between client and server may only be initialized once.
 The `initialize` message has the following key fields:
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface InitializeParams {
-        rootUri?: DocumentUri;
-        capabilities: ClientCapabilities;
-        // ... more fields omitted
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_initialize.ts"),
   caption: "Initialize message parameters",
 )<code:initialize>
 The `rootUri` is an optional field that specifies the root path of the workspace, the client is working on. Setting the workspace e.g. enables finding virtual environments needed to scan the local code base.
@@ -228,14 +169,7 @@ After introducing messages to establish and control the connection between serve
 
 The first message is the `textDocument/didOpen` notification. Sending this notification informs the server that the client opened the document. The message has the following structure:
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface DidOpenTextDocumentParams {
-        textDocument: TextDocumentItem;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_did_open_text_document.ts"),
   caption: "DidOpenTextDocument message parameters",
 )<code:did_open_text_document>
 
@@ -259,26 +193,7 @@ The feature is split into the two messages `textDocument/completion` and `comple
 
 A completion item has the following structure:
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface CompletionItem {
-        label: string;
-        insertText?: string;
-        labelDetails?: CompletionItemLabelDetails;
-        detail?: string;
-        documentation?: string | MarkupContent;
-        kind?: CompletionItemKind;
-        tags?: CompletionItemTag[];
-        deprecated?: boolean;
-        preselect?: boolean;
-        sortText?: string;
-        filterText?: string;
-        data?: any;
-        // ... more fields omitted
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_completion_item.ts"),
   caption: "CompletionItem structure",
 )<code:completion_item>
 
@@ -299,58 +214,25 @@ After receiving the completion items, the client can display the items in a list
 Additional server specific data is stored in the field `data`. This information is needed by the server to resolve the completion item and should not be changed.
 // CompletionItemLabelDetails
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface CompletionItemLabelDetails {
-        detail?: string;
-        description?: string;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_completion_item_label_details.ts"),
   caption: "CompletionItemLabelDetails structure",
 )<code:completion_item_label_details>
 
 // CompletionItemTag
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    namespace CompletionItemTag {
-        const Deprecated = 1;
-    }
-    type CompletionItemTag = 1;
-    ```,
-  ),
+  codefile("/assets/code/lsp_completion_item_tag.ts"),
   caption: "CompletionItemTag enum",
 )<code:completion_item_tag>
 
 // MarkupContent
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface MarkupContent {
-        kind: MarkupKind;
-        value: string;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_markup_content.ts"),
   caption: "MarkupContent structure",
 )<code:markup_content>
 
 // Markup Kind
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    namespace MarkupKind {
-        const PlainText: 'plaintext' = 'plaintext',
-        const Markdown: 'markdown' = 'markdown'
-    }
-    type MarkupKind = 'plaintext' | 'markdown';
-    ```,
-  ),
+  codefile("/assets/code/lsp_markup_kind.ts"),
   caption: "MarkupKind enum",
 )<code:markup_kind>
 
@@ -359,17 +241,7 @@ The @code:markup_content structure includes markup content in the field `value`.
 // Completion request
 To request completions, the client then sends the `textDocument/completion` message. The request the following structure:
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface CompletionParams {
-        textDocument: TextDocumentIdentifier;
-        position: Position;
-        context?: CompletionContext;
-        // ... more fields omitted
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_completion_params.ts"),
   caption: "Completion message parameters",
 )<code:completion_params>
 
@@ -377,30 +249,12 @@ The request contains a `position` in the document `textDocument`. The optional `
 
 // Completion Context
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface CompletionContext {
-        triggerKind: CompletionTriggerKind;
-        triggerCharacter?: string;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_completion_context.ts"),
   caption: "CompletionContext structure",
 )<code:completion_context>
 
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    namespace CompletionTriggerKind {
-        const Invoked: 1 = 1;
-        const TriggerCharacter: 2 = 2;
-        const TriggerForIncompleteCompletions: 3 = 3;
-    }
-    type CompletionTriggerKind = 1 | 2 | 3;
-    ```,
-  ),
+  codefile("/assets/code/lsp_completion_trigger_kind.ts"),
   caption: "CompletionTriggerKind enum",
 )<code:completion_trigger_kind>
 
@@ -408,16 +262,7 @@ The request contains a `position` in the document `textDocument`. The optional `
 The server then responds either with no result, directly with a list of #link(<code:completion_item>)[completion items], or a completion list, as seen in @code:completion_list.
 
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface CompletionList {
-        isIncomplete: boolean;
-        items: CompletionItem[];
-        // ... more fields omitted
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_completion_list.ts"),
   caption: "CompletionList structure",
 )<code:completion_list>
 In addition to containing the completion items, the structure also may indicate that the list is incomplete and will be recomputed // TODO: recomputed when
@@ -434,17 +279,7 @@ The second feature is the signature help. The signature help provides informatio
 Sending the `textDocument/signatureHelp` request to the server returns the signature help. The request has a similar structure to @code:completion_params, as seen in @code:signature_help_params:
 
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface SignatureHelpParams {
-        textDocument: TextDocumentIdentifier;
-        position: Position;
-        context?: SignatureHelpContext;
-        // ... more fields omitted
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_signature_help_params.ts"),
   caption: "SignatureHelp message parameters",
 )<code:signature_help_params>
 
@@ -453,16 +288,7 @@ The `context` field contains additional information about the context in which t
 
 The server responds with the signature help in the structure of @code:signature_help:
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface SignatureHelp {
-        signatures: SignatureInformation[];
-        activeSignature?: uinteger;
-        activeParameter?: uinteger;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_signature_help.ts"),
   caption: "SignatureHelp structure",
 )<code:signature_help>
 
@@ -473,30 +299,12 @@ The parameters each come with a `label` and `documentation` field. The `label` e
 The signature help structure is defined in @code:signature_information, while the single parameter information is provided in @code:parameter_information.
 
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface SignatureInformation {
-        label: string;
-        documentation?: string | MarkupContent;
-        parameters?: ParameterInformation[];
-        activeParameter?: uinteger;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_signature_information.ts"),
   caption: "SignatureInformation structure",
 )<code:signature_information>
 
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface ParameterInformation {
-        label: string | [uinteger, uinteger];
-        documentation?: string | MarkupContent;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_parameter_information.ts"),
   caption: "ParameterInformation structure",
 )<code:parameter_information>
 

@@ -1,0 +1,4 @@
+interface DidOpenTextDocumentParams {
+    textDocument: TextDocumentItem;
+}
+
