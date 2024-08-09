@@ -1,6 +1,6 @@
 #import "/utils.typ": *
 = Background & Related Work <background>
-This chapter provides important background information and related work, necessary to understand the main contributions of this thesis.
+This chapter provides important background information and related work necessary to understand the main contributions of this thesis.
 Firstly, #acrpl("CLM") are introduced in @chapter:bg:llms. Thereafter, @chapter:bg:text_generation discusses commonly used text generation strategies.
 
 The section @chapter:bg:controllable_generation showcases strategies to modify the text generation of a fixed pretrained #acr("CLM").

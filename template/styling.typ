@@ -12,6 +12,10 @@
     if ignored-items.contains(it.body.func()) {
       return it
     }
+    // detect terminal function
+    if it.dest.starts-with("https://data-niklas.github.io/master_thesis") {
+      return it
+    }
     if print-mode {
       let body-fields = it.body.fields()
       if type(it.dest) == str and (

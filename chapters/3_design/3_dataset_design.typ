@@ -216,29 +216,7 @@ Currently, the dataset contains 22 entries for 14 different dependencies:
 The following two examples serve as important test cases for the evaluation of neural code completion:
 
 #figure(
-  code(
-    lang: "Python",
-    ```python
-    from typing import Dict, Any
-    from pydantic import BaseModel
-
-    class User(BaseModel):
-        name: str
-        email: str
-        age: int
-
-    def convert_user_to_dict(user: User) -> Dict[str, Any]:
-        """Convert the user into a Python dictionary.
-
-        Args:
-            user (User): Pydantic user model
-
-        Returns:
-            Dict[str, Any]: User attributes as a Python key value mapping
-        """
-        return user.model_dump()
-    ```,
-  ),
+  codefile("/assets/code/pydantic_1.py"),
   caption: "Example code snippet for Pydantic showing the correct completion",
 )<code:dataset:pydantic>
 @code:dataset:pydantic targets the major change from `Pydantic` version `1.x.x` to `2.x.x`, renaming a few core
@@ -255,20 +233,7 @@ the two.
 #todo()[Mention in evaluation that all LLMs cannot complete the pydantic example previously, cause biased]
 
 #figure(
-  code(
-    lang: "Python",
-    ```python
-    from textual.widgets import TextArea
-
-    def create_textual_text_area_with_indent() -> TextArea:
-        """Create a TextArea widget, which indents its content when tab is pressed.
-
-        Returns:
-            TextArea: New instance of TextArea with indentation on tab press
-        """
-        return TextArea(tab_behavior="indent")
-    ```,
-  ),
+  codefile("/assets/code/textual_1.py"),
   caption: "Example code snippet for Textual showing the correct completion",
 )<code:dataset:textual>
 While the previous example targets the dereferencing of a method, the example @code:dataset:textual targets the

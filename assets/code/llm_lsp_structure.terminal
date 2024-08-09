@@ -1,0 +1,15 @@
+[green,black]❯[text,medium] tree -L 1 --dirsfirst
+[subtext1]├── [sapphire,bold]code_utils
+[subtext1]├── [sapphire,bold]debug
+[subtext1]├── [sapphire,bold]generation_utils
+[subtext1]├── [sapphire,bold]interrupts
+[subtext1]├── [sapphire,bold]lsp
+[subtext1]├── [sapphire,bold]mixins
+[subtext1]├── [sapphire,bold]prompt_formatters
+[subtext1]├── config.py
+[subtext1]├── constants.py
+[subtext1]├── generator.py
+[subtext1]├── __init__.py
+[subtext1]├── __main__.py
+[subtext1]└── prompt_state.py
+

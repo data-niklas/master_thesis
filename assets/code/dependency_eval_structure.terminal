@@ -1,0 +1,12 @@
+[green,black]❯[text,medium] tree --dirsfirst
+[subtext1]├── [sapphire,bold]data
+[subtext1]│   ├── [sapphire,bold]dist
+[subtext1]│   ├── [sapphire,bold]tasks
+[subtext1]│   ├── [sapphire,bold]tests
+[subtext1]│   ├── metadata.json
+[subtext1]│   └── schema.json
+[subtext1]├── [sapphire,bold]model_configurations
+[subtext1]├── [sapphire,bold]evaluations
+[subtext1]└── [sapphire,bold]dependency_eval
+[subtext1]    ├── ... other modules ...
+[subtext1]    └── __main__.py

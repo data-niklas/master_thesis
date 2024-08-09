@@ -28,29 +28,10 @@ Lastly, the used language server for the Python language is `python-language-ser
 
 === Structure
 The structure of the `llm_lsp` package is as follows:
-
-#link(
-  "https://github.com/data-niklas/llm-lsp/tree/main/llm_lsp",
-  [#figure(
-      terminal(```terminal
-      [green,black]❯[text,medium] tree -L 1 --dirsfirst
-      [subtext1]├── [sapphire,bold]code_utils
-      [subtext1]├── [sapphire,bold]debug
-      [subtext1]├── [sapphire,bold]generation_utils
-      [subtext1]├── [sapphire,bold]interrupts
-      [subtext1]├── [sapphire,bold]lsp
-      [subtext1]├── [sapphire,bold]mixins
-      [subtext1]├── [sapphire,bold]prompt_formatters
-      [subtext1]├── config.py
-      [subtext1]├── constants.py
-      [subtext1]├── generator.py
-      [subtext1]├── __init__.py
-      [subtext1]├── __main__.py
-      [subtext1]└── prompt_state.py
-      ```),
-      caption: [Directory structure of the `llm_lsp` package.],
-    )<terminal:project:structure>],
-)
+#figure(
+  codefile("/assets/code/llm_lsp_structure.terminal"),
+  caption: [The directory structure of the `llm_lsp` package.],
+)<terminal:project:structure>
 
 The main component `Generator` is implemented in `generator.py`. Different feature sets of the generator, such as logging, editing token sequences and padding the edited sequences are extracted into the directory `mixins`.
 The different `Monitors` `LSP Processor`, `Boundary Processor` and `Comments Processor` are contained in the directory `lsp`, as well as further utilities needed to interact with a language server.
@@ -66,25 +47,7 @@ All behavior of the approach can be toggled through fields of the data class `Ls
 
 The `LspGenerationConfig` is defined as in @code:lsp_generation_config:
 #figure(
-  code(
-    lang: "Python",
-    ```python
-    # llm_lsp/config.py
-    @dataclass
-    class LspGenerationConfig:
-        boundary_processor: bool = True
-        comments_processor: bool = True
-        lsp_processor: bool = True
-        enabled: bool = True
-        chat_history_log_file: Optional[str] = None
-        force_custom_pad: bool = False
-        predict_correct_completion_symbol: bool = True
-        masked_gen: bool = True
-        use_completion_context: bool = False
-        use_deprecation_context: bool = True
-        use_signature_context: bool = True
-    ```,
-  ),
+  codefile("/assets/code/llm_lsp_config.py"),
   caption: [The `LspGenerationConfig` data class, enabling customizable behavior.],
 )<code:lsp_generation_config>
 The first fields enable the toggling of the `Boundary Processor`, `Comments Processor` and `LSP Processor`, which were introduced in @chapter:design:lsp and are monitors.
@@ -117,16 +80,7 @@ $T_(j,i)$ denotes that during step $i$ the sequence $j$ was selected from the $T
 By receiving a list of objects storing state for each sequence, the `BeamTracker` can replay the selection process for all steps, reordering the objects. As several sequences may be selected from the same previous index, the objects may be duplicated.
 
 #figure(
-  code(
-    lang: "Python",
-    ```py
-        def rearrange_according_to_beams(self, items):
-            indices = self.get_final_beam_indices()
-            if indices is None:
-                indices = list(range(len(items)))
-            return [items[indices[i]] for i in range(len(items))]
-    ```,
-  ),
+  codefile("/assets/code/beam_tracking.py"),
   caption: [The `rearrange_according_to_beams` method of the `BeamTracker` class, which reorders the items according to the sequence selections.],
 )<code:rearrange_according_to_beams>
 
@@ -136,21 +90,7 @@ The instance contains an instance of the `BeamTracker` class, tracking the indic
 Additionally the `BeamIndexStoringSearchScores` class is called with the final sequences before the final selection of the singular best sequence directly before the generation loop ends. These `input_ids` are stored internally for external access by the `Generator` class.
 Concretely, the class overwrites the two methods `process` and `finalize`, adding the additional behavior for each step and for the final step, then passing all arguments into the method on the superclass:
 #figure(
-  code(
-    lang: "Python",
-    ```python
-    # llm_lsp/generation_utils/beam_tracking.py
-    class BeamIndexStoringSearchScores(BeamSearchScorer):
-        def process(self, beam_indices, ...):
-            self.beam_tracker.track_beam_indices(beam_indices)
-            return super().process(...)
-
-        def finalize(self, input_ids, beam_indices, ...):
-            self.input_ids = input_ids
-            self.beam_tracker.track_beam_indices(beam_indices)
-            return super().finalize(...)
-    ```,
-  ),
+  codefile("/assets/code/beam_scoring.py"),
   caption: [
     The `BeamIndexStoringSearchScores` class, which tracks the indices of selected sequences at each step and stores the final sequences before the final selection of the singular best sequence.
   ],
@@ -164,22 +104,7 @@ Coloquially, it propagates the interrupt signal to the interrupt loop.
 It subclasses the `Transformers` `StoppingCriteria` class.
 The class implements the method seen in @code:interrupt_stopping_criteria:
 #figure(
-  code(
-    lang: "Python",
-    ```python
-    # llm_lsp/interrupts/__init__.py
-    class InterruptStoppingCriteria(StoppingCriteria):
-        def __init__(self, interrupt_token_id):
-            self.interrupt_token_id = interrupt_token_id
-
-        def __call__(self, input_ids, scores, **kwargs):
-            # Any batch ends with the interrupt token
-            for i in range(input_ids.shape[0]):
-                if len(input_ids[i]) > 0 and input_ids[i][-1] == self.interrupt_token_id:
-                    return True
-            return False
-    ```,
-  ),
+  codefile("/assets/code/interrupt_stopping_criteria.py"),
   caption: [The `InterruptStoppingCriteria` class, which determines that the generation loop should be stopped when the interrupt token id occurs.],
 )<code:interrupt_stopping_criteria>
 
@@ -223,15 +148,7 @@ To control the device placement, the `Generator` class implements a context mana
 
 Before starting the neural code completion, the context manager is entered to ensure that all tensors are placed on the correct device. The context manager is exited after the neural code completion is finished:
 #figure(
-  code(
-    lang: "Python",
-    ```python
-    # llm_lsp/generator.py
-    async def completion(...):
-        with self.device_placement():
-            return await self._completion(...)
-    ```,
-  ),
+  codefile("/assets/code/device_placement.py"),
   caption: "Entering the PyTorch device context manager before passing all arguments to the wrapped internal completion method.",
 )
 
@@ -255,41 +172,7 @@ As noted in the previous section, the actual completion is implemented in the in
 
 A shortened version of the completion loop is displayed in @code:completion_loop:
 #figure(
-  code(
-    lang: "Python",
-    ```python
-    # llm_lsp/generator.py
-    async def _complete(self, code: str, repo_root: str, file_name: str) -> str:
-            self.log_code(code, "START")
-            (...) = self.initialize_generation_state(code, repo_root, file_name)
-
-            prompt = prompt_states[0].format(code)
-            input_ids = self.tokenizer(
-                prompt, return_tensors="pt", add_special_tokens=False
-            ).input_ids
-            input_ids, _ = self.expand_input_ids(input_ids, config)<code_completion_expansion>
-            while True:<code_completion_loop_while_start>
-                decoded_text = self.resume_generation(input_ids, ...)
-                interrupt = lsp_processor.interrupt
-                if interrupt is None:
-                    prompt_state = prompt_states[0]
-                    return self.retrieve_final_code(prompt_state, decoded_text)<code_completion_loop_while_end>
-                stopped_beam_index = self.index_of_beam_to_edit(interrupt.input_ids)
-                prompt_state = prompt_states[stopped_beam_index]
-                if max_interrupts is not None:
-                    if max_interrupts == 0:
-                        return self.retrieve_final_code(prompt_state, decoded_text)
-                    max_interrupts = max_interrupts - 1
-                code_util = code_utils[stopped_beam_index]
-                edited_prompt = self.edit_generation_text_for_completion(<code_completion_prompt_edit_start>
-                    decoded_text, prompt_state, interrupt, code_util
-                )
-                input_ids = self.edit_input_ids(<code_completion_loop_edit_input_ids_start>
-                    interrupt, edited_prompt, stopped_beam_index
-                )<code_completion_loop_edit_input_ids_end>
-                self.log_interruption(input_ids, interrupt_count)
-    ```,
-  ),
+  codefile("/assets/code/completion_loop.py"),
   caption: [The interrupt loop, which is the core of the `Generator` class and which enables the #acr("IBMS"). Long argument lists are abbreviated by "`...`"],
 )<code:completion_loop>
 
@@ -417,21 +300,7 @@ Between interrupts the second method `log_interruption` is used to list the cont
 
 Generally, the methods have their structure displayed in @code:log_mixin:
 #figure(
-  code(
-    lang: "Python",
-    ```python
-    # llm_lsp/mixins/log_mixin.py
-    def log(self, text: str):
-        with open(self.config.chat_history_log_file, "a") as f:
-            f.write(text)
-    def log_interruption(self, input_ids, interrupt_index):
-        if self.config.chat_history_log_file is None:
-            return
-        code_snippets = self.tokenizer.batch_decode(input_ids)
-        # ... text formatting into variable `text` ...
-        self.log(text)
-    ```,
-  ),
+  codefile("/assets/code/log_mixin.py"),
   caption: [The general structure employed for logging by the `LogMixin`.],
 )<code:log_mixin>
 The logging mechanism is optional and can be enabled as discussed in the configuration section.
@@ -445,28 +314,7 @@ These classes receive and use state objects created in the `Generator` class. Th
 All processors implement the `LogitsProcessor` interface of the `Transformers` library through the `__call__` method. They receive the `input_ids` for each sequence and the current scores of the next predicted token id.
 The implementation of the `__call__` method is found in @code:lsp_processor:
 #figure(
-  code(
-    lang: "Python",
-    ```py
-    # llm_lsp/lsp/lsp_processor.py
-    def __call__(self, input_ids: LongTensor, scores: FloatTensor) -> FloatTensor:
-        """Returns a 2d FloatTensor which has scores for every batch"""
-        if not self.config.lsp_processor or not self.config.enabled:
-            return scores
-        for i in range(input_ids.shape[0]):
-            try:
-                scores[i] = self.scores_for_batch(i, input_ids[i], scores[i])
-            except InterruptGeneration as ig:
-                scores[i][self.interrupt_token_id] = INTERRUPT_LOGITS_SCORE
-                self.interrupt = Interrupt(
-                    input_ids=input_ids,
-                    interrupt_context=ig.context,
-                    interrupt_type_name=ig.interrupt_type_name,
-                )
-                return scores
-        return scores
-    ```,
-  ),
+  codefile("/assets/code/lsp_processor.py"),
   caption: [The `__call__` method of the `LSPProcessor` class.],
 )<code:lsp_processor>
 
@@ -499,29 +347,7 @@ This section and the following section on the `LSP Processor` will provide detai
 
 The method starts with the following logic seen in @code:scores_for_batch_start:
 #figure(
-  code(
-    lang: "Python",
-    ```py
-    # llm_lsp/lsp/lsp_processor.py
-    def scores_for_batch(
-        self, i, input_ids: LongTensor, scores: FloatTensor
-    ) -> FloatTensor:
-        """Returns a 1d FloatTensor for a single batch"""
-        current_code = self.current_code(i, input_ids)
-        file_name = self.file_name(i)
-        with LspCodeFile(
-            file_name, current_code, self.lsp_clients[i // self.expand_size]
-        ) as lsp_code_file:
-            if self.should_complete(current_code):
-                completions = lsp_code_file.ask_completions()
-                completions = lsp_code_file.resolve_completions(completions)
-            else:
-                completions = []
-            trigger_phrase = re.search(r"[A-Za-z_]*$", current_code).group(0)
-            signature_help = lsp_code_file.ask_signature()
-            self.increase_signature_cache(signature_help, completions)
-    ```,
-  ),
+  codefile("/assets/code/lsp_processor_retrieval.py"),
   caption: [Start of the `scores_for_batch` method, listing how the context retrieved from a language server.],
 )<code:scores_for_batch_start>
 
@@ -580,28 +406,7 @@ Thus, this work implements the custom function `is_deprecated`, to properly dete
 The function is implemented in @code:is_deprecated:
 
 #figure(
-  code(
-    lang: "Python",
-    ```python
-    # llm_lsp/interrupts/deprecation.py
-    @lru_cache
-    def is_deprecated(item):
-        module_name, variable_parts = module_name_and_variable_parts(item)
-        try:
-            module = importlib.import_module(module_name)
-        except ModuleNotFoundError:
-            return False
-        except ValueError:
-            # empty module name
-            return False
-        variable = module
-        for variable_part in variable_parts:
-            if not hasattr(variable, variable_part):
-                return False
-            variable = getattr(variable, variable_part)
-        return hasattr(variable, "__deprecated__")
-    ```,
-  ),
+  codefile("/assets/code/is_deprecated.py"),
   caption: [The `is_deprecated` function, which determines if a completion item is deprecated. For speed, the results are memoized using a #acr("LRU") cache.],
 )<code:is_deprecated>
 
@@ -627,18 +432,7 @@ The interrupt is thrown through the `trigger_interrupt` method, which raises the
 The outer loop of the `LSP Processor` then catches the exception, sets the interrupt token id in the scores and sets the interrupt object in the `interrupt` attribute.
 The interrupt object has the structure seen in @code:interrupt_object:
 #figure(
-  code(
-    lang: "Python",
-    ```py
-    # llm_lsp/interrupts/__init__.py
-    @dataclass
-    class Interrupt:
-        # Tensor of (return_count * beams * batched_items_count) x currently_generated_tokens
-        input_ids: Tensor
-        interrupt_context: Any
-        interrupt_token_id: int
-    ```,
-  ),
+  codefile("/assets/code/interrupt_object.py"),
   caption: [The `Interrupt` dataclass, which is used to store the interrupt context and the interrupt token id.],
 )<code:interrupt_object>
 
@@ -729,20 +523,7 @@ Each of the interrupt types is used to inform the model about available completi
 Each interrupt type is implemented through a subclass from the #acr("ABC") `InterruptType`, which is located in `interrupts/__init__.py`.
 The implementation of the base class is shown in @code:interrupt_type:
 #figure(
-  code(
-    lang: "Python",
-    ```python
-    # llm_lsp/interrupts/__init__.py
-    class InterruptType(ABC):
-        @abstractmethod
-        def type_name(self) -> str:
-            pass
-
-        @abstractmethod
-        def create_comment(self, context: Any, code_util: CodeUtil) -> Optional[Comment]:
-            pass
-    ```,
-  ),
+  codefile("/assets/code/interrupt_type.py"),
   caption: [The `InterruptType` abstract base class, which is used to implement the different interrupt types.],
 )<code:interrupt_type>
 
@@ -845,13 +626,7 @@ Thus, the asynchronous nature is not progragated through the generation loop to 
 To use the completion and signature help features, the `LSPProcessor` now requires access to the outer event loop, to run the asynchronous functions.
 To solve this problem, the asynchronous code, nested in synchronous code, nested in asynchronous code, retrieves the current event loop and calls `run_until_complete` on every called asynchronous function:
 #figure(
-  code(
-    lang: "Python",
-    ```py
-    # llm_lsp/lsp/file.py
-     completions = asyncio.get_event_loop().run_until_complete(completion_awaitable)
-    ```,
-  ),
+  codefile("/assets/code/lsp_file.py"),
   caption: [Waiting on to be returned completions from the language server. The asynchronous code is run in the synchronous code by retrieving the current outer event loop.],
 )
 

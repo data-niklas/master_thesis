@@ -198,6 +198,37 @@
   )
 }
 
+#let codefile(file) = {
+  let file_content = read(file).trim()
+  let path_parts = file.split("/")
+  let last_part = path_parts.at(path_parts.len() - 1)
+  let id = last_part.split(".").at(0)
+  let language_extension = last_part.split(".").at(1)
+  let language_mapping = (
+    "py": "Python",
+    "ts": "TypeScript",
+    "json": "JSON",
+    "terminal": "Terminal",
+  )
+  let language = language_mapping.at(language_extension)
+  let body = none
+  let raw_code = raw(file_content, block: true, lang: language_extension)
+
+  if language_extension == "terminal" {
+    body = terminal(raw_code)
+  } else {
+    body = code(
+      raw_code,
+      lang: language,
+    )
+
+  }
+  link(
+    "https://data-niklas.github.io/master_thesis/#" + id,
+    body,
+  )
+}
+
 #let sys = box(raw("<<SYS>>"))
 #let sys- = box(raw("<</SYS>>"))
 #let inst = box(raw("[INST]"))

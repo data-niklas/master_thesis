@@ -45,14 +45,7 @@ The protocol is versioned. Currently the versions `1.0` and `2.0` are specified.
 
 Messages will be defined using TypeScript interfaces, in accordance with the #acr("LSP") specification. A general message has the following interface:
 #figure(
-  code(
-    lang: "TypeScript",
-    ```typescript
-    interface Message {
-        jsonrpc: string;
-    }
-    ```,
-  ),
+  codefile("/assets/code/lsp_message.ts"),
   caption: "General message interface",
 )
 
