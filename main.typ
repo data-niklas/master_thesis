@@ -17,13 +17,16 @@
   acronyms: acronyms,
   bibliography-file: "/bibliography.bib",
   matriculation-number: "3737339",
+  supervisor: "Prof. Dr. Artur Andrzejak",
+  supervisor-link: "https://aip.ifi.uni-heidelberg.de/team/aa",
   date-of-submission: datetime(
     year: 2024,
     month: 09,
     day: 30
   ),
   thesis-repo: "https://github.com/data-niklas/master_thesis",
-  appendix: include "/chapters/appendix/0_mod.typ"
+  appendix: include "/chapters/appendix/0_mod.typ",
+  link-style-exception-cb: it => it.dest.starts-with("https://data-niklas.github.io/master_thesis")
 )
 
 // We generated the example code below so you can see how

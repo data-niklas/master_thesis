@@ -57,6 +57,9 @@
   abstract-de: "",
   thesis-repo: none,
   appendix: none,
+  link-style-exception-cb: it => false,
+  supervisor: "",
+  supervisor-link: "",
 ) = {
   assert-types(
     title,
@@ -70,7 +73,7 @@
     thesis-repo,
   )
   show: doc => {
-    style(print-mode, doc)
+    style(print-mode, link-style-exception-cb, doc)
   }
   // Set the document's basic properties.
   set document(author: author, title: title)
@@ -87,6 +90,8 @@
     author: author,
     matriculation-number: matriculation-number,
     date-of-submission: date-of-submission,
+    supervisor: supervisor,
+    supervisor-link: supervisor-link
   )
   set page(numbering: "I", number-align: center)
   i-did-not-cheat-i-swear(author)

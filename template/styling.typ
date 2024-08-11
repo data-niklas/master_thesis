@@ -1,7 +1,7 @@
 #import "@preview/hydra:0.4.0": hydra
 #import "@preview/equate:0.2.0": equate
 
-#let link-style(print-mode, doc) = {
+#let link-style(print-mode, link-circle-exception-cb, doc) = {
   show link: it => {
     // Workaround for ctheorems package so that its labels keep the default link styling.
     // Ignore research question links
@@ -12,15 +12,13 @@
     if ignored-items.contains(it.body.func()) {
       return it
     }
-    // detect terminal function
-    if it.dest.starts-with("https://data-niklas.github.io/master_thesis") {
+    if link-circle-exception-cb(it) {
       return it
     }
+    // detect terminal function
     if print-mode {
       let body-fields = it.body.fields()
-      if type(it.dest) == str and (
-        "text" not in body-fields or body-fields.at("text") != it.dest
-      ) {
+      if type(it.dest) == str and ("text" not in body-fields or body-fields.at("text") != it.dest) {
         it + footnote(link(it.dest))
       } else {
         it
@@ -39,36 +37,48 @@
   doc
 }
 
-#let style(print-mode, doc) = {
-  set page(
-    margin: (
-      outside: 2.7cm,
-      inside: 2.5cm,
-      top: 2.5cm,
-      bottom: 2.5cm,
-    ),
-    header: context {
-      if calc.odd(here().page()) {
-        align(right, smallcaps(hydra(1, book: true)))
-      } else {
-        align(left, smallcaps(hydra(2, book: true)))
-      }
-      line(length: 100%)
-      counter(footnote).update(0)
-    },
-  )
-  set par(
-    leading: 0.55em,
-    first-line-indent: 1.8em,
-    justify: true,
-    linebreaks: "optimized",
-  )
-  set text(font: "New Computer Modern", spacing: 150%)
-  show footnote: set text(spacing: 100%)
-  show figure: set text(spacing: 100%)
-  show table: set text(spacing: 100%)
+#let heading-style(doc) = {
+
+  show heading.where(level: 1): set heading(supplement: [Chapter])
+  show heading.where(level: 1): set block(above: 0em, below: 1.2em)
+  show heading.where(level: 1): set text(size: 20pt)
+  show heading.where(level: 2): set block(above: 1.4em, below: 0.9em)
+  show heading.where(level: 2): set text(size: 15pt)
+  show heading.where(level: 3): set block(above: 1.2em, below: 0.7em)
+  show heading: it => {
+    set text(font: "New Computer Modern Sans")
+    it
+  }
+  show heading.where(level: 4): it => {
+    set text(font: "New Computer Modern Sans", size: 12pt, spacing: 150%)
+    [ \ ] + text(weight: "regular", style: "italic", it.body)
+  }
+  show heading.where(level: 1): it => {
+    pagebreak(weak: true)
+    it
+  }
+  show heading.where(level: 3): set heading(numbering: none)
+  show heading.where(level: 4): set heading(numbering: none)
+  show heading.where(level: 5): set heading(numbering: none)
+
+  doc
+}
+
+#let raw-math-style(doc) = {
+  show raw: set text(font: "New Computer Modern Mono", size: 11pt)
+  // Else texttt style text in normal backticks is too small
+  show raw.where(lang: none, block: false): set text(size: 11pt)
   set math.equation(supplement: "Equation", numbering: "(1.1)")
   show: equate.with(breakable: true, sub-numbering: true)
+  // Adds support for smappcaps in equations. Requires the patched NewComputerModernMath2 font
+  // Font modified by Erik Imgrund using fontforge
+  show math.equation: set text(font: "NewComputerModernMath2")
+  doc
+}
+
+#let figure-style(doc) = {
+  show figure: set text(spacing: 100%)
+  show table: set text(spacing: 100%)
 
   show figure.where(kind: table): set figure.caption(position: top)
   show figure.where(kind: image): set figure.caption(position: bottom)
@@ -143,28 +153,44 @@
       )
     }
   }
-  show raw: set text(font: "New Computer Modern Mono")
-  // Else texttt style text in normal backticks is too small
-  show raw.where(lang: none, block: false): set text(size: 11pt)
 
-  show par: set block(spacing: 0.55em)
-  show heading: set block(above: 1.4em, below: 0.3em)
-  show heading: it => {
-    set text(font: "New Computer Modern Sans")
-    it
-    v(1em)
-  }
-  show heading.where(level: 1): it => {
-    pagebreak(weak: true)
-    it
-  }
-  show heading.where(level: 3): set heading(numbering: none)
-  show heading.where(level: 3): set block(above: 1.4em, below: -0.2em)
-  show heading.where(level: 4): set heading(numbering: none)
-  // show heading.where(level: 4): it => [\ ] + strong(it.body) + [ ]
-  show heading.where(level: 4): it => {
-    set text(font: "New Computer Modern Sans", spacing: 150%)
-    [ \ ] + text(weight: "regular", style: "italic", it.body)
-  }
-  link-style(print-mode, doc)
+  doc
+}
+
+#let style(print-mode, link-style-exception-cb, doc) = {
+  set page(
+    margin: (
+      outside: 2.7cm,
+      inside: 2.5cm,
+      top: 2.5cm,
+      bottom: 2.5cm,
+    ),
+    header: context {
+      if calc.odd(here().page()) {
+        align(right, smallcaps(hydra(1, book: true)))
+      } else {
+        align(left, smallcaps(hydra(2, book: true)))
+      }
+      line(length: 100%)
+      counter(footnote).update(0)
+    },
+  )
+  set par(
+    leading: 0.7em,
+    first-line-indent: 0em,
+    justify: true,
+    linebreaks: "optimized",
+  )
+  set text(font: "New Computer Modern", spacing: 150%)
+
+
+  show footnote: set text(spacing: 100%)
+
+
+  show par: set block(spacing: 1.4em)
+  doc = figure-style(doc)
+  doc = raw-math-style(doc)
+  doc = heading-style(doc)
+  doc = link-style(print-mode, link-style-exception-cb, doc)
+  doc
 }

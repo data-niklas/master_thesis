@@ -3,6 +3,8 @@
   author: (),
   matriculation-number: "",
   date-of-submission: none,
+  supervisor: "",
+  supervisor-link: ""
 ) = {
   let smallskip = 3pt
   let Large = 14.4pt
@@ -59,8 +61,8 @@
               matriculation-number,
               [Betreuer:],
               link(
-                "https://aip.ifi.uni-heidelberg.de/team/aa",
-                "Prof. Dr. Artur Andrzejak",
+                supervisor-link,
+                supervisor,
               ),
               [Datum der Abgabe],
               date-of-submission.display(),
