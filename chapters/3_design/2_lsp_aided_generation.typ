@@ -92,7 +92,7 @@ This section provides details on different design decision for the introduced co
 The first design decision is the selection of sources to suggest fitting code. The previous sections already highlight why the #acr("LSP") is fitting.
 The protocol provides a vast amount of different information.
 We argue that the core information to use are the completion items and the signature help information.
-When generating code, the primary source are the completion items, as they dictate the available symbols. The completion items list the attributes of objects and which attributes are deprecated and should be replaced.
+When generating code, the primary source is the completion items, as they dictate the available symbols. The completion items list the attributes of objects and which attributes are deprecated and should be replaced.
 After using the completion items to write callable code, the secondary source is the signature help. Likewise, the signature help lists available parameters of a function call and includes documentation.
 Both types of information sources allow code generation using up-to-date information. Other features provided through #acr("LSP") may improve code generation, but are not vital, such as diagnostics information. In addition, both sources can be used on partial code and provide suggestions on how to extend the code, aiding the natural #acr("CLM") generation flow.
 Diagnostic information and other information reference code already written, increasing the difficulty to integrate into the natural generation flow.
@@ -116,7 +116,7 @@ This leads to the need for a `Comments Processor` to suppress the generation of 
 // RQ2: 5. Remove completions, such as snippets, units colors etc.
 // RQ2: 6. Remove signatures without parameters
 This section details the different processing steps for the retrieved completion items and signature help.
-Both sources provide critical information, but also a lot of unrelevant information not needed to decide on the next code piece.
+Both sources provide critical information, but also a lot of irrelevant information not needed to decide on the next code piece.
 Such context pollutes the context window of #acr("CLM") and worsens the prediction quality. As such, preprocessing is needed to filter such data.
 
 // Allow only specific types (no snippets)
@@ -128,10 +128,10 @@ Such context pollutes the context window of #acr("CLM") and worsens the predicti
 
 Completion items are initially filtered by their `CompletionItemKind`#footnote()[The full list is visible in @code:completion_item_kind]. Only items of kind `Method`, `Field`, `Class`, `Function`, `Property` or `Variable` are allowed, to remove kinds such as `Snippet`, `Color` and `File`.
 
-To reduce confusion further, completion items of builtins are removed, as the assumption is made that the model has the knowledge of builtins. If the model does not have knowledge about builtins, this filter can be disabled, to e.g improve support of low resource languages.
+To reduce confusion further, completion items of builtins are removed, as the assumption is made that the model has the knowledge of builtins. If the model does not have knowledge about builtins, this filter can be disabled, to e.g. improve support of low resource languages.
 Filtering is done by checking the `detail` field of the completion item, as it contains the origin of the code item, such as the code file.
 
-Next, completion items from the current code piece are removed. Similarily, it is assumed that the current code is in the context of the #acr("CLM").
+Next, completion items from the current code piece are removed. Similarly, it is assumed that the current code is in the context of the #acr("CLM").
 Again, this filter checks the `detail` field of the completion item.
 
 Then private or meta functions are removed, such as the `__getitem__` function in Python. These functions are not meant to be called directly.
