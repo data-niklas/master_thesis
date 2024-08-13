@@ -9,6 +9,7 @@
   "CLI": ("Command Line Interface"),
   "CLM": ("Causal Language Model"),
   "EOS": ("End of Sequence"),
+  "GQA": ("Grouped-Query Attention"),
   "IBMS": ("Interrupt-based meta-strategy"),
   "IDE": (
     "Integrated Development Environment",
@@ -26,6 +27,7 @@
   "MIME": ("Multipurpose Internet Mail Extensions"),
   "PAD": ("Padding"),
   "PEP": ("Python Enhancement Proposal"),
+  "RoPE": ("Rotary Position Embedding"),
   "PyPI": ("Python Package Index"),
   "RAG": ("Retrieval Augmented Generation"),
   "RPC": ("Remote Procedure Call"),

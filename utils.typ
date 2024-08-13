@@ -13,6 +13,9 @@
 )
 
 #let rq(number) = link(label("rq:" + str(number)))[*RQ#str(number)*]
+#let rqdataset(number) = link(
+  label("rqdataset:" + str(number)),
+)[*RQ#sub[dataset]#str(number)*]
 #let r(number) = link(label("r:" + str(number)))[*R#str(number)*]
 #let ribms(number) = link(
   label("ribms:" + str(number)),
