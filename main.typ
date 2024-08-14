@@ -26,7 +26,7 @@
   ),
   thesis-repo: "https://github.com/data-niklas/master_thesis",
   appendix: include "/chapters/appendix/0_mod.typ",
-  link-style-exception-cb: it => it.dest.starts-with("https://data-niklas.github.io/master_thesis")
+  link-style-exception-cb: it => str(it.dest).starts-with("https://data-niklas.github.io/master_thesis")
 )
 
 // We generated the example code below so you can see how

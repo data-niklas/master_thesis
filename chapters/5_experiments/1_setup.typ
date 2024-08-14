@@ -41,6 +41,9 @@ Lastly, the Magicoder-S-DS@weiMagicoderEmpoweringCode2024 model is based on the 
 It supports a context size of 16k tokens and is the only model that does not have #acr("GQA") enabled for the small model.
 
 After determining that the models behave similarly, the experiments will only use the Code Llama model, to reduce the computational requirements.
+
+Each of the previous models has support for the Transformers runtime, which enables the normal use of the models in the experiments.
+Next to these models, the behavior of the popular Copilot tool is of interest. While the model behind Copilot, Codex@chenEvaluatingLargeLanguage2021a, cannot be integrated into the approach, it can be used for normal code completion. It will be used as a baseline.
 // TODO: maybe talk about used data
 
 === Dataset
