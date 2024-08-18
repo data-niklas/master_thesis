@@ -53,5 +53,5 @@ Additionally, the dataset entries must include examples of deprecated code.
 The design section listed several scenarios, such as the use of alternatives to deprecated code or the use of e.g. renamed function parameters.
 
 The consequence is that this thesis created a new dataset, the DependencyEval dataset.
-The experiments will use the 22 hand chosen tasks from the dataset to evaluate the new approach in a controlled environment on several different scenarios.
-As the dataset only contains 22 tasks, a few experiment results will additionally be evaluated by hand.
+The experiments will use the #num-dataset hand chosen tasks from the dataset to evaluate the new approach in a controlled environment on several different scenarios.
+As the dataset only contains #num-dataset tasks, a few experiment results will additionally be evaluated by hand.

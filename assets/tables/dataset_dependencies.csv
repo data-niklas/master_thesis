@@ -4,10 +4,12 @@ dateutil,2282,1
 dotted,181,2
 emoji,1852,1
 fastapi,73298,1
+numpy,27356,1
+pandas,43018,1
 polars,27881,1
 pydantic,19643,3
 pytorch,80214,3
-rich,48161,1
+rich,48161,2
 sklearn,58838,2
 sqlalchemy,9145,1
 textual,24102,2

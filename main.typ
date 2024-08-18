@@ -1,11 +1,12 @@
 #import "template/0_mod.typ": *
 #import "acronyms.typ": *
+#import "/utils.typ": print-mode
 // Take a look at the file `template.typ` in the file panel
 // to customize this template and discover how it works.
 #show: project.with(
   title: "Interrupt-Guided Neural Code Completion with Static Analysis of Dependencies",
   author: "Niklas Loeser",
-  print-mode: false,
+  print-mode: print-mode,
   // Insert your abstract after the colon, wrapped in brackets.
   // Example: `abstract: [This is my abstract...]`
   abstract-en: [

@@ -50,7 +50,7 @@ After evaluating the accuracy of the models when using dependencies, the general
 
 ==== RQ4: How easily does the approach confuse the model?<rq:4>
 The research question focuses on the general robustness of the approach and checks if the approach can improve scenarios without affecting the functional result.
-How easily is the model confused by the appraoch?
+How easily is the model confused by the approach?
 
 Especially the experiment results of the approach are analyzed against the baseline, which fail the functional test, but pass the approach test.
 // 1. How easily does the approach confuse the model?

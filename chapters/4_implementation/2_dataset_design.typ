@@ -33,7 +33,8 @@ The structure of the repository is fourfold.
 The `data` directory contains all information to build the distributable dataset, which is then located in `data/dist`.
 The evaluation results of the dataset are stored in `evaluations`, such that they are persisted in Git.
 The Python package `dependency_eval` can be executed with Python, which runs the file `__main__.py` and serves the functionality through the #acr("CLI") program.
-The evaluations use different model configurations, of which some used with the approach are stored in `model_configurations`.
+The evaluations use different model configurations, which are stored in `model_configurations`.
+Similar to how model are evaluated with different configurations, the approach is evaluated with different configurations, which are stored in `lsp_generation_configurations`.
 
 === Dataset Distribution
 The distributable dataset is a `.jsonl` file, where each row is a #acr("JSON") dictionary with the schema as introduced in @code:dataset:format.
@@ -214,3 +215,24 @@ Single arguments are defined through the `click.option` decorator.
 
 The `create_venvs` function defined in @code:dataset:main defines a subcommand with the same name, taking three arguments, of which two have a default value.
 All uppercase variables are constants either defined in `dependnecy_eval/constants.py`, or in other parts of the file.
+
+=== Data Collection
+While the previous sections detail the evaluation pipeline, this section briefly details the data collection process.
+The process consists of `crawling`, `filtering`, `scenario extraction` and `scenario validation`.
+
+In the first step `crawling`, possible Python dependencies are searched for manually, either by searching through #acr("PyPI"), by browsing the web, asking colleagues or through any other means.
+As this is a manual process, it is inefficient, different sources provide duplicates.
+
+While crawling and afterward, the dependencies are filtered after different criteria.
+Each dependency must not have too many tasks present in the dataset yet. Currently, the highest amount of tasks per dependency is $3$ (pydantic). In this case pydantic would be filtered in favor of other dependencies.
+Additionally, the dependency must have some form of changelog, which can be used to determine potential scenarios, such as deprecation etc.
+Usually the dependency has a Git repository, which includes some form of changelog file in the root directory (`CHANGELOG`, `CHANGELOG.md`, `NEWS`, `HISTORY`, etc.).
+Alternatively, the changelog can often be found in the GitHub releases tab. Popular dependencies also have a changelog on their website.
+Another criteria is how well the approach correctness and functional correctness of scenarios can be tested. Crafting scenarios for some dependencies is hard, such as game engines.
+In the filtering process, algorithmic libraries are preferred to such dependencies, as they are easier to test.
+
+Then, the changelog is skimmed for potential scenarios, while the previous criteria are kept in mind. If a plausible scenario is found, a task is created, including the approach and functional correctness tests.
+At last, the functional tests are run to validate the gold solution.
+
+The manual collection process is time-consuming and increases per found scenario, as it is difficult to find dependencies which match all criteria.
+E.g. the time spent on finding a suitable 22nd task took ~$30$-$60$minutes, while the first three tasks took ~$10$-$20$minutes each.

@@ -201,7 +201,7 @@ changelog. Repositories are then selected based on the different mentioned scena
 are kept, for which test cases can easily be written and executed, removing dependencies requiring a complex setup to
 use the changed functionality.
 
-Currently, the dataset contains 22 entries for 14 different dependencies:
+Currently, the dataset contains #num-dataset entries for 16 different dependencies:
 #{
   show figure: set block(breakable: true)
   figure(

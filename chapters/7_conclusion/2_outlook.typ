@@ -14,9 +14,14 @@ It is still left to be seen, how models react to the control techniques used in 
 Other works already focus on different means of control, such as model weight editing, which allows for the manipulation of the model's weights.
 Future work could combine information from static analysis through the #acr("LSP") with model weight editing, similar to Imgrund (2024)@imgrundLocatingEditingKnowledge2024, to further improve the control over the model.
 
-At last, future work could focus on the area of context injection. This work injects context into the system prompt, as the instruction tuned models have issues following instructions in other formats.
+Furthermore, future work could focus on the area of context injection. This work injects context into the system prompt, as the instruction tuned models have issues following instructions in other formats.
 Custom special tokens could be added to the vocabulary, which signify the start of certain embedded code context, such as the signature help.
 By training the model with the added tokens, and a fitting dataset, the instruction following capabilities for embedded contexts could potentially be improved for code completion.
+
+At last, the thesis uses the novel dataset DependencyEval, to evaluate the approach used by completed code. It is the first of its kind, providing different types of tests to distinguish between functionally correct code and code using the correct approach.
+Due to the high effort associated with creating the dataset, and it not being the focus of the thesis, the dataset is still small and only contains #num-dataset samples.
+Future work could focus on expanding the dataset, to provide a more comprehensive evaluation of the model's performance using more samples.
+// TODO: how did I collect examples, for future work
 
 // Thesis touches on lots of topics, which may be deepened
 // LSP / static analysis

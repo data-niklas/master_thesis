@@ -18,7 +18,9 @@
     // detect terminal function
     if print-mode {
       let body-fields = it.body.fields()
-      if type(it.dest) == str and ("text" not in body-fields or body-fields.at("text") != it.dest) {
+      if type(it.dest) == str and (
+        "text" not in body-fields or body-fields.at("text") != it.dest
+      ) {
         it + footnote(link(it.dest))
       } else {
         it
@@ -65,7 +67,7 @@
 }
 
 #let raw-math-style(doc) = {
-  show raw: set text(font: "New Computer Modern Mono", size: 11pt)
+  show raw: set text(font: "New Computer Modern Mono", size: 10pt)
   // Else texttt style text in normal backticks is too small
   show raw.where(lang: none, block: false): set text(size: 11pt)
   set math.equation(supplement: "Equation", numbering: "(1.1)")

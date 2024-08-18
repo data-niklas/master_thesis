@@ -2,6 +2,7 @@
 #import "@preview/sourcerer:0.2.1": code
 #import "@preview/typpuccino:0.1.0": latte, frappe, macchiato, mocha
 
+#let print-mode = false
 #let theme = mocha
 
 #let example(body, caption: "") = figure(
@@ -245,3 +246,4 @@
   height: 1em,
   baseline: (1em - measure([T]).height) / 2,
 )
+#let num-dataset = 25

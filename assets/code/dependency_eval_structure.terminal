@@ -6,6 +6,7 @@
 [subtext1]│   ├── metadata.json
 [subtext1]│   └── schema.json
 [subtext1]├── [sapphire,bold]model_configurations
+[subtext1]├── [sapphire,bold]lsp_generation_configurations
 [subtext1]├── [sapphire,bold]evaluations
 [subtext1]└── [sapphire,bold]dependency_eval
 [subtext1]    ├── ... other modules ...
