@@ -42,6 +42,14 @@ The other files and submodules contain various types of utilities, fixes and con
 
 #todo()[List all design components and classes in this section, to provide an overview]
 
+=== Environment Separation
+The approach separates the runtime environment of the approach from the project environment, to prevent conflicts in dependencies.
+While e.g. the approach requires a specific version of the Transformers library, the project may also use Transformers, but a different version.
+The runtime requires one version for code completion, while the other version is required for the language features, leading to a conflict.
+
+The approach is started while in the runtime environment. The language server uses the project environment, and some functions are run in the project environment.
+This will be detailed in later sections.
+
 === Configuration
 All behavior of the approach can be toggled through fields of the data class `LspGenerationConfig`. This enables the analysis of certain behaviors on the performance of the approach, as well as introspection through logging.
 
@@ -407,13 +415,15 @@ The function is implemented in @code:is_deprecated:
 
 #figure(
   codefile("/assets/code/is_deprecated.py"),
-  caption: [The `is_deprecated` function, which determines if a completion item is deprecated. For speed, the results are memoized using a #acr("LRU") cache.],
+  caption: [The `is_deprecated` function, which determines if a completion item is deprecated. This function is called from a subprocess using the project environment.],
 )<code:is_deprecated>
 
 @code:is_deprecated loads the module a value is stored in, retrieves the value from the module and then checks for the meta-attribute `__deprecated__`. If the field is present, the value is deprecated, in any other case it is not.
-As importing from packages may be slow and the function is called repeatedly, the results are memoized using the `lru_cache` decorator.
 
 To use the function in the `LSP Processor`, the import path of the value is constructed, by concatenating the module path from the `detail` field with the name of the symbol in the following format: `is_deprecated(completion.detail + "." + completion.insert_text)`.
+
+As this function needs to be run in the project environment, the function is extracted into a separate file `venv_language_features.py`, which is then executed using the Python interpreter of the project environment. All variables are communicated via standard streams.
+As importing, starting many processes is slow, and the function is called repeatedly, the results are memoized using the `lru_cache` decorator.
 
 #todo[Talk about scope, so when can items be removed? in design]
 After splitting the items, each of the three interrupt types completion, deprecation and signature help checks if context needs to be inserted. Each of the three checks works similarly:
@@ -585,14 +595,9 @@ The code passes several important initialization parameters to the language serv
   / `tag_support`: Enable support for the deprecation tag on completion items.
   / `resolve_support`: Enable support to receive detailed information on completion items, enabling complex filtering.
 
-Additionally, the `workspace_did_change_configuration` method sends the similarly named notification to inform the language server about workspace configurations.
-In particular, the following configuration is essential to find installed dependencies:
-```json
-{
-    "pylsp.plugins.jedi.environment": "/path/to/venv/bin/python"
-}
-```
-The code automatically finds the virtual environment from the project root path and sets it for the language server to use.
+Additionally, to the #acr("LSP") messages, the environment variable `VIRTUAL_ENV` is ensured to be set. If it is not set yet, the virtual environment is determined by the project root path and set.
+The environment variable is used by the language server to determine the installed packages and to provide completion items and signature help.
+This allow separating the runtime environment for the approach and the project environment, ensuring that the approach does not interfere with the project environment.
 
 ==== Temporary Code File.
 The completion and signature help on partially completed code is abstracted through the `LspCodeFile` class in `lsp/file.py`.

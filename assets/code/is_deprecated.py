@@ -1,5 +1,4 @@
-# llm_lsp/interrupts/deprecation.py
-@lru_cache
+# llm_lsp/interrupts/venv_language_features.py
 def is_deprecated(item):
     module_name, variable_parts = module_name_and_variable_parts(item)
     try:
@@ -15,4 +14,3 @@ def is_deprecated(item):
             return False
         variable = getattr(variable, variable_part)
     return hasattr(variable, "__deprecated__")
-

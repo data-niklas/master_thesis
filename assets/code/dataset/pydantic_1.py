@@ -1,5 +1,7 @@
-from typing import Dict, Any
+from typing import Any, Dict
+
 from pydantic import BaseModel
+
 
 class User(BaseModel):
     name: str
@@ -14,6 +16,5 @@ def convert_user_to_dict(user: User) -> Dict[str, Any]:
 
     Returns:
         Dict[str, Any]: User attributes as a Python key value mapping
-    """
+    """    
     return user.model_dump()
-

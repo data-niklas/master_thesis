@@ -216,7 +216,7 @@ Currently, the dataset contains #num-dataset entries for 16 different dependenci
 The following two examples serve as important test cases for the evaluation of neural code completion:
 
 #figure(
-  codefile("/assets/code/pydantic_1.py"),
+  codefile("/assets/code/dataset/pydantic_1.py"),
   caption: "Example code snippet for Pydantic showing the correct completion",
 )<code:dataset:pydantic>
 @code:dataset:pydantic targets the major change from `Pydantic` version `1.x.x` to `2.x.x`, renaming a few core
@@ -224,7 +224,7 @@ methods@SerializationPydantic. `Pydantic` is a data validation library for Pytho
 types to and from Python dictionaries. To converte a `Pydantic` model to a dictionary, previously the method `dict`
 would be called. This was renamed to `model_dump`. The previous method is still available and marked as deprecated. As
 the library is widely used and the change in April 2023, lots of publicly available code snippets contain the old
-method. In addition, the standard library method `dict` is used in a similar way, making it hard to distinguish between
+method. In addition, the standard library method `dict` is used similarly, making it hard to distinguish between
 the two.
 
 #todo()[Example copilot]
@@ -233,7 +233,7 @@ the two.
 #todo()[Mention in evaluation that all LLMs cannot complete the pydantic example previously, cause biased]
 
 #figure(
-  codefile("/assets/code/textual_1.py"),
+  codefile("/assets/code/dataset/textual_1.py"),
   caption: "Example code snippet for Textual showing the correct completion",
 )<code:dataset:textual>
 While the previous example targets the dereferencing of a method, the example @code:dataset:textual targets the

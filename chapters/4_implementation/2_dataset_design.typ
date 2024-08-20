@@ -43,7 +43,7 @@ Thus, the basis for the dataset is a easily human readable form, which simplifie
 One base is the `data/tasks` directory, which includes a single code file for each task. The code files are named after the task and include the whole code, including the gold solution.
 
 #figure(
-  codefile("/assets/code/textual_1_task.py"),
+  codefile("/assets/code/dataset/textual_1.py"),
   caption: [The contents of the `data/tasks/textual_1.py` file, which is used to create the task `textual_1` in the DependencyEval dataset. The file is split to obtain the imports, additional context, the function definition, function documentation string and gold standard completion.],
 )<code:dataset:textual_1>
 
@@ -78,7 +78,7 @@ The test setup requires three components to fit together:
 2. disabling logging to access and log the test results, while
 3. mocking used objects to introspect the used approach.
 
-Typically unit tests are either run through the command line using the unit test module:
+Typically, unit tests are either run through the command line using the unit test module:
 ```bash
 python -m unittest path/to/file.py
 ```,
@@ -169,16 +169,13 @@ The salt is unique to the run and obtained by taking the first 8 characters of a
 )<code:evaluation:salt>
 This allows for multiple evaluations to run in parallel, without interfering with each other.
 
-=== Test Metric Calculation
-#todo[Move to evaluation?]
-
 === Virtual Environment Management
-Running the neural code completion requires a whole Python virtual environment per task, as each task has its own pinned dependencies.
-As creating each environment may take several minutes, especially when installing larger dependencies, the environments are cached and reused.
+Running the neural code completion requires a whole Python virtual environment per task, as each task has its own pinned dependencies, the project environment.
+As creating each environment may take up to several minutes when installing larger dependencies, the environments are cached and reused.
 
 #figure(
-  codefile("/assets/code/venv_cache_size.terminal"),
-  caption: [Space used by the virtual environments in the cache. Results obtained using `ncdu`. Each directory is a Python virtual environment containing specific dependencies and the installed approach.],
+  codefile("/assets/code/optimized_venv_cache_size.terminal"),
+  caption: [Space used by the virtual environments in the cache. Results obtained using `ncdu`. Each directory is a Python virtual environment containing specific dependencies of a task.],
 )<terminal:venv_cache>
 
 The dependencies are first sorted, then hashed using SHA256, to further enable reuse between tasks.
@@ -194,10 +191,12 @@ Instead of the typical #acr("CLI") use, the following Python functions are used,
 The `EnvBuilder` in @code:dataset:venv_creation creates the base environment without further dependencies. After manually installing `packaging` and `wheel`, the remaining dependencies can be installed using a regular `pip install`, using the Python installation of the virtual environment.
 
 If the virtual environment exists yet, it is cloned into the code directory, such that the neural code completion can find the environment.
-As virtual environments contain links, copying is non trivial and involves more than copying the directory.
+As virtual environments contain links, copying is non-trivial and involves more than copying the directory.
 Thus, the dependency `clonevirtualenv` is used to clone the cached environment.
 
 The environments may be prepopulated once before evaluation, by running the subcommand `create_venvs`.
+
+Using the same approach the runtime environment is created once, before the evaluation starts. Only the approach is installed into the runtime environment.
 
 === Main
 The main file has the following structure, as seen in @code:dataset:main:
