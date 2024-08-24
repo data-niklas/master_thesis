@@ -148,11 +148,11 @@ The Docker container is started with the following arguments seen in @code:evalu
 
 #figure(
   codefile("/assets/code/docker_run.py"),
-  caption: [Arguments to Docker run, which starts the evaluation in a Docker container.],
+  caption: [Arguments to Docker run, which starts the evaluation in a Docker container. Note that Git is installed to support installing dependencies from Git repositories.],
 )<code:evaluation:docker>
 
 The Docker container image is an official Python image, where the Python version is set from the task.
-Ultimatively this creates the specific environment needed for the task. The Python package dependencies are installed inside of the container, before running the evaluation.
+Ultimately, this creates the specific environment needed for the task. The Python package dependencies are installed inside the container, before running the evaluation.
 The code to evaluate is mounted into the container, next to the requirements file.
 The compute is limited to a single CPU.
 

@@ -15,7 +15,7 @@ For each of the research questions, the evaluation will focus on the deprecation
 E.g. the section will allow functionally incorrect code, as long as the dependencies are used correctly, no deprecated code is used and the correct function parameters are used.
 // TODO: say denpendency test is used
 
-==== RQ1: In which scenarios does normal code completion fail to use dependencies correctly?<rq:1>
+==== RQ1: In which scenarios does regular code completion fail to use dependencies correctly?<rq:1>
 // 1. In which scenarios does normal code completion fail to use dependencies correctly?
 While further research questions focus on possible improvements using the approach, this question starts with the current state of code completion.
 It goes beyond simply evaluating the accuracy of the baseline, but aims to identify concrete scenarios where the baseline fails to use dependencies correctly.

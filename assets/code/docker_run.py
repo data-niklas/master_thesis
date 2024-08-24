@@ -19,6 +19,5 @@ def get_docker_cmd(item: Dict[str, Any], code_file: str, requirements_file: str)
         get_docker_image(item["python_version"]),
         "sh",
         "-c",
-        "python -m venv /tool/venv && /tool/venv/bin/pip install -r /tool/requirements.txt 2>error.log >/dev/null && /tool/venv/bin/python llm_lsp_code.py || cat error.log",
+        "apt update >/dev/null 2>/dev/null&& apt install git -y >/dev/null 2>/dev/null && python -m venv /tool/venv && /tool/venv/bin/pip install -r /tool/requirements.txt 2>error.log >/dev/null && /tool/venv/bin/python llm_lsp_code.py || cat error.log",
     ]
-

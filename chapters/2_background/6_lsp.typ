@@ -13,10 +13,10 @@ Many modern editors and #acrpl("IDE") provide features such as:
 This list is not exhaustive, and the features between different editors may vary. These features are vital for any programmer, as the effort to create and maintain code is significantly reduced. Navigating large code bases and finding documentation on used code is highly beneficial.
 
 // High effort
-These many features take a significant effort to implement for a *single* programming language and editor. Providing support for several programming languages massively increases the implementation effort. In addition, the created features must be maintained next to the editor itself. As more programming languages are designed and are adopted, the need for tooling for these programming languages arises. Editor maintainers must then integrate these features for the new programming language.
+These many features take a significant effort to implement for a *single* programming language and editor. Providing support for several programming languages massively increases the implementation effort. In addition, the created features must be maintained next to the editor itself. As more programming languages are designed and adopted, the need for tooling for these programming languages arises. Editor maintainers must then integrate these features for the new programming language.
 // Example Rust a few years ago, zig now, koka in the feature, crystal, ...
 
-Providing support for an ever increasing amount of programming languages is hard, but supporting these features for an ever increasing amount of programming languages in every editor is impossible. Many diverse editors exist, such as Emacs@GNUEmacsGNU@LSPModeLanguage, VSCode@VisualStudioCode@LanguageServerExtension, Neovim (modern fork of Vim)@HomeNeovim@LspNeovimDocs, Zed (the successor of Atom)@ZedCodeSpeed@AddingNewLanguages, Jetbrains #acrpl("IDE")@JetBrainsIDEsEnjoy@LanguageServerProtocol, Helix@HelixeditorHelix2024@LanguageSupport and many more.
+Providing support for an ever-increasing amount of programming languages is hard, but supporting these features for an ever-increasing amount of programming languages in every editor is impossible. Many diverse editors exist, such as Emacs@GNUEmacsGNU@LSPModeLanguage, VSCode@VisualStudioCode@LanguageServerExtension, Neovim (modern fork of Vim)@HomeNeovim@LspNeovimDocs, Zed (the successor of Atom)@ZedCodeSpeed@AddingNewLanguages, Jetbrains #acrpl("IDE")@JetBrainsIDEsEnjoy@LanguageServerProtocol, Helix@HelixeditorHelix2024@LanguageSupport and many more.
 // TODO: reference every editor
 
 Thus, a solution is needed to extract the *common* features from the editors and provide them centrally, such that every editor need only implement an interface to integrate the common features.
@@ -27,7 +27,7 @@ The protocol is based on a bidirectional client-server architecture. The client 
 The protocol is capability based. Both parties define and communicate their capabilities, then find common capabilities and restrict their use to them.
 Each client can connect to multiple language servers, and each language server can serve multiple clients. As such a client could use a language server for the Rust programming language while the user is coding on a Rust project. As soon as the user switches projects to a web project, the editor could then connect to several language servers to provide support for HTML, CSS and JavaScript at once. In that scenario several simultaneous language servers are necessary, as CSS and JavaScript can be embedded into HTML.
 // Embedded programming languages!? Code block in markdown
-The communication between the client and server must be bidirectional, as the server must be able to notify the client about events occuring, such as new diagnostic information.
+The communication between the client and server must be bidirectional, as the server must be able to notify the client about events occurring, such as new diagnostic information.
 
 === JSON-RPC
 The base protocol relies on #acr("JSON-RPC"). The following section will give a short introduction on the protocol.
@@ -35,7 +35,7 @@ The content part is specified using #acr("JSON-RPC"). #acr("JSON-RPC") is a ligh
 // TODO: http, websockets, etc
 
 // Versioning
-The protocol is versioned. Currently the versions `1.0` and `2.0` are specified. The #acr("LSP") uses version `2.0` of #acr("JSON-RPC"). Henceforth, the sections will focus on version `2.0` of the protocol.
+The protocol is versioned. Currently, the versions `1.0` and `2.0` are specified. The #acr("LSP") uses version `2.0` of #acr("JSON-RPC"). Henceforth, the sections will focus on version `2.0` of the protocol.
 
 #acr("JSON-RPC") defines three types of messages:
 - Requests
@@ -183,12 +183,12 @@ Other messages for synchronizing documents and notebooks exist and are omitted.
 
 === Language Features
 This section displays messages to query language features. The #acr("LSP") specification defines many different features, of which this section highlights the few relevant ones:
-- Auto Completion
+- Auto-Completion
 - Signature help
 - Provide diagnostics data on the current file
 
 // Completion
-The auto completion feature provides a list of completion items for a given position in a document. The completion items can be selected to provide more detailed information. On applying the selected completion item, the completion text is inserted into the document at the given position.
+The auto-completion feature provides a list of completion items for a given position in a document. The completion items can be selected to provide more detailed information. On applying the selected completion item, the completion text is inserted into the document at the given position.
 The feature is split into the two messages `textDocument/completion` and `completionItem/resolve`.The first message queries the completion items for the given position in a text document. Each completion item only contains basic information. If further details are required, the second message `completionItem/resolve` asks the server to extend a single completion item with in depth details.
 
 A completion item has the following structure:
@@ -209,7 +209,7 @@ The next field `kind` specifies the type of the completion item. The type refers
 
 Annotations can be found in the field `tags`. The only supported tag is `Deprecated`, as defined in @code:completion_item_tag. It replaces the now deprecated field `deprecated`.
 
-After receiving the completion items, the client can display the items in a list. The field `preselect` can mark a *single* completion item to be preselected in the list. Additionally, the client may filter and sort the items. In these cases it should use the fields `filterText` and `sortText` for theses tasks, instead of `label`.
+After receiving the completion items, the client can display the items in a list. The field `preselect` can mark a *single* completion item to be preselected in the list. Additionally, the client may filter and sort the items. In these cases it should use the fields `filterText` and `sortText` for these tasks, instead of `label`.
 
 Additional server specific data is stored in the field `data`. This information is needed by the server to resolve the completion item and should not be changed.
 // CompletionItemLabelDetails

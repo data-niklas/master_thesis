@@ -3,9 +3,8 @@
 #todo()[Simpler languages like LISP easier to integrate auto completion, as less syntactical sugar? (example where instead of object.method it uses {} in python)]
 
 #{
-  include "1_collection.typ"
-  include "2_configurations.typ"
-  include "3_results.typ"
+  include "1_approach.typ"
+  include "2_dataset.typ"
 }
 
 /* ~ General flow ~

@@ -21,7 +21,6 @@ By training the model with the added tokens, and a fitting dataset, the instruct
 At last, the thesis uses the novel dataset DependencyEval, to evaluate the approach used by completed code. It is the first of its kind, providing different types of tests to distinguish between functionally correct code and code using the correct approach.
 Due to the high effort associated with creating the dataset, and it not being the focus of the thesis, the dataset is still small and only contains #num-dataset samples.
 Future work could focus on expanding the dataset, to provide a more comprehensive evaluation of the model's performance using more samples.
-// TODO: how did I collect examples, for future work
 
 // Thesis touches on lots of topics, which may be deepened
 // LSP / static analysis

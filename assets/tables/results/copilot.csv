@@ -1,0 +1,13 @@
+Fully solved,Partially solved,Not solved,Errors
+#2,11,9,3
+dateutil_1,bidict_1,dotted_1,sklearn_1
+pytorch_1,bidict_2,fastapi_1,textual_1
+,dotted_2,pandas_1,theflow_1
+,emoji_1,polars_1,
+,numpy_1,rich_1,
+,pydantic_1,rich_2,
+,pydantic_2,sqlalchemy_1,
+,pydantic_3,textual_2,
+,pytorch_2,tsv2py_1,
+,pytorch_3,,
+,sklearn_2,,
