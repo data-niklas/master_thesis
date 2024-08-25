@@ -318,7 +318,18 @@
   evaluations.filter(evaluation => evaluation.at("config").at("do_sample") == sampling)
 }
 #let filter-evaluations-by-beams(evaluations, beams) = {
-  evaluations.filter(evaluation => evaluation.at("config").at("num_beams") == beams)
+  evaluations.filter(evaluation => {
+    let config = evaluation.at("config")
+    if "num_beams" not in config {
+      if beams == 1 {
+        true
+      } else {
+        false
+      }
+    } else {
+      config.at("num_beams") == beams
+    }
+  })
 }
 #let filter-items(evaluations, key, value) = {
   evaluations.map(evaluation => {
@@ -375,12 +386,27 @@
   )
   stats
 }
-#let average-stats(stats) = {
-  let total = stats.map(stat => stat.at("total")).sum()
+#let total-stats(stats) = {
   let full = stats.map(stat => stat.at("full")).sum()
   let partial = stats.map(stat => stat.at("partial")).sum()
   let nil = stats.map(stat => stat.at("none")).sum()
   let error = stats.map(stat => stat.at("error")).sum()
+
+
+  let stats = (
+    "full": full,
+    "partial": partial,
+    "none": nil,
+    "error": error,
+  )
+  stats
+}
+#let average-stats(stats) = {
+  let full = stats.map(stat => stat.at("full")).sum()
+  let partial = stats.map(stat => stat.at("partial")).sum()
+  let nil = stats.map(stat => stat.at("none")).sum()
+  let error = stats.map(stat => stat.at("error")).sum()
+  let total = stats.map(stat => stat.at("total")).sum()
   let full_p = full / total * 100
   let full_p_f = strfmt("{:.2}", full_p)
   let partial_p = partial / total * 100
@@ -407,30 +433,65 @@
   )
   stats
 }
-#let stats-table(stats) = {
+#let stats-table(stats, show-total: true, diff: false) = {
+  let columns = if show-total {
+    6
+  } else {
+    5
+  }
+  let align = if show-total {
+    (left, right, right, right, right, right)
+  } else {
+    (left, right, right, right, right)
+  }
+  let header = (
+    "Name",
+    "Total",
+    "Fully solved",
+    "Partially Solved",
+    "Not solved",
+    "Error",
+  )
+  if not show-total {
+    let _ = header.remove(1)
+  }
   table(
-    columns: 6,
-    align: (left, right, right, right, right, right),
-    table.header(..(
-      "Name",
-      "Total",
-      "Fully solved",
-      "Partially Solved",
-      "Not solved",
-      "Error",
-    )),
+    columns: columns,
+    align: align,
+    table.header(..header),
     ..stats.map(name-stat => {
       let name = name-stat.at(0)
       let stat = name-stat.at(1)
+      let get-stat(key) = {
+        let value = stat.at(key)
+        if diff and value > 0 {
+          "+" + str(value)
+        } else if diff and value == 0 {
+          sym.plus.minus + "0"
+        } else {
+          str(value)
+        }
+      }
       let get-p(
         key,
-      ) = stat.at(key + "_p_f") + "% (" + str(stat.at(key)) + ")"
-      let total = stat.at("total")
+      ) = {
+        let key_pf = key + "_p_f"
+        if key_pf in stat {
+          stat.at(key_pf) + "% (" + get-stat(key) + ")"
+        } else {
+          get-stat(key)
+        }
+      }
       let full = get-p("full")
       let partial = get-p("partial")
       let nil = get-p("none")
       let error = get-p("error")
-      (name, str(total), full, partial, nil, error)
+      let result = (name, full, partial, nil, error)
+      if show-total {
+        let total = stat.at("total")
+        let _ = result.insert(1, str(total))
+      }
+      result
     }).flatten(),
   )
 }
@@ -448,5 +509,182 @@
 
   body
 }
+#let get-task-stats(evaluations, key: "evaluated_code_llm_lsp") = {
+  let tasks = (:)
+  for evaluation in evaluations {
+    let items = evaluation.at("items")
+    for item in items {
+      let task = item.at("task_name")
+      if task not in tasks {
+        tasks.insert(
+          task,
+          (
+            "total": evaluations.len(),
+            "full": 0,
+            "partial": 0,
+            "none": 0,
+            "error": 0,
+          ),
+        )
+      }
+      let task_stats = tasks.at(task)
+      let value = map-evaluated-value(item.at(key))
+      task_stats.insert(value, task_stats.at(value) + 1)
+      tasks.insert(task, task_stats)
+    }
+  }
+  for task in tasks.keys() {
+    // add _p and _p_f values
+    let task_stats = tasks.at(task)
+    let total = task_stats.at("total")
+    let full = task_stats.at(FULL)
+    let partial = task_stats.at(PARTIAL)
+    let nil = task_stats.at(NONE)
+    let error = task_stats.at(ERROR)
+    let full_p = full / total * 100
+    let full_p_f = strfmt("{:.2}", full_p)
+    let partial_p = partial / total * 100
+    let partial_p_f = strfmt("{:.2}", partial_p)
+    let nil_p = nil / total * 100
+    let nil_p_f = strfmt("{:.2}", nil_p)
+    let error_p = error / total * 100
+    let error_p_f = strfmt("{:.2}", error_p)
+    task_stats.insert("full_p", full_p)
+    task_stats.insert("full_p_f", full_p_f)
+    task_stats.insert("partial_p", partial_p)
+    task_stats.insert("partial_p_f", partial_p_f)
+    task_stats.insert("none_p", nil_p)
+    task_stats.insert("none_p_f", nil_p_f)
+    task_stats.insert("error_p", error_p)
+    task_stats.insert("error_p_f", error_p_f)
+    tasks.insert(task, task_stats)
+  }
+  tasks
+}
+#let task-sorted-key(task) = (
+  task.at(1).at("full_p"),
+  task.at(1).at("partial_p"),
+  task.at(1).at("none_p"),
+  task.at(1).at("error_p"),
+)
+#let task-stats-table(task-stats, show-total: true) = {
+  let final-row = if show-total {
+    ("Average", average-stats(task-stats.values()))
+  } else {
+    ("Total", total-stats(task-stats.values()))
+  }
+  stats-table(
+    show-total: show-total,
+    task-stats.pairs().sorted(key: task-sorted-key).rev() + (final-row,),
+  )
+}
+
+#let stats-percentage(stats) = {
+  let full = stats.at("full")
+  let partial = stats.at("partial")
+  let nil = stats.at("none")
+  let error = stats.at("error")
+  let total = (full, partial, nil, error).map(calc.abs).sum()
+  let full_p = full / total * 100
+  let full_p_f = strfmt("{:.2}", full_p)
+  let partial_p = partial / total * 100
+  let partial_p_f = strfmt("{:.2}", partial_p)
+  let nil_p = nil / total * 100
+  let nil_p_f = strfmt("{:.2}", nil_p)
+  let error_p = error / total * 100
+  let error_p_f = strfmt("{:.2}", error_p)
+  let stats = (
+    "total": total,
+    "full": full,
+    "partial": partial,
+    "none": nil,
+    "error": error,
+    "full_p": full_p,
+    "full_p_f": full_p_f,
+    "partial_p": partial_p,
+    "partial_p_f": partial_p_f,
+    "none_p": nil_p,
+    "none_p_f": nil_p_f,
+    "error_p": error_p,
+    "error_p_f": error_p_f,
+  )
+  stats
+}
+
+#let task-stats-diff(task-stats-new, task-stats-old) = {
+  let diff = (:)
+  for task in task-stats-new.keys() {
+    let new_stats = task-stats-new.at(task)
+    let old_stats = task-stats-old.at(task)
+    let full_diff = new_stats.at(FULL) - old_stats.at(FULL)
+    let partial_diff = new_stats.at(PARTIAL) - old_stats.at(PARTIAL)
+    let nil_diff = new_stats.at(NONE) - old_stats.at(NONE)
+    let error_diff = new_stats.at(ERROR) - old_stats.at(ERROR)
+    let full_p_diff = new_stats.at("full_p") - old_stats.at("full_p")
+    let partial_p_diff = new_stats.at("partial_p") - old_stats.at("partial_p")
+    let nil_p_diff = new_stats.at("none_p") - old_stats.at("none_p")
+    let error_p_diff = new_stats.at("error_p") - old_stats.at("error_p")
+    diff.insert(
+      task,
+      (
+        "full": full_diff,
+        "partial": partial_diff,
+        "none": nil_diff,
+        "error": error_diff,
+        "full_p": full_p_diff,
+        "partial_p": partial_p_diff,
+        "none_p": nil_p_diff,
+        "error_p": error_p_diff,
+        "full_p_f": strfmt("{:.2}", full_p_diff),
+        "partial_p_f": strfmt("{:.2}", partial_p_diff),
+        "none_p_f": strfmt("{:.2}", nil_p_diff),
+        "error_p_f": strfmt("{:.2}", error_p_diff),
+      ),
+    )
+  }
+  diff
+}
+
+#let stats-diff(stats-new, stats-old) = {
+  let diff = (
+    "full": stats-new.at("full") - stats-old.at("full"),
+    "partial": stats-new.at("partial") - stats-old.at("partial"),
+    "none": stats-new.at("none") - stats-old.at("none"),
+    "error": stats-new.at("error") - stats-old.at("error"),
+    "full_p": stats-new.at("full_p") - stats-old.at("full_p"),
+    "partial_p": stats-new.at("partial_p") - stats-old.at("partial_p"),
+    "none_p": stats-new.at("none_p") - stats-old.at("none_p"),
+    "error_p": stats-new.at("error_p") - stats-old.at("error_p"),
+    "full_p_f": strfmt(
+      "{:.2}",
+      stats-new.at("full_p") - stats-old.at("full_p"),
+    ),
+    "partial_p_f": strfmt(
+      "{:.2}",
+      stats-new.at("partial_p") - stats-old.at("partial_p"),
+    ),
+    "none_p_f": strfmt(
+      "{:.2}",
+      stats-new.at("none_p") - stats-old.at("none_p"),
+    ),
+    "error_p_f": strfmt(
+      "{:.2}",
+      stats-new.at("error_p") - stats-old.at("error_p"),
+    ),
+  )
+  diff
+}
+
+#let total-diff-percentage(evaluations) = {
+  stats-percentage(
+    total-stats(
+      task-stats-diff(
+        get-task-stats(evaluations),
+        get-task-stats(evaluations, key: "evaluated_code_vanilla"),
+      ).values(),
+    ),
+  )
+}
+
 #let num-dataset = 25
 
