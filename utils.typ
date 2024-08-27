@@ -391,6 +391,7 @@
   let partial = stats.map(stat => stat.at("partial")).sum()
   let nil = stats.map(stat => stat.at("none")).sum()
   let error = stats.map(stat => stat.at("error")).sum()
+  let total = stats.map(stat => stat.at("total")).sum()
 
 
   let stats = (
@@ -398,6 +399,7 @@
     "partial": partial,
     "none": nil,
     "error": error,
+    "total": total,
   )
   stats
 }
@@ -416,7 +418,7 @@
   let error_p = error / total * 100
   let error_p_f = strfmt("{:.2}", error_p)
 
-  let stats = (
+  let result-stats = (
     "total": total,
     "full": full,
     "partial": partial,
@@ -431,18 +433,38 @@
     "none_p_f": nil_p_f,
     "error_p_f": error_p_f,
   )
-  stats
+  if "unchanged" in stats.at(0) {
+    let unchanged = stats.map(stat => stat.at("unchanged")).sum()
+    let unchanged_p = unchanged / total * 100
+    let unchanged_p_f = strfmt("{:.2}", unchanged_p)
+    result-stats.insert("unchanged", unchanged)
+    result-stats.insert("unchanged_p", unchanged_p)
+    result-stats.insert("unchanged_p_f", unchanged_p_f)
+  }
+  result-stats
+}
+#let fmt-float(number, prefix: false) = {
+  let rounded-number = calc.round(number, digits: 2)
+  if rounded-number == 0 and prefix {
+    sym.plus.minus + str(rounded-number)
+  } else if rounded-number > 0 and prefix {
+    sym.plus + str(rounded-number)
+  } else if rounded-number >= 0 {
+    str(rounded-number)
+  } else {
+    sym.minus + str(rounded-number * -1)
+  }
 }
 #let stats-table(stats, show-total: true, diff: false) = {
-  let columns = if show-total {
-    6
-  } else {
-    5
-  }
-  let align = if show-total {
-    (left, right, right, right, right, right)
-  } else {
-    (left, right, right, right, right)
+  let align = (column, row) => {
+    if row == 0 {
+      center
+    } else if column == 0 {
+      left
+    } else {
+      right
+
+    }
   }
   let header = (
     "Name",
@@ -455,6 +477,10 @@
   if not show-total {
     let _ = header.remove(1)
   }
+  if diff {
+    header += ("Unchanged",)
+  }
+  let columns = header.len()
   table(
     columns: columns,
     align: align,
@@ -464,20 +490,22 @@
       let stat = name-stat.at(1)
       let get-stat(key) = {
         let value = stat.at(key)
-        if diff and value > 0 {
-          "+" + str(value)
-        } else if diff and value == 0 {
-          sym.plus.minus + "0"
+        if diff and key != "unchanged_p" {
+          fmt-float(value, prefix: true)
         } else {
-          str(value)
+          fmt-float(value, prefix: false)
         }
       }
       let get-p(
         key,
       ) = {
-        let key_pf = key + "_p_f"
-        if key_pf in stat {
-          stat.at(key_pf) + "% (" + get-stat(key) + ")"
+        let key_p = key + "_p"
+        if key_p in stat {
+          if diff {
+            get-stat(key_p) + "%"
+          } else {
+            get-stat(key_p) + "% (" + get-stat(key) + ")"
+          }
         } else {
           get-stat(key)
         }
@@ -490,6 +518,10 @@
       if show-total {
         let total = stat.at("total")
         let _ = result.insert(1, str(total))
+      }
+      if diff {
+        let unchanged = get-p("unchanged")
+        result = result + (unchanged,)
       }
       result
     }).flatten(),
@@ -567,7 +599,7 @@
   task.at(1).at("none_p"),
   task.at(1).at("error_p"),
 )
-#let task-stats-table(task-stats, show-total: true) = {
+#let task-stats-table(task-stats, show-total: true, diff: false) = {
   let final-row = if show-total {
     ("Average", average-stats(task-stats.values()))
   } else {
@@ -575,6 +607,7 @@
   }
   stats-table(
     show-total: show-total,
+    diff: diff,
     task-stats.pairs().sorted(key: task-sorted-key).rev() + (final-row,),
   )
 }
@@ -584,7 +617,8 @@
   let partial = stats.at("partial")
   let nil = stats.at("none")
   let error = stats.at("error")
-  let total = (full, partial, nil, error).map(calc.abs).sum()
+  let unchanged = stats.at("unchanged")
+  let total = stats.at("total")
   let full_p = full / total * 100
   let full_p_f = strfmt("{:.2}", full_p)
   let partial_p = partial / total * 100
@@ -593,7 +627,12 @@
   let nil_p_f = strfmt("{:.2}", nil_p)
   let error_p = error / total * 100
   let error_p_f = strfmt("{:.2}", error_p)
+  let unchanged_p = unchanged / total * 100
+  let unchanged_p_f = strfmt("{:.2}", unchanged_p)
   let stats = (
+    "unchanged": unchanged,
+    "unchanged_p": unchanged_p,
+    "unchanged_p_f": unchanged_p_f,
     "total": total,
     "full": full,
     "partial": partial,
@@ -616,17 +655,31 @@
   for task in task-stats-new.keys() {
     let new_stats = task-stats-new.at(task)
     let old_stats = task-stats-old.at(task)
+    let total = new_stats.at("total")
     let full_diff = new_stats.at(FULL) - old_stats.at(FULL)
     let partial_diff = new_stats.at(PARTIAL) - old_stats.at(PARTIAL)
     let nil_diff = new_stats.at(NONE) - old_stats.at(NONE)
     let error_diff = new_stats.at(ERROR) - old_stats.at(ERROR)
-    let full_p_diff = new_stats.at("full_p") - old_stats.at("full_p")
-    let partial_p_diff = new_stats.at("partial_p") - old_stats.at("partial_p")
-    let nil_p_diff = new_stats.at("none_p") - old_stats.at("none_p")
-    let error_p_diff = new_stats.at("error_p") - old_stats.at("error_p")
+    let full_p_diff = full_diff / total * 100
+    let partial_p_diff = partial_diff / total * 100
+    let nil_p_diff = nil_diff / total * 100
+    let error_p_diff = error_diff / total * 100
+    // either total - all positive diffs or sum of all minima between versions
+    let unchanged_count = total - (
+      full_diff,
+      partial_diff,
+      nil_diff,
+      error_diff,
+    ).filter(x => x >= 0).sum()
+    let unchanged_p = unchanged_count / total * 100
+    let unchanged_p_f = strfmt("{:.2}", unchanged_p)
     diff.insert(
       task,
       (
+        "total": total,
+        "unchanged": unchanged_count,
+        "unchanged_p": unchanged_p,
+        "unchanged_p_f": unchanged_p_f,
         "full": full_diff,
         "partial": partial_diff,
         "none": nil_diff,
@@ -646,42 +699,50 @@
 }
 
 #let stats-diff(stats-new, stats-old) = {
+  let total = stats-new.at("total")
+  let full_diff = stats-new.at("full") - stats-old.at("full")
+  let partial_diff = stats-new.at("partial") - stats-old.at("partial")
+  let nil_diff = stats-new.at("none") - stats-old.at("none")
+  let error_diff = stats-new.at("error") - stats-old.at("error")
+  let unchanged_count = total - (
+    full_diff,
+    partial_diff,
+    nil_diff,
+    error_diff,
+  ).filter(x => x >= 0).sum()
+  let unchanged_p = unchanged_count / total * 100
+  let unchanged_p_f = strfmt("{:.2}", unchanged_p)
+  let full_p_diff = full_diff / total * 100
+  let partial_p_diff = partial_diff / total * 100
+  let nil_p_diff = nil_diff / total * 100
+  let error_p_diff = error_diff / total * 100
+  let total = stats-new.at("total")
   let diff = (
-    "full": stats-new.at("full") - stats-old.at("full"),
-    "partial": stats-new.at("partial") - stats-old.at("partial"),
-    "none": stats-new.at("none") - stats-old.at("none"),
-    "error": stats-new.at("error") - stats-old.at("error"),
-    "full_p": stats-new.at("full_p") - stats-old.at("full_p"),
-    "partial_p": stats-new.at("partial_p") - stats-old.at("partial_p"),
-    "none_p": stats-new.at("none_p") - stats-old.at("none_p"),
-    "error_p": stats-new.at("error_p") - stats-old.at("error_p"),
-    "full_p_f": strfmt(
-      "{:.2}",
-      stats-new.at("full_p") - stats-old.at("full_p"),
-    ),
-    "partial_p_f": strfmt(
-      "{:.2}",
-      stats-new.at("partial_p") - stats-old.at("partial_p"),
-    ),
-    "none_p_f": strfmt(
-      "{:.2}",
-      stats-new.at("none_p") - stats-old.at("none_p"),
-    ),
-    "error_p_f": strfmt(
-      "{:.2}",
-      stats-new.at("error_p") - stats-old.at("error_p"),
-    ),
+    "total": total,
+    "unchanged": unchanged_count,
+    "full": full_diff,
+    "partial": partial_diff,
+    "none": nil_diff,
+    "error": error_diff,
+    "full_p": full_p_diff,
+    "partial_p": partial_p_diff,
+    "none_p": nil_p_diff,
+    "error_p": error_p_diff,
+    "full_p_f": strfmt("{:.2}", full_p_diff),
+    "partial_p_f": strfmt("{:.2}", partial_p_diff),
+    "none_p_f": strfmt("{:.2}", nil_p_diff),
+    "error_p_f": strfmt("{:.2}", error_p_diff),
   )
   diff
 }
 
 #let total-diff-percentage(evaluations) = {
   stats-percentage(
-    total-stats(
-      task-stats-diff(
-        get-task-stats(evaluations),
-        get-task-stats(evaluations, key: "evaluated_code_vanilla"),
-      ).values(),
+    stats-diff(
+      total-stats(get-task-stats(evaluations).values()),
+      total-stats(
+        get-task-stats(evaluations, key: "evaluated_code_vanilla").values(),
+      ),
     ),
   )
 }

@@ -191,21 +191,46 @@ Another similar example is related to renaming method parameters, such as in the
 === RQ2: Which scenarios does the approach improve best and under which conditions?
 // 2. Which scenarios does the approach improve best and under which conditions?
 
+#figure(
+  highlight-cells(
+    cells: (),
+    task-stats-table(
+      diff: true,
+      task-stats-diff(
+        get-task-stats(
+          all-results,
+          key: "evaluated_code_llm_lsp",
+        ),
+        get-task-stats(
+          all-results,
+          key: "evaluated_code_vanilla",
+        ),
+      ),
+    ),
+  ),
+  caption: [
+    Difference between the baseline and the approach evaluation results for each task. The table is sorted from best to worst solved tasks.
+  ],
+)
+
 // Show difference between sampling and no sampling
 #figure(
-  stats-table(
-    show-total: false,
-    diff: true,
-    (
+  highlight-cells(
+    cells: ((1, 2),),
+    stats-table(
+      show-total: false,
+      diff: true,
       (
-        "Sampling",
-        total-diff-percentage(sampling-evaluations),
-      ),
-      (
-        "No Sampling",
-        total-diff-percentage(no-sampling-evaluations),
-      ),
-    ).sorted(key: task-sorted-key).rev(),
+        (
+          "Sampling",
+          total-diff-percentage(sampling-evaluations),
+        ),
+        (
+          "No Sampling",
+          total-diff-percentage(no-sampling-evaluations),
+        ),
+      ).rev(),
+    ),
   ),
   caption: [
     Effects of using sampling vs. not using sampling on the evaluation results, compared against the baseline.
@@ -213,37 +238,43 @@ Another similar example is related to renaming method parameters, such as in the
 )
 
 #figure(
-  stats-table(
-    show-total: false,
-    diff: true,
-    (
+  highlight-cells(
+    cells: ((1, 2),),
+    stats-table(
+      show-total: false,
+      diff: true,
       (
-        "3 Beams",
-        total-diff-percentage(three-beams-evaluations),
-      ),
-      (
-        "2 Beams",
-        total-diff-percentage(two-beams-evaluations),
-      ),
-      (
-        "1 Beam",
-        total-diff-percentage(one-beam-evaluations),
-      ),
-    ).sorted(key: task-sorted-key).rev(),
+        (
+          "3 Beams",
+          total-diff-percentage(three-beams-evaluations),
+        ),
+        (
+          "2 Beams",
+          total-diff-percentage(two-beams-evaluations),
+        ),
+        (
+          "1 Beam",
+          total-diff-percentage(one-beam-evaluations),
+        ),
+      ).rev(),
+    ),
   ),
   caption: [
     Effects of using different beam sizes on the evaluation results, compared against the baseline.
   ],
 )
 #figure(
-  stats-table(
-    show-total: false,
-    diff: true,
-    (
-      ("Codellama", total-diff-percentage(codellama-evaluations)),
-      ("Magicoder", total-diff-percentage(magicoder-evaluations)),
-      ("Codestral", total-diff-percentage(codestral-evaluations)),
-    ).sorted(key: task-sorted-key).rev(),
+  highlight-cells(
+    cells: ((1, 1),),
+    stats-table(
+      show-total: false,
+      diff: true,
+      (
+        ("Codellama", total-diff-percentage(codellama-evaluations)),
+        ("Magicoder", total-diff-percentage(magicoder-evaluations)),
+        ("Codestral", total-diff-percentage(codestral-evaluations)),
+      ),
+    ),
   ),
   caption: [
     Effects of using different models on the evaluation results, compared against the baseline.
@@ -270,6 +301,13 @@ Another similar example is related to renaming method parameters, such as in the
 // https://github.com/python-lsp/python-lsp-server/issues/352
 // Out of GPU mem
 // Bugs
+
+// reuse previous tables
+// show error types
+// #{
+//   // get all llm_lsp data
+//   all-results.map(evaluation => evaluation.at("items").filter(item => item.at("evaluated_code_llm_lsp").at(0) == "error").map(item => item.at("generated_code_llm_lsp")))
+// }
 
 === RQ4: How easily does the approach confuse the model?
 // 1. How easily does the approach confuse the model?
