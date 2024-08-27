@@ -13,6 +13,7 @@
 #let default-llm-lsp = aggregate-stats(get-llm-lsp(default))
 #let use-completions-baseline = aggregate-stats(get-baseline(use-completions))
 #let use-completions-llm-lsp = aggregate-stats(get-llm-lsp(use-completions))
+#let dependency-stats = json("/assets/evaluations/dependency_stats.json")
 
 #let codellama-evaluations = filter-evaluations-by-model(
   default,
@@ -309,17 +310,55 @@ Another similar example is related to renaming method parameters, such as in the
 //   all-results.map(evaluation => evaluation.at("items").filter(item => item.at("evaluated_code_llm_lsp").at(0) == "error").map(item => item.at("generated_code_llm_lsp")))
 // }
 
+// pick examples
+
 === RQ4: How easily does the approach confuse the model?
 // 1. How easily does the approach confuse the model?
+#todo[Search for correct looking tasks where approach is correct, but syntax error]
 
 === RQ5: Which errors are most common when applying the approach?
 // 2. Which errors are most common?
 
+// debug session afterwards
+
 === RQ6: How does the availability of documentation affect the results?
 // 2: How does the length of available documentation affect the results?
 
+// sort tasks by amount of documentation descending
+
+// show documentation summary
+
 === RQ7: How does the approach handle differently sized code bases?
 // 3: Does the approach scale from single code files to large code bases?
+#{
+  figure(
+    table(
+      columns: 3,
+      align: (row, column) => {
+        if row == 0 {
+          center
+        } else if column == 0 {
+          left
+        } else {
+          right
+        }
+      },
+      table.header(
+        [Dependency],
+        [Lines of Code],
+        [Documentation Percentage],
+      ),
+      ..(
+        dependency-stats.pairs().sorted(key: item => item.at(1).at("lines_of_code")).rev().map(item => (
+          [#item.at(0)],
+          [#item.at(1).at("lines_of_code")],
+          [#calc.round(item.at(1).at("lines_of_doc")/item.at(1).at("lines_of_code")*100, digits: 2)%],
+        )).flatten()
+      ),
+    ),
+    caption: [Size of dependencies, as counted using pygount. Documentation percentage is relative to the lines of code, thus excluding empty lines, etc.],
+  )
+}
 === RQ8: How well can the approach (implementation) be extended to other languages?
 // 1: How well can the approach be extended to other languages?
 === RQ9: For which languages does the approach not work?
@@ -327,3 +366,56 @@ Another similar example is related to renaming method parameters, such as in the
 
 === RQ10: How much overhead does the approach introduce?
 // 1: How much overhead does the approach introduce?
+// generation_duration_vanilal, generation_duration_llm_lsp
+#let evaluation-duration(evaluation) = {
+  let items = evaluation.at("items").map(item => (
+    item.at("generation_duration_vanilla"),
+    item.at("generation_duration_llm_lsp"),
+  ))
+  items.fold(
+    (0, 0),
+    (acc, item) => (acc.at(0) + item.at(0), acc.at(1) + item.at(1)),
+  ).map(item => item / items.len())
+}
+#let evaluation-duration-map(item) = (
+  item.at(0),
+  item.at(1).map(evaluation-duration),
+)
+#let duration-entries(items) = {
+  items.map(item => {
+    let name = item.at(0)
+    let evaluations = item.at(1)
+    let vanilla-sum = evaluations.map(evaluation => evaluation.at("items").map(item => item.at("generation_duration_vanilla")).sum()).sum()
+    let llm-lsp-sum = evaluations.map(evaluation => evaluation.at("items").map(item => item.at("generation_duration_llm_lsp")).sum()).sum()
+    let total-count = evaluations.map(evaluation => evaluation.at("items").len()).sum()
+    let vanilla-average = vanilla-sum / total-count
+    let llm-lsp-average = llm-lsp-sum / total-count
+    (
+      name,
+      calc.round(vanilla-average, digits: 2),
+      calc.round(llm-lsp-average, digits: 2),
+    ).map(str)
+  }).flatten()
+}
+#figure(
+  table(
+    columns: 3,
+    align: (row, column) => {
+      if row == 0 {
+        center
+      } else if column == 0 {
+        left
+      } else {
+        right
+      }
+    },
+    table.header([Name], [Duration Baseline (s)], [Duration Approach (s)]),
+    ..duration-entries((
+      ("All", all-results),
+      ("Default", default),
+      ("Masking", masking),
+      ("Use Completions", use-completions),
+    )),
+  ),
+  caption: [Average runtime in seconds per task, comparing the baseline and the approach.],
+)
