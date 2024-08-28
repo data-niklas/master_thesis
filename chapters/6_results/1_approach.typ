@@ -390,16 +390,38 @@ Another similar example is related to renaming method parameters, such as in the
     let total-count = evaluations.map(evaluation => evaluation.at("items").len()).sum()
     let vanilla-average = vanilla-sum / total-count
     let llm-lsp-average = llm-lsp-sum / total-count
+    let median(list) = {
+      let sorted = list.sorted()
+      let len = sorted.len()
+      if calc.rem(len, 2) == 0 {
+        (
+          sorted.at(int(calc.round(len / 2)) - 1) + sorted.at(
+            int(calc.round(len / 2)),
+          )
+        ) / 2
+      } else {
+        sorted.at(len / 2)
+      }
+    }
+    // calculate the median over all durations
+    let vanilla-median = median(
+      evaluations.map(evaluation => evaluation.at("items").map(item => item.at("generation_duration_vanilla"))).flatten(),
+    )
+    let llm-lsp-median = median(
+      evaluations.map(evaluation => evaluation.at("items").map(item => item.at("generation_duration_llm_lsp"))).flatten(),
+    )
     (
       name,
       calc.round(vanilla-average, digits: 2),
       calc.round(llm-lsp-average, digits: 2),
+      calc.round(vanilla-median, digits: 2),
+      calc.round(llm-lsp-median, digits: 2),
     ).map(str)
   }).flatten()
 }
 #figure(
   table(
-    columns: 3,
+    columns: 5,
     align: (row, column) => {
       if row == 0 {
         center
@@ -409,7 +431,13 @@ Another similar example is related to renaming method parameters, such as in the
         right
       }
     },
-    table.header([Name], [Duration Baseline (s)], [Duration Approach (s)]),
+    table.header(
+      [Name],
+      [Average\ Baseline (s)],
+      [Average\ Approach (s)],
+      [Median\ Baseline (s)],
+      [Median\ Approach (s)],
+    ),
     ..duration-entries((
       ("All", all-results),
       ("Default", default),
