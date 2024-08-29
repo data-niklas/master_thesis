@@ -6,8 +6,34 @@ To evaluate the research questions, the following general experiment is conducte
 
 The DependencyEval dataset is used in conjunction with the listed models, to evaluate neural code completion both with and without the approach.
 The evaluation using normal code completion is used as a baseline to compare the results with the approach.
-For each model, different configurations are evaluated, depending on the research question.
-At last, the results provided by the DependencyEval pipeline are analyzed to answer each research question.
+The three evaluations are run, using the three different approach configurations:
+/ Default: The config as seen in @code:lsp_generation_config without masked generation.
+/ Masked: The config as seen in @code:lsp_generation_config.
+/ Use completion: The config as seen in @code:lsp_generation_config without masked generation, but using the completion context.
+
+Additionally, the six model configurations are used:
+- Sampling with 3 beams
+- Sampling with 2 beams
+- Sampling without beam search
+- Greedy decoding with 3 beams
+- Greedy decoding with 2 beams
+- Greedy decoding without beam search
+
+Each model configuration includes the following base parameters:
+#figure(
+  codefile("/assets/code/evaluation_base_model_config.json"),
+  caption: [Base model configuration used for all models.],
+)
+
+The base parameters ensure that the model finishes in at most 90 seconds, which is especially important as to limit the total evaluation time.
+The repetition penalty of $1.3$ has proven itself to prevent repetition of e.g. `\\n` in CodeLlama, over a value of $1.1$.
+Additionally, sampling uses the parameter `"top_k": 50` and `"top_p": 0.95`.
+
+All model configurations are combined with the three models CodeLlama, Codestral and Magicoder.
+Each evaluation of one of the three runs "Default", "Masked" and "Use completion" runs one dataset evaluation for all model configurations, with and without the approach, totaling to $3*6*3*2=108$ dataset evaluations. The repeated dataset evaluations of the baseline are used to average results.
+
+After collecting the results, they are processed and analyzed to answer the research questions.
+As each research question requires different parts of the results, the data is split, grouped and analyzed accordingly.
 
 === Dependency Accuracy
 To measure and evaluate the accuracy on how the model uses dependencies, the following research questions are posed.

@@ -13,6 +13,27 @@ DependencyEval provides a #acr("CLI"), which includes the following functionalit
 The functionality of the #acr("CLI") is split into several modules, e.g. the calculation of different metrics lies in its own module.
 This enables the use of this Python package as a library, reusing functionality such as the evaluation pipeline.
 
+=== Data Collection
+While the previous sections detail the evaluation pipeline, this section briefly details the data collection process.
+The process consists of `crawling`, `filtering`, `scenario extraction` and `scenario validation`.
+
+In the first step `crawling`, possible Python dependencies are searched for manually, either by searching through #acr("PyPI"), by browsing the web, asking colleagues or through any other means.
+As this is a manual process, it is inefficient, different sources provide duplicates.
+
+While crawling and afterward, the dependencies are filtered after different criteria.
+Each dependency must not have too many tasks present in the dataset yet. Currently, the highest amount of tasks per dependency is $3$ (pydantic). In this case pydantic would be filtered in favor of other dependencies.
+Additionally, the dependency must have some form of changelog, which can be used to determine potential scenarios, such as deprecation etc.
+Usually the dependency has a Git repository, which includes some form of changelog file in the root directory (`CHANGELOG`, `CHANGELOG.md`, `NEWS`, `HISTORY`, etc.).
+Alternatively, the changelog can often be found in the GitHub releases tab. Popular dependencies also have a changelog on their website.
+Another criteria is how well the approach correctness and functional correctness of scenarios can be tested. Crafting scenarios for some dependencies is hard, such as game engines.
+In the filtering process, algorithmic libraries are preferred to such dependencies, as they are easier to test.
+
+Then, the changelog is skimmed for potential scenarios, while the previous criteria are kept in mind. If a plausible scenario is found, a task is created, including the approach and functional correctness tests.
+At last, the functional tests are run to validate the gold solution.
+
+The manual collection process is time-consuming and increases per found scenario, as it is difficult to find dependencies which match all criteria.
+E.g. the time spent on finding a suitable 22nd task took ~$30$-$60$minutes, while the first three tasks took ~$10$-$20$minutes each.
+
 === Dependencies
 To achieve the listed functionality, DependencyEval relies on several dependencies:
 The two main dependencies are `click` and `virtualenv-clone`.
@@ -20,7 +41,7 @@ The two main dependencies are `click` and `virtualenv-clone`.
 In addition, it automatically creates a help page of the commands and subcommands.
 `virtualenv-clone` is another fundamental package in enabling reproducable and fast workflows, as it can duplicate a Python virtual environment. It is used to duplicate a virtual environment from a cache into a working directory.
 Other dependencies are `openpyxl` to export stats into Excel sheets, `matplotlib` to create beautiful charts and `sankeyflow` to create Sankey diagrams of the results without and with the approach.
-`textual` is used to display results interactively in a table, while the dependency `tqdm` is used to display progress bars for long evaluation runs.
+`textual` is used to display results interactively in a table, while the dependency `tqdm` is used to display progress bars for long evaluation runs. `pygount` counts lines of code and enables dependency analysis of dataset dependencies.
 All other features use the standard library for operations like working with files and processes.
 
 === Structure
@@ -215,23 +236,3 @@ Single arguments are defined through the `click.option` decorator.
 The `create_venvs` function defined in @code:dataset:main defines a subcommand with the same name, taking three arguments, of which two have a default value.
 All uppercase variables are constants either defined in `dependnecy_eval/constants.py`, or in other parts of the file.
 
-=== Data Collection
-While the previous sections detail the evaluation pipeline, this section briefly details the data collection process.
-The process consists of `crawling`, `filtering`, `scenario extraction` and `scenario validation`.
-
-In the first step `crawling`, possible Python dependencies are searched for manually, either by searching through #acr("PyPI"), by browsing the web, asking colleagues or through any other means.
-As this is a manual process, it is inefficient, different sources provide duplicates.
-
-While crawling and afterward, the dependencies are filtered after different criteria.
-Each dependency must not have too many tasks present in the dataset yet. Currently, the highest amount of tasks per dependency is $3$ (pydantic). In this case pydantic would be filtered in favor of other dependencies.
-Additionally, the dependency must have some form of changelog, which can be used to determine potential scenarios, such as deprecation etc.
-Usually the dependency has a Git repository, which includes some form of changelog file in the root directory (`CHANGELOG`, `CHANGELOG.md`, `NEWS`, `HISTORY`, etc.).
-Alternatively, the changelog can often be found in the GitHub releases tab. Popular dependencies also have a changelog on their website.
-Another criteria is how well the approach correctness and functional correctness of scenarios can be tested. Crafting scenarios for some dependencies is hard, such as game engines.
-In the filtering process, algorithmic libraries are preferred to such dependencies, as they are easier to test.
-
-Then, the changelog is skimmed for potential scenarios, while the previous criteria are kept in mind. If a plausible scenario is found, a task is created, including the approach and functional correctness tests.
-At last, the functional tests are run to validate the gold solution.
-
-The manual collection process is time-consuming and increases per found scenario, as it is difficult to find dependencies which match all criteria.
-E.g. the time spent on finding a suitable 22nd task took ~$30$-$60$minutes, while the first three tasks took ~$10$-$20$minutes each.
