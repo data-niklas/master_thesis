@@ -59,8 +59,8 @@ Similar to how model are evaluated with different configurations, the approach i
 
 === Dataset Distribution
 The distributable dataset is a `.jsonl` file, where each row is a #acr("JSON") dictionary with the schema as introduced in @code:dataset:format.
-While the compact `.jsonl` dataset file is easily distributed and machine readable, it is hard to read for a human.
-Thus, the basis for the dataset is a easily human readable form, which simplifies extending the dataset by a human (which is necessary, as the dataset is curated manually).
+While the compact `.jsonl` dataset file is easily distributed and machine-readable, it is hard to read for a human.
+Thus, the basis for the dataset is an easily human-readable form, which simplifies extending the dataset by a human (which is necessary, as the dataset is curated manually).
 One base is the `data/tasks` directory, which includes a single code file for each task. The code files are named after the task and include the whole code, including the gold solution.
 
 #figure(
@@ -85,9 +85,9 @@ The test file contains both a test for the functional correctness and approach c
 
 The final piece needed to form the distributable dataset is the additional metadata associated with each entry.
 While the metadata could have been embedded in the code directly, e.g. as a Python comment at the top of `data/tasks/textual_1.py`, a separate metadata file such as `data/metadata.json` simplifies the parsing process and reduces format driven errors.
-`metadata.json` does not use any special format. It contains a list for dictionaries, where each dictionary contains additional metadata in the same schema as the final dataset, including a field `task_name`. The task name is the same task name used for the code file, unit test file and helps associate the different informations.
+`metadata.json` does not use any special format. It contains a list for dictionaries, where each dictionary contains additional metadata in the same schema as the final dataset, including a field `task_name`. The task name is the same task name used for the code file, unit test file and helps associate the different information.
 
-When distributing the dataset, these three information sources are combined to form the different task entries. This has both the benefit of an easy to extend dataset for humans, while enabling easy distribution and use by machines.
+When distributing the dataset, these three information sources are combined to form the different task entries. This has both the benefit of an easy-to-extend dataset for humans, while enabling easy distribution and use by machines.
 
 === Unit Tests
 As introduced in the design section and quickly described in the last section, each entry requires two test cases.
@@ -111,7 +111,7 @@ In either case, all defined unit tests are found and executed, after which the r
 )<terminal:unittest>
 
 The script accesses the test results directly through the `results` field, which contains the number of failures, tests with errors and the total number of tests run.
-The list of errors, failures and total tests is serialized using the #acr("JSON") format and sent to the controlling process through standard output.
+The list of errors, failures, and total tests is serialized using the #acr("JSON") format and sent to the controlling process through standard output.
 This simplifies the parsing process and easily yields the desired information and is extensible if more information is needed.
 // IPC
 
@@ -122,7 +122,7 @@ Other output is suppressed, by setting the logging level of the logger to critic
 
 // Approach correctness
 Each unit test is carefully crafted, by mocking the objects of the gold solution and of probable deprecated functions.
-Tests can then be failed directly, if the deprecated function is used instead of the gold solution. Even if the gold solution function is used, the passed parameters can be introspected, enabling complex test scenarios. Each test scenarios tests certain properties.
+Tests can then be failed directly, if the deprecated function is used instead of the gold solution. Even if the gold solution function is used, the passed parameters can be introspected, enabling complex test scenarios. Each test scenarios test certain properties.
 For the scenario in @code:dataset:textual_1_tests the tests assert that the parameter `tab_behavior` is used, while `tab_behaviour` is incorrect, as it is deprecated.
 
 === Evaluation Loop

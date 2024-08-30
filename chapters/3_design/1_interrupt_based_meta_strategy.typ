@@ -36,7 +36,7 @@ While previous sections introduced the need for this strategy, this section will
 
 // derived from meta-strategies that generate a result in multiple steps
 While the strategy was developed independently of Agrawal et al.@agrawalMonitorGuidedDecodingCode, the design uses the same observation made for the `Monitor` component in their work.
-The `Monitor` not only allows controlling model logits at runtime, but it allows *observing the generation in realtime*.
+The `Monitor` not only allows controlling model logits at runtime, but it also allows *observing the generation in real time*.
 This allows a fine-grained control over the model generation, which is not possible with general prompt engineering or meta-strategies.
 Coupled with any form of static analysis, the monitor can find additional relevant context.
 This is similar to the iterative approach of `RepoCoder`. `RepoCoder` uses each iteration to retrieve relevant code based on the current whole generation, while this observation leads to an approach which finds context during a single generation.
@@ -47,7 +47,7 @@ The third key observation bridges the gap between meta-strategies and fine-grain
 Additional tokens can be added to the vocabulary of a tokenizer for inference and the model embeddings can be resized to fit the new token. The model will not be able to meaningfully predict the added token, as it was not trained on the ad-hoc token, but strategies can use the added token to elicit behavior.
 For example, the token can be used as an additional #acr("EOS") token, stopping the generation process, but with the added semantic information of the special token.
 
-Combining the aforementioned observations, the #acr("IBMS") combines the fine granularity needed to monitor the generation in realtime, with the prompt editing capabilities of multi-step meta-strategies, through the use of an added special token.
+Combining the aforementioned observations, the #acr("IBMS") combines the fine granularity needed to monitor the generation in real time, with the prompt editing capabilities of multi-step meta-strategies, through the use of an added special token.
 
 === Components
 An overview over the strategy is given in @fig:ibms-components. All components in blue are additions to the normal model generation.

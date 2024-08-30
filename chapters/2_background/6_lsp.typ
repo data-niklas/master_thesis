@@ -159,10 +159,10 @@ The next field `capabilities` is a complex structure of flags, which specify all
 
 The server responds with the initialize result, which contains the server capabilities.
 
-Afer receiving the response, the client must then acknowledge the response, by sending the `initialized` message. The server then has the option to e.g. register capabilities dynamically or run further initializations. Afterwards, the initialization process is finished.
+After receiving the response, the client must then acknowledge the response, by sending the `initialized` message. The server then has the option to e.g. register capabilities dynamically or run further initializations. Afterward, the initialization process is finished.
 
 // TODO: replace many after
-After using the language server, the client can stop the server in a two step process. First, the client sends a `shutdown` message. The server then stops itself, but preserves its messaging capabilities to send a proper response. In the next step, the client sends the `exit` message, after which the server exits its process.
+After using the language server, the client can stop the server in a two-step process. First, the client sends a `shutdown` message. The server then stops itself, but preserves its messaging capabilities to send a proper response. In the next step, the client sends the `exit` message, after which the server exits its process.
 
 === Document Synchronization
 After introducing messages to establish and control the connection between server and client, this section focused on the next step, the document synchronization. The goal of these messages is to synchronize the server to the users actions. The server should provide capabilities for a file, while the user works on it.

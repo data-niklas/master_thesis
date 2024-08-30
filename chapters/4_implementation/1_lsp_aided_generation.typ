@@ -1,7 +1,7 @@
 #import "/utils.typ": *
 == Language Server Protocol aided generation
 // While the implementation directly focuses on the final approach, this section will focus on the implementation details needed to enable injecting contexts into the prompt
-Next to detailing the implementation of the various components, this section will shortly introduce the general project setup, including the used dependencies, the structure and other hints. By transparently providing details on the whole setup, the reproducability shall be promoted.
+Next to detailing the implementation of the various components, this section will shortly introduce the general project setup, including the used dependencies, the structure and other hints. By transparently providing details on the whole setup, the reproducibility shall be promoted.
 
 === Project setup
 // Versioning
@@ -17,7 +17,7 @@ This section will list the main package dependencies of the project and their re
 The two main dependencies are `Transformers` (`transformers`) and `PyTorch` (`torch`), as introduced in @chapter:bg:transformers and @chapter:bg:torch.
 
 //Transformers
-`Transformers` enables neural code completion and provides high- and low-level control over the model's behavior. The implementation will integrate with this library to provide seamless #acr("LSP") aided code completion with any supported code completion model.
+`Transformers` enable neural code completion and provide high- and low-level control over the model's behavior. The implementation will integrate with this library to provide seamless #acr("LSP")-aided code completion with any supported code completion model.
 // PyTorch
 To manipulate tensors and perform computations, the implementation uses `PyTorch`.
 // pygls
@@ -38,7 +38,7 @@ The different `Monitors` `LSP Processor`, `Boundary Processor` and `Comments Pro
 The component `Prompt State` is implemented in `prompt_state.py`, while the `Prompt Formatter` is implemented in the `prompt_formatters` submodule.
 Lastly, the submodule `interrupts` contains the behavior for the different types of interrupts.
 
-The other files and submodules contain various types of utilities, fixes and configurations needed to enable the approach and make it configurable for evaluation. The next sections will focus on the components introduced in @chapter:design:lsp and then continue on with important details on the various other files and submodules.
+The other files and submodules contain various types of utilities, fixes, and configurations needed to enable the approach and make it configurable for evaluation. The next sections will focus on the components introduced in @chapter:design:lsp and then continue on with important details on the various other files and submodules.
 
 #todo()[List all design components and classes in this section, to provide an overview]
 
@@ -107,8 +107,8 @@ Concretely, the class overwrites the two methods `process` and `finalize`, addin
 A later section will detail how the `BeamIndexStoringSearchScores` replaces another instance of the `BeamSearchScorer`.
 
 === InterruptStoppingCriteria
-The `InterruptStoppingCriteria` class is a utility class, which is used to determine if an interrupt occured inside a monitor and the generation loop should be stopped.
-Coloquially, it propagates the interrupt signal to the interrupt loop.
+The `InterruptStoppingCriteria` class is a utility class, which is used to determine if an interrupt occurred inside a monitor and the generation loop should be stopped.
+Colloquially, it propagates the interrupt signal to the interrupt loop.
 It subclasses the `Transformers` `StoppingCriteria` class.
 The class implements the method seen in @code:interrupt_stopping_criteria:
 #figure(
@@ -118,7 +118,7 @@ The class implements the method seen in @code:interrupt_stopping_criteria:
 
 === Generator
 The `Generator` component is implemented by the class `Generator` in `generator.py`. It is the main component of the approach and orchestrates the generation process.
-The idea is to provide a high-level interface to the user, somewhere between the interace of the `generate` function of #acrpl("CLM") and the `pipeline` abstraction in the `Transformers` library.
+The idea is to provide a high-level interface to the user, somewhere between the interface of the `generate` function of #acrpl("CLM") and the `pipeline` abstraction in the `Transformers` library.
 The interface shall provide the same interface as the `generate` function, while reducing a few pitfalls through the features of the `pipeline` abstraction, and the added configuration options for the approach.
 
 The following sections include notes on the different features provided by the `Generator`.
@@ -143,7 +143,7 @@ The generation specific initialization will be detailed in the later section det
 
 The general initialization creates both a beam tracker (`BeamTracker` class) and an instance of a `PromptFormatter` class.
 The `BeamTracker` is the solution to enable support for the beam search generation strategy, as introduced in @chapter:design:ibms in `Generation Strategy Support`. It will be further detailed later in conjunction with the tweaked generation loop.
-The `PromptFormatter` is a class directly implementing the `Prompt Formatter` component. The initialization picks one of two classes: An instance of `VanillaPromptFormatter` is chosen if no context is to be injected into the model, while an instance of `DefaultPromptFormatter` is chosen for the normal proceding of the approach.
+The `PromptFormatter` is a class directly implementing the `Prompt Formatter` component. The initialization picks one of two classes: An instance of `VanillaPromptFormatter` is chosen if no context is to be injected into the model, while an instance of `DefaultPromptFormatter` is chosen for the normal preceding of the approach.
 The toggle allows for a seamless switch between a baseline and the approach itself, through the passed configuration.
 
 // General initialization
@@ -152,7 +152,7 @@ The toggle allows for a seamless switch between a baseline and the approach itse
 Another form of implicit initialization is the control of the default device placement. The device placement regulates on which physical device `PyTorch` tensors are placed on initialization.
 It is important that all tensors used during the approach are placed on the same device, else the generation fails.
 
-To control the device placement, the `Generator` class implements a context manager@ContextlibUtilitiesWithstatement, which changes the default device to the device the model was initialized on. The context manager is implemented through the method `device_placement` in the mixin `PipelineMixin`. It sets default device through the `torch.device` function and is inspired by the same behavior occuring in the high level abstraction `pipeline` in the `Transformers` library.
+To control the device placement, the `Generator` class implements a context manager@ContextlibUtilitiesWithstatement, which changes the default device to the device the model was initialized on. The context manager is implemented through the method `device_placement` in the mixin `PipelineMixin`. It sets default device through the `torch.device` function and is inspired by the same behavior occurring in the high level abstraction `pipeline` in the `Transformers` library.
 
 Before starting the neural code completion, the context manager is entered to ensure that all tensors are placed on the correct device. The context manager is exited after the neural code completion is finished:
 #figure(
@@ -185,7 +185,7 @@ A shortened version of the completion loop is displayed in @code:completion_loop
 )<code:completion_loop>
 
 The core of the loop consists of @code_completion_loop_while_start - @code_completion_loop_while_end and @code_completion_loop_edit_input_ids_start - @code_completion_loop_edit_input_ids_end.
-The first lines call the `resume_generation` method, which wraps around the modified `Transformers` generation loop. Lines 12 to 15 check if an interrupt occured and return the result if the generation ended with an #acr("EOS").
+The first lines call the `resume_generation` method, which wraps around the modified `Transformers` generation loop. Lines 12 to 15 check if an interrupt occurred and return the result if the generation ended with an #acr("EOS").
 Else line 26 edits the changed prompt into the current input token ids for the next call to `resume_generation`.
 
 To further enable introspection, the initial code is logged and the input token ids are logged between interrupts. The logging behavior is detailed further in the introspection section.
@@ -197,7 +197,7 @@ Additionally, the initial input token ids are obtained by creating the initial p
 Usually the prompt is tied to a sequence and formatted using the `PromptFormatter` instance associated with a sequence. At the start of the neural code completion all sequences are the same, which is why the first `PromptState` instance is used.
 
 Other parts of the method handle the augmented generation config. Initially, fields supported by the approach, but unsupported by `Transformers` are removed from the `config` dictionary. Then during each iteration, values such as the maximum allowed time (`max_time`) are updated to reflect the then correct values.
-The supported maximum interruptions configuration value is tracked by the `maximum_interrupts` variable.
+The supported maximum interruptions' configuration value is tracked by the `maximum_interrupts` variable.
 
 @code_completion_expansion is further explained in a later section. The same is true for details on editing and resumption.
 
@@ -292,7 +292,7 @@ The format of the prompt can be seen in @figure:prompt_formatting:completion:
 )<figure:prompt_formatting:completion>
 
 // raw markdown
-The output is expected to be the completion item wrapped in backticks, as usual for raw markdown text. If the model did not return a result in the expected format, the empty string is returned. Else the predicted completion is returned. The predicted completion is then directly appended to the generated code.
+The output is expected to be the completion item wrapped in backticks, as usual for raw Markdown text. If the model did not return a result in the expected format, the empty string is returned. Else the predicted completion is returned. The predicted completion is then directly appended to the generated code.
 
 ==== Introspection
 For any type of neural model generation, introspection into the generation flow is crucial. The result determined by the model can be often times unexpected and confusing.
@@ -316,7 +316,7 @@ If disabled, the methods are no-ops.
 
 === Monitors
 After discussing the complicated details of the interruption loop and prompt editing, this section provides details on the different monitors `LSP Processor`, `Boundary Processor` and `Comments Processor`.
-These classes receive and use state objects created in the `Generator` class. The following sections will only list further created objects and and the state objects will not be listed explicitly.
+These classes receive and use state objects created in the `Generator` class. The following sections will only list further created objects and the state objects will not be listed explicitly.
 
 ==== LSP Processor Overview.
 All processors implement the `LogitsProcessor` interface of the `Transformers` library through the `__call__` method. They receive the `input_ids` for each sequence and the current scores of the next predicted token id.
@@ -361,7 +361,7 @@ The method starts with the following logic seen in @code:scores_for_batch_start:
 
 The method starts by determining the partially completed code of the current sequence using the `current_code` method. The `current_code` method reuses the `PromptState` abstraction to do so. The only new difficulty lies in finding the correct `PromptState` instance, as the `LSPProcessor` stores an instance per sequence and the ordering of the stored instances and the passed `input_ids` could be different due to beam search reordering. Generally, the class uses the `BeamTracker` to determine the reordered indices, then retrieve the correct object of the current sequence and then use the object to perform the action.
 
-Similarily, the file name of the current batch is retrieved using the `get_file_name_for_batch` method.
+Similarly, the file name of the current batch is retrieved using the `get_file_name_for_batch` method.
 
 Lastly, the abstraction `LspCodeFile` is used to interact with the language server. The `LspCodeFile` abstraction is detailed in the `Language Server` section.
 The returned `lsp_code_file` object is used to firstly retrieve the completion items and then the signature help items.
@@ -458,7 +458,7 @@ For the reranking, the `LSP Processor` first applies a constant adjustment to th
 
 `apply_constant_adjustments` applies a delta to the score of the token ids. A positive delta is applied to non-deprecated token ids, a negative delta to deprecated token ids. As shortly mentioned in the design section, the delta was empirically fixed to $7.0$.
 
-In contrast `ensure_deprecated_below_non_deprecated` determines the minimum non-deprecated token score. Then any scores of deprecated token ids above the minimum are fixed to the delta value below the minimum, to ensure a gap of at least the delta.
+In contrast, `ensure_deprecated_below_non_deprecated` determines the minimum non-deprecated token score. Then any scores of deprecated token ids above the minimum are fixed to the delta value below the minimum, to ensure a gap of at least the delta.
 
 The masking is skipped if masking is disabled in the `LspGenerationConfig`. The implementation was adapted from the masked generation in Agrawal et al.@agrawalMonitorGuidedDecodingCode. For details see #link("https://github.com/microsoft/monitors4codegen/blob/022c65efb19cf6046d0b67960ca232ae7a351af4/src/monitors4codegen/monitor_guided_decoding/hf_gen.py#L30C15-L30C49", "their logits processor").
 #footnote[While the design of the strategy was developed independently of Agrawal et al, the implementation was retrofitted to support masked generation.]
@@ -485,10 +485,10 @@ The `PromptState` is initialized with the initial given code and no comments. Th
   2. The `PromptFormatter` instance is used to create a list of messages, given the initial text and instruction text.
   3. The messages are formatted into a prompt, using the tokenizer method `apply_chat_template`, into the model specific prompt format.
 ]
-The method is called whenever the list of comments is changed, to update the initial prompt. The initial prompt is only used for generation initially.
-It is used to track the prefix of the prompt including the comments, which is then used to determine the completed code without comments, or to create a new prompt with edited comments.
+The method is called whenever the list of comments is changed to update the initial prompt. The initial prompt is only used for generation initially.
+It is used to track the prefix of the prompt, including the comments, which is then used to determine the completed code without comments, or to create a new prompt with edited comments.
 The comments are changed through the `add_comment` method, which takes a comment of an interrupt type and adds it to the list of comments.
-In a previous steps all comments of the same interrupt type are removed, ensuring that only the most recent instruction of an interrupt type is present.
+In a previous step all comments of the same interrupt type are removed, ensuring that only the most recent instruction of an interrupt type is present.
 This limits the scope of the context to the next context instance. For function signature context, the context would stay included until the next function call is completed.
 If the comment is empty, no instruction is added, effectively removing the previous instruction of the interrupt type.
 
@@ -597,7 +597,7 @@ The code passes several important initialization parameters to the language serv
 
 Additionally, to the #acr("LSP") messages, the environment variable `VIRTUAL_ENV` is ensured to be set. If it is not set yet, the virtual environment is determined by the project root path and set.
 The environment variable is used by the language server to determine the installed packages and to provide completion items and signature help.
-This allow separating the runtime environment for the approach and the project environment, ensuring that the approach does not interfere with the project environment.
+This allows separating the runtime environment for the approach and the project environment, ensuring that the approach does not interfere with the project environment.
 
 ==== Temporary Code File.
 The completion and signature help on partially completed code is abstracted through the `LspCodeFile` class in `lsp/file.py`.

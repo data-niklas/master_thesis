@@ -26,7 +26,7 @@ $
       [/ Previous words: ], [_"The quick brown fox jumps over the lazy \_"_],
       [/ Predicted next word: ], [_"dog"_],
     ),
-    caption: "Language model predicting the last word of the famous English pangram.",
+    caption: [Language model predicting the last word of the famous English pangram.],
   ),
 )
 
@@ -55,7 +55,7 @@ The probability function represents a matrix of size $|V| times m$, the feature 
 
 // clm, open-end-generation, autoregressivity
 The next step in causal language modeling is the property `autoregressivity`. Decomposing the probability function into a series of next word predictions enables an open-end-generation.
-The model can predict the next word, which is appended to the input sequence afterwards.
+The model can predict the next word, which is appended to the input sequence afterward.
 This process is repeated for the new sequence, which serves as the new input sequence for the next word prediction.
 
 // problem of strategy => later
@@ -68,7 +68,7 @@ A problem in language modeling is the vocabulary size.
 While the vocabulary $V$ of a #acr("CLM") is fixed, the number of possible words in a language is infinite. Languages change frequently, with old words falling out of use and new words emerging.
 Prominent examples include teenage slang, technical terms, and word combinations.
 Using a fixed vocabulary comprised of words makes it impossible to model the language accurately.
-In contrast, using a vocabulary at character level is not feasible, as many eastern languages feature thousands of characters. Additionally, encoding a sentence of a western language into characters would require a sequence of many vocabulary "words".
+In contrast, using a vocabulary at the character level is not feasible, as many eastern languages feature thousands of characters. Additionally, encoding a sentence of a western language into characters would require a sequence of many vocabulary "words".
 The solution lies in-between, using sub-word fragments as vocabulary items.
 Popular choices used in modern language models are #acr("BPE") and SentencePiece@gageNewAlgorithmData@kudoSentencePieceSimpleLanguage2018.
 The vocabulary entries are called tokens, with the process of encoding natural language into tokens called tokenization. The reverse process is called detokenization.

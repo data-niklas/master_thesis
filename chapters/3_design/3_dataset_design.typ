@@ -40,15 +40,14 @@ required.
 
 ==== Test functional and approach correctness.<rdataset:2>
 The second requirement is for the dataset to contain at least two types of tests. The first type is used to test the
-functional correctness of any given code snippet. This test is the most basic test and comparable to a regular unit test
-checking the output of a function.
+functional correctness of any given code snippet. This test is the most basic and comparable to a regular unit test checking the output of a function.
 
 The second type of test is used to check if the approach used in the code snippet is correct. This test will be the
 focus of the evaluation as it specifically checks if the code snippet e.g. uses deprecated code or uses the correct
 alternative instead.
 
-Both tests can be run in conjuction to count the number of failed tests, completed tests and tests with errors. This
-will allow observing the behavior of different changes in the implementation to the used approach, while asserting that
+Both tests can be run in conjunction to count the number of failed tests, completed tests, and tests with errors. This
+will allow observing the behavior of different changes in the implementation of the used approach while asserting that
 the functional correctness is kept.
 
 ==== Include examples of deprecated code.<rdataset:3>
@@ -101,7 +100,7 @@ nor does it contain a secure execution environment.
 `HumanEval` is a dataset going slightly beyond #acr("MBPP") in complexity. It contains 164 handwritten Python
 programming problems for code completion. Each programming problem has the scope of a single function and includes the
 function head with the docstring, the solution and test cases for the functional correctness. The solution is the
-completion of the function head and docstring and they can be combined together to form the complete
+completion of the function head and docstring and they can be combined to form the complete
 function@chenEvaluatingLargeLanguage2021.
 
 Similar to #acr("MBPP"), `HumanEval` lacks the same requirements. It only imports 8 packages, all of which are part of
@@ -123,7 +122,7 @@ about 33.1 test cases per class. In contrast to previous datasets, `ClassEval` e
 types of dependencies. Most dependencies are to different parts of the class itself, but some are to external "Library
 Dependencies". Of the 100 tasks, only 49% use imports, of which 13% use 6 different external dependencies. Even though
 the dataset contains external dependencies, it does not specify the exact version of the dependencies used, or the
-version of the Python interpreter. Also the tests only test the functional
+version of the Python interpreter. Also, the tests only test the functional
 correctness@duClassEvalManuallyCraftedBenchmark2023.
 
 A benefit of `ClassEval` is the fine-grained separation of the provided code snippets. Import statement, code skeletons,
@@ -140,7 +139,7 @@ To fulfill the above requirements, the dataset `DependencyEval` is proposed. It 
 the code snippets, including the exact environment, the used dependencies, the import statements, the code skeleton, the
 test cases and the solution. In addition, it contains a secure evaluation pipeline that can run the tests and collect
 the results reliably. This section will first introduce the structure of each entry in the dataset, followed by how the
-data was obtained and lastly the design of the evaluation pipeline. The samples are hand crafted to test changes in
+data was obtained and lastly the design of the evaluation pipeline. The samples are handcrafted to test changes in
 specific Python dependencies.
 
 ==== Structure.
@@ -197,7 +196,7 @@ moved to a different section of the dependency.
 
 ==== Data sourcing.
 The data is obtained by searching for public Python dependencies on the #acr("PyPI")@PyPIPythonPackage that have a
-changelog. Repositories are then selected based on the different mentioned scenarios. Additionally only the repositories
+changelog. Repositories are then selected based on the different mentioned scenarios. Additionally, only the repositories
 are kept, for which test cases can easily be written and executed, removing dependencies requiring a complex setup to
 use the changed functionality.
 
@@ -221,7 +220,7 @@ The following two examples serve as important test cases for the evaluation of n
 )<code:dataset:pydantic>
 @code:dataset:pydantic targets the major change from `Pydantic` version `1.x.x` to `2.x.x`, renaming a few core
 methods@SerializationPydantic. `Pydantic` is a data validation library for Python, capable of converting complex data
-types to and from Python dictionaries. To converte a `Pydantic` model to a dictionary, previously the method `dict`
+types to and from Python dictionaries. To convert a `Pydantic` model to a dictionary, previously the method `dict`
 would be called. This was renamed to `model_dump`. The previous method is still available and marked as deprecated. As
 the library is widely used and the change in April 2023, lots of publicly available code snippets contain the old
 method. In addition, the standard library method `dict` is used similarly, making it hard to distinguish between
@@ -238,7 +237,7 @@ the two.
 )<code:dataset:textual>
 While the previous example targets the dereferencing of a method, the example @code:dataset:textual targets the
 signature of a function. The parameter `tab_behaviour` was renamed to `tab_behavior` in the widely used library
-`Textual` in Februar 2024@TextualHome. As the change occurred recently, we assume and later evaluate that most #acrpl("CLM") were
+`Textual` in February 2024@TextualHome. As the change occurred recently, we assume and later evaluate that most #acrpl("CLM") were
 trained on older versions and do not complete the correct parameter.
 
 Both examples serve as core test cases for the different included information sources, such as completion items and
@@ -262,7 +261,7 @@ neural code completion without the approach, to serve as a baseline. Before runn
 must first create a virtual Python environment (venv) in which all of the dependencies for the task are installed in.
 The code completion occurs inside the venv, such that the approach has access to dependency information.
 
-Afterwards, the generated code snippets are evaluated inside `Docker` containers and the results transmitted back to the
+Afterward, the generated code snippets are evaluated inside `Docker` containers and the results transmitted back to the
 pipeline via the standard output. `Docker` is a containerization platform that allows for the isolation of processes and
 the restriction of resources. Through the use of `Docker`, the pipeline can restrict access to resources, such as the
 number of CPUs@DockerRunDocker.

@@ -136,7 +136,7 @@ Again, this filter checks the `detail` field of the completion item.
 
 Then private or meta functions are removed, such as the `__getitem__` function in Python. These functions are not meant to be called directly.
 
-To avoid the completion of already completed code, the to be inserted text is checked against the ending of the currently generated code. This also removes items which do not properly extend the current code.
+To avoid the completion of already completed code, the to-be-inserted text is checked against the ending of the currently generated code. This also removes items that do not properly extend the current code.
 // TODO: explain more
 
 // Deprecation vs non-deprecation

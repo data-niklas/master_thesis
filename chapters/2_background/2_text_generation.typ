@@ -6,7 +6,7 @@ To generate a full sequence of token ids and thus a document, the model must cho
 Depending on the text generation strategy, the models generate different documents of varying quality. Each text generation strategy has different advantages and drawbacks. The next sections will introduce a few core sampling strategies and highlight the main advantages and drawbacks.
 
 === Greedy Decoding
-Greedy decoding is the simplest of sampling strategies. The strategy always chooses the token id with highest probability. This always yields the best next token id, but not necessarily the best token id overall.
+Greedy decoding is the simplest of sampling strategies. The strategy always chooses the token id with the highest probability. This always yields the best next token id, but not necessarily the best token id overall.
 
 Its main advantage is the simplicity. The strategy does not require additional state. Only the current probabilities are needed. This also leads to low hardware requirements, compared to other strategies.
 

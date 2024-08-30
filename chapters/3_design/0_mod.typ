@@ -4,7 +4,7 @@ After introducing the necessary background in @background,
 this section will first derive the requirements from the motivation and goals in @chapter:design:requirements.
 
 By analyzing the shortcomings of existing solutions in @chapter:design:analysis,
-the thesis will propose a new design to integrate high quality context into neural code completion. Context retrieval is enhanced with hand crafted filtering rules, to reduce noise and improve completion accuracy.
+the thesis will propose a new design to integrate high quality context into neural code completion. Context retrieval is enhanced with handcrafted filtering rules, to reduce noise and improve completion accuracy.
 
 Lastly, a dataset design is proposed to evaluate the effectiveness of the new design.
 
@@ -40,11 +40,11 @@ In contrast, the approach does not work for dependencies which are either too ne
 The second option, in-context learning, allows the #acr("CLM") to dynamically learn a small subset of the dependency. The benefit of such a dynamic approach is that the #acr("CLM") has accurate knowledge of dependency knowledge previously unknown. The huge flaw is that the #acr("CLM") can only copy the developer, thus only achieving quality on par, but not above the developer.
 Additionally, the developer has to write the initial code, in which case the developer either misuses the dependency or already acquired knowledge of the dependency, in which case the #acr("CLM") cannot support him in that regard.
 
-1. The proposed approach shall provide neural code completions with a high accuracy, by always considering the *exact local development environment* and the full featureset of each dependency.
+1. The proposed approach shall provide neural code completions with a high accuracy, by always considering the *exact local development environment* and the full feature set of each dependency.
 2. It shall differentiate between nuances of different versions of the same dependency.
 3. To enable diverse code completions, the approach shall be able to handle a wide range of dependencies, even if they have never been used in other public projects before.
 
-The second dependency accuracy requirement has the implication that the approach should follow (some) clean code practices. Dependencies use a "Deprecation" mechanism to gradually change features, without breaking dependant code directly by providing a time window, in which the code can be changed, before the old feature is removed or replaced.
+The second dependency accuracy requirement has the implication that the approach should follow (some) clean code practices. Dependencies use a "Deprecation" mechanism to gradually change features, without breaking dependent code directly by providing a time window, in which the code can be changed, before the old feature is removed or replaced.
 By differentiating between nuances in different versions, the approach can suggest code which is future-proof and does not rely on deprecated features.
 The following different scenarios between dependency versions can be distinguished:
 1. The dependency has a new feature, which is not available in the old version.
@@ -79,7 +79,7 @@ Using editor tooling feels fast, as responses in interactions with toolings only
 While the goal of this thesis is not to reduce the latency in neural code generation, the approach should not impose a significant overhead on the default code completion.
 
 == Analysis <chapter:design:analysis>
-After introducing the five requirements in the previous section, this section will analyze the shortcomings of existing solutions in regards to the requirements. In particular, the analysis will focus on the work by Agrawal et al.@agrawalMonitorGuidedDecodingCode, as it is the most promising work.
+After introducing the five requirements in the previous section, this section will analyze the shortcomings of existing solutions in regard to the requirements. In particular, the analysis will focus on the work by Agrawal et al.@agrawalMonitorGuidedDecodingCode, as it is the most promising work.
 While this thesis has evolved without the knowledge of the work by Agrawal et al. and is not based on it, the general design choices are similar enough to show initial observations and design choices.
 
 === Monitor-Guided Decoding
@@ -94,8 +94,8 @@ It cannot guide the model away from now deprecated features.
 Additionally, other code items, such as function signature parameters are not considered in the work.
 
 As the work depends on the #acr("LSP"), it is robust under the assumption, that the running language server is robust.
-By abstracting language dependant features, the work is generalizable to other programming languages, though the implementation of the work relies on Java specific functionality.
-Through the use of #acr("MGD"), the only performance overhead of this method is the additional processing for each token. The bulk of the processing is shifted towards the language server, which performs the static analysis. As the language servers are optimized towards these analysis, the performance impact is $O(n)$, where $n$ is the token count@agrawalMonitorGuidedDecodingCode.
+By abstracting language dependent features, the work is generalizable to other programming languages, though the implementation of the work relies on Java specific functionality.
+Through the use of #acr("MGD"), the only performance overhead of this method is the additional processing for each token. The bulk of the processing is shifted towards the language server, which performs the static analysis. As the language servers are optimized towards these analyses, the performance impact is $O(n)$, where $n$ is the token count@agrawalMonitorGuidedDecodingCode.
 
 === RepoCoder
 The work by Zhang et al. fails in most requirements, only fulfilling basic requirements.
@@ -105,17 +105,17 @@ By reusing local code, the approach is generalizable to other programming langua
 Under the assumption taht the embedding is performed upfront, the performance decreases by the iteration count $i$.
 
 === DocPrompting
-The work by Zhou et al. fails similarly to `RepoCoder`, as it uses a similar approach, but tuned towards globally available documentation. As no iterations are used, the performance impact is a single similarity seach using embeddings.
+The work by Zhou et al. fails similarly to `RepoCoder`, as it uses a similar approach, but tuned towards globally available documentation. As no iterations are used, the performance impact is a single similarity search using embeddings.
 
 === Summary
-While `DocPrompting` and `RepoCoder` show that using documentation and available code can improve neural code completion, they fail to improve completions for very specific installed dependenecies.
+While `DocPrompting` and `RepoCoder` show that using documentation and available code can improve neural code completion, they fail to improve completions for very specific installed dependencies.
 The work by Agrawal et al. fulfills the most requirements, through the clever use of #acr("LSP").
 #acr("LSP") is a protocol abstracting programming language features, thus enabling generalizable approaches using global context of the exact installed dependencies.
 
 A possible approach would use available information, such as the `CompletionItemTag` in a `CompletionItem`, to check if an item was deprecated and should not be used anymore.
 Furthermore, additional language features, such as signature completions, could be used to guide the neural code completion of parameters in function calls.
 
-A full #acr("MGD") is not possible, due to deprecated completion items. A typical #acr("MGD") approach would keep the logits of completion item to guide the dereferece operation, as seen in Agrawal et al., but mask other tokens.
+A full #acr("MGD") is not possible, due to deprecated completion items. A typical #acr("MGD") approach would keep the logits of completion item to guide the dereference operation, as seen in Agrawal et al., but mask other tokens.
 
 When combined with deprecated completion items, tokens of deprecated completion items would need to be masked, *while* tokens of non deprecated completion items would not be masked.
 The problem arises when deprecated and non deprecated completion items share the same prefix when represented as a token sequence. Now the same token would need masking and retaining.

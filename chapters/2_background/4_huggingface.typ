@@ -2,12 +2,12 @@
 
 == Torch <chapter:bg:torch>
 // TODO: @rabanserIntroductionTensorDecompositions2017
-Torch is a widely used machine learning library in Python. It enables the creation and manipulation of tensors in different precisions. The Transformers provides high level abstractions which base on Pytorch. // TODO as an example, other models are also possible
-This section shortly introduces a few core concepts of Pytorch, which are used in the Transformers library. It will focus on version #link("https://pytorch.org/docs/2.2/")[`2.2`] of PyTorch.
+Torch is a widely used machine learning library in Python. It enables the creation and manipulation of tensors in different precisions. The Transformers provides high level abstractions which base on PyTorch. // TODO as an example, other models are also possible
+This section shortly introduces a few core concepts of PyTorch, which are used in the Transformers library. It will focus on version #link("https://pytorch.org/docs/2.2/")[`2.2`] of PyTorch.
 // TODO: übergang
 // TODO: introduce motivation
 // What is a tensor
-PyTorch provides operations on tensors. A tensor is a multi-dimensional array of numerical values and the generalization of a matrix@rabanserIntroductionTensorDecompositions2017.
+PyTorch provides operations on tensors. A tensor is a multidimensional array of numerical values and the generalization of a matrix@rabanserIntroductionTensorDecompositions2017.
 // n-d array of numerical values => generalization of matrices
 Each tensor typically only contains values of the same type, such as value from $RR$@rabanserIntroductionTensorDecompositions2017.
 
@@ -15,7 +15,7 @@ Each tensor typically only contains values of the same type, such as value from 
 One of the applications for tensors is to represent multi-relational data@rabanserIntroductionTensorDecompositions2017. In that case each dimension represents a single relation.
 
 // example: first dimension: generated tokens, second dimension: batch
-For #acr("CLM") inference different types of tensors are used. For example, the token id sequence during parallel text generation is a two-dimensional tensors of the following relations: `(batch, token)`.
+For #acr("CLM") inference different types of tensors are used. For example, the token id sequence during parallel text generation is a two-dimensional tensor of the following relations: `(batch, token)`.
 The second dimension represents a single token id sequence, while the first dimension enables parallel text generation for `n` token id sequences.
 
 // TODO: reference
@@ -38,7 +38,7 @@ After providing the motivation for tensors, the following list will introduce co
 Fixing indices on a tensor will return a subfield or subarray, which in itself is a lower-order tensor. By fixing all indices a scalar is obtained. A slice and fiber are special terms for lower-order tensors obtained from fixing indices on a tensor.
 
 // Precision
-As introduced earlies, tensors usually contain values of the same type. Each PyTorch tensor contains values of a single data type, in short: `dtype`.
+As introduced earlier, tensors usually contain values of the same type. Each PyTorch tensor contains values of a single data type, in short: `dtype`.
 PyTorch supports many different numerical data types, of which the following are relevant:
 #figure(
   table(
@@ -151,7 +151,7 @@ By default, the model will be loaded using the data type of the loaded weights. 
 The `device_map` parameter controls on which devices the model is allocated. The parameter takes a PyTorch device as value. Passing `auto` computes the most optimized device map automatically.
 
 // Auto models
-Transformers provides an abstraction called `AutoClasses`. These abstraction solve the problem of finding the specific model, config and tokenizer classes to load and use a #acr("CLM"). Instead, the correct classes can be guessed from the name of a model alone@AutoClasses.
+Transformers provides an abstraction called `AutoClasses`. These abstractions solve the problem of finding the specific model, config and tokenizer classes to load and use a #acr("CLM"). Instead, the correct classes can be guessed from the name of a model alone@AutoClasses.
 This simplifies code when trying different models for the same task, such as code generation:
 #figure(
   code(
@@ -164,7 +164,7 @@ This simplifies code when trying different models for the same task, such as cod
     model = AutoModel.from_pretrained("codellama/CodeLlama-7b-Instruct-hf")
     ```,
   ),
-  caption: [Using AutoClasses to load a model@AutoClasses],
+  caption: [Using `AutoClasses` to load a model@AutoClasses],
 )<code:auto_classes>
 
 // Resizing token embeddings
@@ -265,7 +265,7 @@ After obtaining a model and a tokenizer, the text generation process can be perf
 The lowest level abstraction is the `forward` method of the model, which takes previous token ids and returns the logits for the next token id. The arguments to the function only control the provided output format and cache behavior@Models.
 
 // generate
-The next abstraction is the `generate` method, which generates a whole sequence of tokens, until a stopping criteria is met, such as the #acr("EOS") token.
+The next abstraction is the `generate` method, which generates a whole sequence of tokens until a stopping criteria is met, such as the #acr("EOS") token.
 The functions is provided by the `GenerationMixin` class, which #acr("CLM") inherit from using multiple-inheritance.
 The `GenerationMixin` implements the different text generation strategies, which can be controlled through the provided parameters@Generationa.
 The `generate` function has the following signature:
