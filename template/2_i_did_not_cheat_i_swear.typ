@@ -1,4 +1,4 @@
-#let i-did-not-cheat-i-swear(name) = {
+#let i-did-not-cheat-i-swear(name, print-mode) = context {
   set page(header: none, footer: none)
   set par(first-line-indent: 0pt, hanging-indent: 0pt)
   v(40pt)
@@ -13,5 +13,14 @@
   v(15pt)
   line(length: 6cm, stroke: 0.02cm + black)
   name
-  pagebreak(to: "odd", weak: true)
+  if calc.rem(counter(page).get().last(), 2) == 1 and print-mode {
+    pagebreak()
+    align(center + horizon, [_Page intentionally left empty_])
+  }
+  let to = if print-mode {
+    "odd"
+  } else {
+    none
+  }
+  pagebreak(to: to, weak: true)
 }

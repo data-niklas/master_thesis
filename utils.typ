@@ -2,8 +2,9 @@
 #import "@preview/sourcerer:0.2.1": code
 #import "@preview/typpuccino:0.1.0": latte, frappe, macchiato, mocha
 #import "@preview/oxifmt:0.2.1": strfmt
+#import "@preview/cetz:0.2.2"
 
-#let print-mode = false
+#let print-mode = true
 #let theme = mocha
 
 #let example(body, caption: "") = figure(
@@ -39,6 +40,9 @@
 )
 
 #let todo(text) = {
+  if print-mode {
+    return none
+  }
   show figure.caption: it => []
   box(
     figure(
@@ -458,21 +462,21 @@
 #let stats-table(stats, show-total: true, diff: false) = {
   let align = (column, row) => {
     if row == 0 {
-      center
+      center + horizon
     } else if column == 0 {
-      left
+      left + horizon
     } else {
-      right
+      right + horizon
 
     }
   }
   let header = (
     "Name",
     "Total",
-    "Fully solved",
-    "Partially Solved",
-    "Not solved",
-    "Error",
+    [Fully\ solved],
+    [Partially\ solved],
+    [Not\ solved],
+    text(hyphenate: false)[Error],
   )
   if not show-total {
     let _ = header.remove(1)
@@ -746,6 +750,128 @@
     ),
   )
 }
+#let stat-name(evaluation, run-name) = {
+  let config = evaluation.at("config")
+  let sampling-text = if config.at("do_sample") {
+    "sampling"
+  } else {
+    "greedy"
+  }
+  let beams = if "num_beams" in config {
+    config.at("num_beams")
+  } else {
+    1
+  }
+  // add sampling and num beams
+  let model = evaluation.at("model")
+  let model-name = if model == codellama {
+    "CodeLlama"
+  } else if model == magicoder {
+    "Magicoder"
+  } else {
+    "MistralHermes"
+  }
+  let name = run-name + " " + model-name + " " + sampling-text + " " + str(beams) + if beams == 1 {
+    " beam"
+  } else {
+    " beams"
+  }
+  let content-name = [
+    #run-name\
+    #model-name\
+    #sampling-text #beams #{
+      if beams == 1 {
+        " beam"
+      } else {
+        " beams"
+      }
+    }
+  ]
+  content-name
+}
+
+#let debug-best-evaluation(runs-with-name, worst: false, baseline: false) = {
+  let best-value = if worst {
+    100.0
+  } else {
+    0.0
+  }
+  let best-name = ""
+  for run in runs-with-name {
+    let run-name = run.at(0)
+    let evaluations = run.at(1)
+    let evaluation-stats = if baseline {
+      get-baseline(evaluations)
+    } else {
+      get-llm-lsp(evaluations)
+    }
+    let stats = evaluation-stats.map(evaluation => aggregate-stats((
+      evaluation,
+    )))
+    for (i, stat) in stats.enumerate() {
+      if (stat.at("full_p") > best-value and not worst) or (
+        stat.at("full_p") < best-value and worst
+      ) {
+        best-value = stat.at("full_p")
+        best-name = stat-name(evaluations.at(i), run-name)
+      }
+    }
+  }
+  (best-name, best-value)
+}
+
+#let debug-best-diff-evaluation(runs-with-name, worst: false) = {
+  let best-value = if worst {
+    100.0
+  } else {
+    0.0
+  }
+  let best-name = ""
+  for run in runs-with-name {
+    let run-name = run.at(0)
+    let evaluations = run.at(1)
+    let stats = evaluations.map(evaluation => total-diff-percentage((
+      evaluation,
+    )))
+    for (i, stat) in stats.enumerate() {
+      if (stat.at("full_p") > best-value and not worst) or (
+        stat.at("full_p") < best-value and worst
+      ) {
+        best-value = stat.at("full_p")
+        let config = evaluations.at(i).at("config")
+        best-name = stat-name(evaluations.at(i), run-name)
+      }
+    }
+  }
+  (best-name, best-value)
+}
+
+#let get-all-stats(runs-with-name) = {
+  let stats = ()
+  for run in runs-with-name {
+    let run-name = run.at(0)
+    let evaluations = run.at(1)
+    let evaluation-baseline-stats = get-baseline(evaluations)
+    let evaluation-llm-lsp-stats = get-llm-lsp(evaluations)
+    let baseline-stats = evaluation-baseline-stats.map(evaluation => aggregate-stats((
+      evaluation,
+    )))
+    let llm-lsp-stats = evaluation-llm-lsp-stats.map(evaluation => aggregate-stats((
+      evaluation,
+    )))
+    let evaluation-diff-stats = evaluations.map(evaluation => total-diff-percentage((
+      evaluation,
+    )))
+    for (i, stat) in baseline-stats.zip(
+      llm-lsp-stats,
+      evaluation-diff-stats,
+    ).enumerate() {
+      let name = stat-name(evaluations.at(i), run-name)
+      stats = stats + ((name, stat),)
+    }
+
+  }
+  stats
+}
 
 #let num-dataset = 25
-

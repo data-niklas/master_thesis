@@ -81,6 +81,17 @@
 #let figure-style(doc) = {
   show figure: set text(spacing: 100%)
   show table: set text(spacing: 100%)
+  // citations have no element attached, so do not show refs in figures
+  show figure: it => {
+    show ref: it2 => {
+      if it2.element == none {
+        none
+      } else {
+        it2
+      }
+    }
+    it
+  }
 
   show figure.where(kind: table): set figure.caption(position: top)
   show figure.where(kind: image): set figure.caption(position: bottom)

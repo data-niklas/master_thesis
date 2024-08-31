@@ -79,7 +79,7 @@
   set document(author: author, title: title)
   init-acronyms(acronyms)
   set heading(numbering: "I")
-  context if query(figure.where(kind: "todo")).len() > 0 {
+  context if query(figure.where(kind: "todo")).len() > 0 and not print-mode {
     outline(
       title: [TODOS],
       target: figure.where(kind: "todo"),
@@ -91,10 +91,11 @@
     matriculation-number: matriculation-number,
     date-of-submission: date-of-submission,
     supervisor: supervisor,
-    supervisor-link: supervisor-link
+    supervisor-link: supervisor-link,
+    print-mode: print-mode,
   )
   set page(numbering: "I", number-align: center)
-  i-did-not-cheat-i-swear(author)
+  i-did-not-cheat-i-swear(author, print-mode)
   // set text(spacing: 150%) // Space text to make it readable (\onehalfspacing)
   // // Apparently in LaTeX the spacing is not applied to the following elements
   // show footnote: set text(spacing: 100%)

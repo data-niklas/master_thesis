@@ -1,108 +1,10 @@
 #import "/utils.typ": *
 
-== Torch <chapter:bg:torch>
-// TODO: @rabanserIntroductionTensorDecompositions2017
-Torch is a widely used machine learning library in Python. It enables the creation and manipulation of tensors in different precisions. The Transformers provides high level abstractions which base on PyTorch. // TODO as an example, other models are also possible
-This section shortly introduces a few core concepts of PyTorch, which are used in the Transformers library. It will focus on version #link("https://pytorch.org/docs/2.2/")[`2.2`] of PyTorch.
-// TODO: übergang
-// TODO: introduce motivation
-// What is a tensor
-PyTorch provides operations on tensors. A tensor is a multidimensional array of numerical values and the generalization of a matrix@rabanserIntroductionTensorDecompositions2017.
-// n-d array of numerical values => generalization of matrices
-Each tensor typically only contains values of the same type, such as value from $RR$@rabanserIntroductionTensorDecompositions2017.
-
-// multi-relational data:
-One of the applications for tensors is to represent multi-relational data@rabanserIntroductionTensorDecompositions2017. In that case each dimension represents a single relation.
-
-// example: first dimension: generated tokens, second dimension: batch
-For #acr("CLM") inference different types of tensors are used. For example, the token id sequence during parallel text generation is a two-dimensional tensor of the following relations: `(batch, token)`.
-The second dimension represents a single token id sequence, while the first dimension enables parallel text generation for `n` token id sequences.
-
-// TODO: reference
-// other example: first dimension: batch, second dimension: prediction in shape of vocabulary
-Another example is the next token prediction tensor, which is a two-dimensional tensor of the following relations: `(batch, vocabulary)`. The second dimension contains the probability distribution over the whole vocabulary, while the first dimension enables parallel text generation.
-
-The second example only displays the tensor for a single next token prediction. By adding another dimension for the `token` relation, the whole probability distribution history could be represented.
-// TODO: introduce batching
-
-After providing the motivation for tensors, the following list will introduce core terminology for use with tensors:
-/ Order: Number of dimensions of a tensor
-/ Shape: Number of elements in each dimension
-/ Slice: Two-dimensional subfield of a tensor. Obtained by fixing all but two indices.
-/ Fiber: One-dimensional subarray of a tensor. Obtained by fixing all but one index.
-/ Matrix: Two-dimensional tensor.
-/ Vector: One-dimensional tensor.
-/ Scalar: Zero-dimensional tensor.
-@rabanserIntroductionTensorDecompositions2017
-
-Fixing indices on a tensor will return a subfield or subarray, which in itself is a lower-order tensor. By fixing all indices a scalar is obtained. A slice and fiber are special terms for lower-order tensors obtained from fixing indices on a tensor.
-
-// Precision
-As introduced earlier, tensors usually contain values of the same type. Each PyTorch tensor contains values of a single data type, in short: `dtype`.
-PyTorch supports many different numerical data types, of which the following are relevant:
-#figure(
-  table(
-    columns: (auto, auto),
-    table.header([Data Type], [dtype]),
-    [32-bit floating point],
-    [torch.float32],
-    [16-bit floating point 1],
-    [torch.float16],
-    [16-bit floating point 2],
-    [torch.bfloat16],
-    [64-bit integer (signed)],
-    [torch.int64],
-    [32-bit integer (signed)],
-    [torch.int32],
-    [Boolean],
-    [torch.bool],
-  ),
-  caption: [Relevant PyTorch data types@TensorAttributesPyTorch],
-)<table:data_types>
-
-The data types can be used by specifying the `dtype` parameter when creating a tensor. The value is one of the variables listed in the `dtype` column in @table:data_types@TorchTensorPyTorch.
-
-// float16 vs bfloat16
-The difference between `torch.float16` and `torch.bfloat16` is the precision of the floating point number. Both formats use 16 bits to encode the floating point number. The difference lies in the number of bits used to encode the mantissa@TensorAttributesPyTorch.
-
-The `torch.float16` is a half-precision floating point number, as defined in the IEEE 754 standard. It uses one sign bit, five exponent bits and 10 mantissa bits@IEEEStandardsAssociation.
-// TODO: better IEEE reference
-#figure(
-  image("/assets/float16.svg"),
-  caption: "IEEE 754 half-precision floating point number: float16",
-)
-
-In contast, the `torch.bfloat16` keeps the full range of the full-precision floating point number of 8-bits, but has a reduced precision of 7 mantissa bits@BFloat16SecretHigh@TensorAttributesPyTorch.
-#figure(
-  image("/assets/bfloat16.svg"),
-  caption: "Brain Floating Point Format: bfloat16",
-)
-The format was introduced by Google Brain and is used in their Tensor Processing Units (TPUs)@BFloat16SecretHigh, as the reduced mantissa precision reduces the size needed for physical hardware multipliers@BFloat16SecretHigh.
-// TODO: paper to show that less precision not really relevant for model quality
-
-In addition to the precision, another aspect of a PyTorch tensor is the *physical location* it is allocated at, the `device`. The function `torch.device` creates a reference to such a physical location.
-Possible relevant device locations are `cpu` and `cuda`, where `cpu` allocates a tensor on the CPU memory, while `cuda` allocates the tensor on GPU memory@TensorAttributesPyTorch.
-// Device
-// torch.device
-// torch.to
-Already creates tensor can be *moved to a different device* by calling the `to` method with the new device@TorchTensorPyTorcha.
-
-// TEnsor, LongTensor, FloatTensor
-To *create a tensor*, the function `torch.tensor` is used. It takes `data` and optionally `dtype` and the `device`@TorchTensorPyTorch.
-// torch.Tensor
-The order and shape of the tensor can be accessed through the `dim` and `shape` attributes@TorchTensorDim@TorchTensorShape. Indexing the tensor is done through the Python `tensor[indice_list]` notation, where untouched dimensions are marked through the `:` symbol, e.g.: `tensor[3,:,1]`@TensorIndexingAPI.
-// .shape
-// indexing
-// iterating like normal python (over first dimension)
-Iterating the tensor will iterate over the first dimension.
-
-// functions
-// torch.nn.functional
-
 == Transformers Library <chapter:bg:transformers>
 Transformers is the name of the popular Python machine learning library developed by HuggingFace. It provides broad support for many different machine learning domains, such as computer vision, audio processing, multimodal models and *natural language processing*@Transformers.
 For each domain, the library enables simple training and inference of state-of-the-art models.
 The thesis heavily relies on functionality provided by this library, as it provides in-depth features to implement the more advanced features. It provides support for all techniques introduced in @chapter:bg:llms and @chapter:bg:text_generation@Transformers.
+The library itself is built on top of PyTorch, for which further information may be found in the appendix.
 
 As the library receives frequent updates, the thesis focuses on version #link("https://huggingface.co/docs/transformers/v4.41.3/en/index")[`4.41.3`]. In addition, the library is complex and enables many different use-cases through many abstraction layers. This section will focus on the #acr("CLM") use-case, omit unneeded arguments and list parameters only available for #acr("CLM").
 
@@ -320,15 +222,25 @@ The first parameters in @table:generation_config configure the first stopping cr
 
 The following diagram displays the different used generation strategies, depending on the provided parameters:
 #figure(
-  image(
-    "/assets/text_strategy_parameters.excalidraw.svg",
-    // width: 50%,
-    height: 30%,
-    fit: "contain",
+  cetz.canvas(
+    length: 2.3cm,
+    {
+      import cetz.draw: *
+      rect((1, -1), (3, -3), radius: .2, stroke: rgb("#222222"), name: "box")
+      content((name: "box", anchor: 115deg), move(dy: -8pt, "sampling"))
+      content((name: "box", anchor: 65deg), move(dy: -8pt, "no sampling"))
+      content((name: "box", anchor: 155deg), move(dx: -16pt, [> 1\ beam]))
+      content((name: "box", anchor: 205deg), move(dx: -16pt, [\= 1\ beam]))
+      content((1.5, -1.5), [beam-search\ multinomial\ sampling])
+      content((2.5, -1.5), [beam-search\ decoding])
+      content((1.5, -2.5), [multinomial\ sampling])
+      content((2.5, -2.5), [greedy\ decoding])
+      line((1, -2), (3, -2))
+      line((2, -1), (2, -3))
+    },
   ),
   caption: "Generation strategies",
 )
-
 // Logits manipulation
 The final parameters manipulate the logits before sampling. They enable `Top-k`, `Top-p` and `Temperature` sampling. The last parameter hinders models from endlessly repeating the same token, until a stopping criterium is reached.
 

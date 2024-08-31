@@ -117,6 +117,4 @@ By structuring the thoughts into a tree, common tree search algorithms can be ap
 // Benefits
 In general, the tree of thoughts meta-strategy is more powerful than the chain of thoughts. It is a very powerful and flexible strategy, which even allows following thoughts and then backtracking@yaoTreeThoughtsDeliberate2023a.
 
-@yaoTreeThoughtsDeliberate2023a
-
 // TODO: details? math, drawbacks, images, examples

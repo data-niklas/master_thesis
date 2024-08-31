@@ -4,7 +4,8 @@
   matriculation-number: "",
   date-of-submission: none,
   supervisor: "",
-  supervisor-link: ""
+  supervisor-link: "",
+  print-mode: false,
 ) = {
   let smallskip = 3pt
   let Large = 14.4pt
@@ -60,10 +61,14 @@
               [Matrikelnummer:],
               matriculation-number,
               [Betreuer:],
-              link(
-                supervisor-link,
-                supervisor,
-              ),
+              if not print-mode {
+                link(
+                  supervisor-link,
+                  supervisor,
+                )
+              } else {
+                supervisor
+              },
               [Datum der Abgabe],
               date-of-submission.display(),
             ),

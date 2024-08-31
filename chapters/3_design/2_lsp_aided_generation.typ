@@ -151,6 +151,6 @@ These design choices try to ramify the problem of overlapping tokens in deprecat
 - Token ids that are a prefix of a deprecated completion item and a non-deprecated completion item should be scored lower
 - Other token ids should be masked
 
-The exact delta score is fixed to $7.0$ empirically. For each token id, the delta score will be added once for each completion item it is a prefix of.
+The exact delta score is not specified by the design and is left to the implementation.
 
 The score of the interrupt token is fixed to the maximum possible logits value, if an interrupt should occur.

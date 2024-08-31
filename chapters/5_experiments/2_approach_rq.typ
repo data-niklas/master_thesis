@@ -6,7 +6,7 @@ To evaluate the research questions, the following general experiment is conducte
 
 The DependencyEval dataset is used in conjunction with the listed models, to evaluate neural code completion both with and without the approach.
 The evaluation using normal code completion is used as a baseline to compare the results with the approach.
-The three evaluations are run, using the three different approach configurations:
+The three evaluations are run using the three different approach configurations:
 / Default: The config as seen in @code:lsp_generation_config without masked generation.
 / Masked: The config as seen in @code:lsp_generation_config.
 / Use completion: The config as seen in @code:lsp_generation_config without masked generation, but using the completion context.
@@ -29,7 +29,7 @@ The base parameters ensure that the model finishes in at most 90 seconds, which 
 The repetition penalty of $1.3$ has proven itself to prevent repetition of e.g. `\\n` in CodeLlama, over a value of $1.1$.
 Additionally, sampling uses the parameter `"top_k": 50` and `"top_p": 0.95`.
 
-All model configurations are combined with the three models CodeLlama, Codestral and Magicoder.
+All model configurations are combined with the three models CodeLlama, MistralHermes and Magicoder.
 Each evaluation of one of the three runs "Default", "Masked" and "Use completion" runs one dataset evaluation for all model configurations, with and without the approach, totaling to $3*6*3*2=108$ dataset evaluations. The repeated dataset evaluations of the baseline are used to average results.
 
 After collecting the results, they are processed and analyzed to answer the research questions.

@@ -100,7 +100,11 @@
 #let three-beams-baseline = aggregate-stats(
   get-baseline(three-beams-evaluations),
 )
-
+#let all-stats = get-all-stats((
+  ("Default", default),
+  ("Masking", masking),
+  ("Use Completions", use-completions),
+))
 == Approach Results <chapter:results:approach>
 
 // reminder scenarios:
@@ -251,8 +255,58 @@ The first group of tasks fully solved by the baseline serve to check if the appr
 // in almost most scenarios code completion fails to use dependencies correctly
 // pytorch_1, bidict_2, sometimes rich_2, pandas_1 (magicoder, sampling, 3), (polars_1)
 
-// no sampling worse than sampling
-// the less beams the worse
+// show best evaluation
+#figure(
+  highlight-cells(
+    stats-table((
+      ("Default", default-baseline),
+      (
+        "Masking",
+        masking-baseline,
+      ),
+      (
+        "Use Completions",
+        use-completions-baseline,
+      ),
+    )),
+  ),
+  caption: [
+    Overview over the baseline evaluation using different approach configurations.
+  ],
+)<table:results:approach:baseline-stats-approach-config>
+
+As could be seen in previous tables, choosing the right configuration changes the results drastically. Even more so when combining the different choices. While the averaged baseline evaluations often do not complete more than $10%$ of tasks fully, this cannot be said for individual evaluations.
+@table:results:approach:baseline-all-stats-best displays the top 5 best configurations.
+It is directly apparent, that those individual evaluations only use sampling and 2-3 beams. This is as expected and in line with @table:results:approach:baseline-stats-config.
+Additionally, the best configurations produce substantially less errors and many partially solved tasks.
+While a fully solved rate of up to $20%$ is more impressive, it is not sufficient and leaves much room for improvement to the approach.
+
+#figure(
+  highlight-cells(
+    stats-table(
+      all-stats.map(stat-with-name => (
+        stat-with-name.at(0),
+        stat-with-name.at(1).at(0),
+      )).sorted(key: task-sorted-key).rev().slice(0, 3),
+    ),
+  ),
+  caption: [
+    Overview over the top 3 baseline configurations.
+  ],
+)<table:results:approach:baseline-all-stats-best>
+// #figure(
+//   highlight-cells(
+//     stats-table(
+//       all-stats.map(stat-with-name => (
+//         stat-with-name.at(0),
+//         stat-with-name.at(1).at(0),
+//       )).sorted(key: task-sorted-key).slice(0, 5),
+//     ),
+//   ),
+//   caption: [
+//     Overview over the worst 5 baseline configurations.
+//   ],
+// )<table:results:approach:baseline-all-stats-worst>
 
 // copilot
 The exact distribution of tasks results by Copilot are found in @table:results:copilot. The results are in line with @table:results:approach:baseline-task-stats.
@@ -405,6 +459,21 @@ After looking at the tasks, three groups emerge:
 The first group answers #rq(2), showing which scenarios the approach improves best. These unique tasks mainly include the `pydantic` tasks and the `textual_1` tasks, which correspond to the second baseline task group.
 In the baseline those tasks mainly had a high partial solved rate, as the dependencies were recently changed and included simple deprecations of methods and function parameters.
 The approach clearly improves such examples the best, changing the single deprecated method or parameter to an alternative.
+
+#figure(
+  highlight-cells(
+    stats-table(
+      all-stats.map(stat-with-name => (
+        stat-with-name.at(0),
+        stat-with-name.at(1).at(2),
+      )).sorted(key: task-sorted-key).rev().slice(0, 3),
+      diff: true,
+    ),
+  ),
+  caption: [
+    Overview over the top 3 configurations improving the baseline using the approach.
+  ],
+)<table:results:approach:diff-all-stats-best>
 
 To summarize, only certain configuration combinations improve the results.
 Especially CodeLlama using sampling and two beams, using the Default approach configuration, shows the most improvements. Additionally, only a handful of tasks can be improved. Those are the core tasks in which a method or function parameter was recently deprecated. Other tasks do not show many or any improvements.

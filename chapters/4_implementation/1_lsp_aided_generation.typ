@@ -14,7 +14,7 @@ To further simplify the installation, this repository includes a Dockerfile, whi
 
 === Dependencies
 This section will list the main package dependencies of the project and their respective uses.
-The two main dependencies are `Transformers` (`transformers`) and `PyTorch` (`torch`), as introduced in @chapter:bg:transformers and @chapter:bg:torch.
+The two main dependencies are `Transformers` (`transformers`) and `PyTorch` (`torch`), as introduced in @chapter:bg:transformers and found in the appendix.
 
 //Transformers
 `Transformers` enable neural code completion and provide high- and low-level control over the model's behavior. The implementation will integrate with this library to provide seamless #acr("LSP")-aided code completion with any supported code completion model.
@@ -456,7 +456,7 @@ Token ids which are prefixes of tokenized non-deprecated completions will hencef
 
 For the reranking, the `LSP Processor` first applies a constant adjustment to the scores using the method `apply_constant_adjustments`. Then deprecated tokens ids are ensured to stay below non-deprecated token ids in the method `ensure_deprecated_below_non_deprecated`. Finally, masking occurs in the method `mask_other_tokens`.
 
-`apply_constant_adjustments` applies a delta to the score of the token ids. A positive delta is applied to non-deprecated token ids, a negative delta to deprecated token ids. As shortly mentioned in the design section, the delta was empirically fixed to $7.0$.
+`apply_constant_adjustments` applies a delta to the score of the token ids. A positive delta is applied to non-deprecated token ids, a negative delta to deprecated token ids. The delta is empirically fixed to $7.0$.
 
 In contrast, `ensure_deprecated_below_non_deprecated` determines the minimum non-deprecated token score. Then any scores of deprecated token ids above the minimum are fixed to the delta value below the minimum, to ensure a gap of at least the delta.
 
