@@ -16,6 +16,7 @@ jobs:
       with:
         source_paths: 'main.typ'
         output_paths: 'release/Masterthesis.pdf'
+        fonts_paths: 'assets/fonts'
     - name: Commit compiled PDFs
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
