@@ -61,6 +61,10 @@
   supervisor: "",
   supervisor-link: "",
 ) = {
+  // Allows overwriting the print-mode when writing the thesis, while building the PDF using whatever default is used else
+  if "print-mode" in sys.inputs {
+    print-mode = json.decode(sys.inputs.at("print-mode"))
+  }
   assert-types(
     title,
     abstract,

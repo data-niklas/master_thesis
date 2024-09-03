@@ -71,3 +71,13 @@ dataset/textual_2.py
 dataset/theflow_1.py
 dataset/tsv2py_1.py
 evaluation_base_model_config.json
+correct_approach_wrong_code_textual_1.py
+correct_approach_wrong_code_rich_1.py
+correct_approach_wrong_code_fastapi_1.py
+correct_approach_wrong_code_pydantic_1.py
+correct_approach_wrong_code_rich_2.py
+model_dump_signature.py
+text_area_signature.py
+clear_meta_and_links_signature.py
+error_indent_dotted_2.py
+error_empty_sklearn_2.py

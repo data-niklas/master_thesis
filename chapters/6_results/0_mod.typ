@@ -1,5 +1,7 @@
 #import "/utils.typ": *
 = Results <results>
+After introducing the the experiment setup, run experiments, and research questions, this section lists the results for each research question.
+If not specified otherwise, percentage differences are given in percentage points.
 #todo()[Simpler languages like LISP easier to integrate auto completion, as less syntactical sugar? (example where instead of object.method it uses {} in python)]
 
 #{

@@ -286,3 +286,24 @@ Iterating the tensor will iterate over the first dimension.
     All differences between the evaluation with and without the approach.
   ],
 )<table:results:approach:diff-all-stats-all>
+
+== Evaluation Result Details
+The following code snippets contain signature help information on different functions used in tasks from the DependencyEval dataset.
+The Pydantic `model_dump` method has the following signature:
+#figure(
+  codefile("/assets/code/model_dump_signature.py"),
+  caption: [Signature of the `model_dump` method],
+)<code:signature:model_dump>
+
+The `TextArea` class of the rich library has the following signature:
+#figure(
+  codefile("/assets/code/text_area_signature.py"),
+  caption: [Signature of the `TextArea` class],
+)<code:signature:text_area>
+
+The method `clear_meta_and_links` of the `Style` class in the rich library has the following signature:
+#figure(
+  codefile("/assets/code/clear_meta_and_links_signature.py"),
+  caption: [Signature of the `clear_meta_and_links` method],
+)<code:signature:clear_meta_and_links>
+As seen, the signature is not as expected, as the method is decorated with `@lru_cache`, which destroys the original signature@FunctoolsCacheDestroys.

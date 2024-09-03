@@ -74,12 +74,11 @@ The remaining tasks in the experiments are analyzed, focusing on the differences
 After evaluating the accuracy of the models when using dependencies, the general correctness of the models is evaluated.
 // TODO: say functional test is used
 
-==== RQ4: How easily does the approach confuse the model?<rq:4>
+==== RQ4: How does the approach confuse the model?<rq:4>
 The research question focuses on the general robustness of the approach and checks if the approach can improve scenarios without affecting the functional result.
-How easily is the model confused by the approach?
-
-Especially the experiment results of the approach are analyzed against the baseline, which fail the functional test, but pass the approach test.
-// 1. How easily does the approach confuse the model?
+To answer this question, the results are analyzed for tasks, where the functional result is incorrect, but the approach is correct. This will be referred to as a model confusion in following chapters.
+By looking at those examples, the research question aims to understand issues in injecting context into the model generation using the approach.
+These findings may lead to improvements in future approaches.
 
 ==== RQ5: Which errors are most common when applying the approach?<rq:5>
 // 2. Which errors are most common?

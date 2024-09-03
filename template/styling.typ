@@ -195,7 +195,7 @@
     linebreaks: "optimized",
   )
   set text(font: "New Computer Modern", spacing: 150%)
-
+  set cite(style: "my-acm.csl")
 
   show footnote: set text(spacing: 100%)
 

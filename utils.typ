@@ -40,7 +40,9 @@
 )
 
 #let todo(text) = {
-  if print-mode {
+  if print-mode and (
+    "print-mode" not in sys.inputs or sys.inputs.at("print-mode") == "true"
+  ) {
     return none
   }
   show figure.caption: it => []

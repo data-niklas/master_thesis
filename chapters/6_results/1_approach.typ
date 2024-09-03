@@ -116,9 +116,9 @@
 === RQ1: In which scenarios does normal code completion fail to use dependencies correctly?
 // 1. In which scenarios does normal code completion fail to use dependencies correctly?
 @table:results:approach:baseline-stats displays the average completion rate using the baseline (approach is disabled).
-The three models CodeLlama, MistralHermes and Magicoder are able to solve $34.82%$ of the tasks in a traditional sense. When considering the used approach of the model, now only $5.93%$ are solved.
+The three models CodeLlama, MistralHermes and Magicoder are able to solve $34.52%$ of the tasks in a traditional sense. When considering the used approach of the model, now only $6%$ are solved.
 In comparison, Copilot is the superior baseline model, solving $52%$ in a traditional sense and still solving $8%$ when considering the approach.
-As can be seen, there is a need for the approach to transform the $39.16%$ partially solved tasks (over all models) into fully solved tasks, by using the correct approach.
+As can be seen, there is a need for the approach to transform the $28.8%$ partially solved tasks (over all models) into fully solved tasks, by using the correct approach.
 
 To note is that Magicoder and MistralHermes perform more errors than CodeLlama and Copilot, but at the same time have less unsolved tasks.
 Possibly Magicoder and MistralHermes fail harder on some tasks.
@@ -483,7 +483,7 @@ Especially CodeLlama using sampling and two beams, using the Default approach co
 
 This section uses the same figures as the last section, but now looks at the examples in which the approach worsens the results. It e.g. continues the notes on the different task groups from the last section.
 
-As introduced before, the second task group mainly includes tasks unaffected by the approach. The main observation is that many of these tasks are some of the worst performing baseline tasks. E.g. `sklearn-1` and `theflow_1` have a $0%$ completion rate in the baseline and show no improvements using the approach.
+As introduced before, the second task group mainly includes tasks unaffected by the approach. The main observation is that many of these tasks are some of the worst performing baseline tasks. E.g. `sklearn_1` and `theflow_1` have a $0%$ completion rate in the baseline and show no improvements using the approach.
 These tasks seem to be unaffected due to their proportionally high difficulty, as providing additional context does not improve the base model capabilities.
 The only outlier being `bidict_2`, which is one of the best performing tasks in the baseline, but is not improved by the approach. This task is likely to be too simple for the approach to improve, as the baseline already solves it consistently.
 // bidict_1, textual_2, emoji_1, sklearn_1, theflow_1, sqlalchemy_1, tsv2py_1, bidict_2
@@ -495,22 +495,75 @@ The conclusion is that the simpleness of the tasks is worsened by the approach, 
 
 When looking at different configurations again, it becomes clear that limiting the search space by using only a single beam, or not using sampling, worsens the results. Exploring many different combinations of completions affected by the approach reduces the amount of errors.
 
-=== RQ4: How easily does the approach confuse the model?
+=== RQ4: How does the approach confuse the model?
 // 1. How easily does the approach confuse the model?
-#todo[Search for correct looking tasks where approach is correct, but syntax error]
-- Second group, partial results:
-- pytorch_3
-- dotted_1
-- pytorch_2
-- pydantic_1
-- pydantic_3
-- sklearn_2
-- pydantic_2
-- rich_1
-- numpy_1
-- textual_1
-- dotted_2
-- fastapi_1
+There are several cases where using the approach led to a model confusion. The following four examples show different types of confusions occuring:
+
+// ... fill value for unneeded parameter
+In the first example @figure:correct_approach_wrong_code_pydantic_1, the approach guides the generation towards the correct method `model_dump`. The error lies in the uneeded parameter `by_alias`, with the wrong value `...`. As can be seen in the signature of `model_dump`(@code:signature:model_dump), the parameter `by_alias` accepts a boolean. The completed code uses the wrong value, the ellipsis constant.
+#figure(
+  codefile("/assets/code/correct_approach_wrong_code_pydantic_1.py"),
+  caption: [
+    Example of the approach confusing the model to use a wrong value for an unneeded parameter. The approach guided the generation towards the correct method `model_dump`.
+  ],
+)<figure:correct_approach_wrong_code_pydantic_1>
+
+// Literal type instead of direct value
+In the next example @figure:correct_approach_wrong_code_textual_1, now the correct function and parameter were chosen. For comparison, the function signature can be found in @code:signature:text_area. The confusion lies in `Literal`. `Literal` is a type class representing a literal value, to be specified directly. This can be seen in the default value set in the function signature.
+In contrast, the completed code tries to construct the parameter value using the `Literal` class, erronously predicting that it is a real class and not a type hint.
+#figure(
+  codefile("/assets/code/correct_approach_wrong_code_textual_1.py"),
+  caption: [
+    Example of the approach confusing the model to use a wrong type for a parameter value. The approach guided the generation towards the correct method `text_area`, but was confused by the `Literal` type hint.
+  ],
+)<figure:correct_approach_wrong_code_textual_1>
+
+// correct parameters, but wrong syntax, as return value
+The third example @figure:correct_approach_wrong_code_fastapi_1 goes one step further.
+The used function and parameters use the correct approach, similar to the correct result @code:dataset:task:fastapi_1. The difference is the generation of a type hint for the return type, which is incorrect outside of function definitions.
+#figure(
+  codefile("/assets/code/correct_approach_wrong_code_fastapi_1.py"),
+  caption: [
+    Example of the approach confusing the model to use a wrong type hint for a return value. The approach guided the generation towards the correct method `app`, but was confused by the type hint.
+  ],
+)<figure:correct_approach_wrong_code_fastapi_1>
+
+// correct method, but invalid parameters, due to LRU cache decorator proxying
+Next, @figure:correct_approach_wrong_code_rich_1 calls the correct method, but is confused by the method parameters.
+While the `clear_meta_and_links` takes no parameters (except `self`), the completed code passes the value `True`.
+This can be explained by the method being decorated with `@lru_cache`, which proxies the method. This destroys the original function signature@FunctoolsCacheDestroys, leading to the function signature found in @code:signature:clear_meta_and_links.
+
+#figure(
+  codefile("/assets/code/correct_approach_wrong_code_rich_1.py"),
+  caption: [
+    Example of the approach confusing the model to use invalid parameters for a method. The approach guided the generation towards the correct method `clear_meta_and_links`, but was confused by the method signature.
+  ],
+)<figure:correct_approach_wrong_code_rich_1>
+
+And lastly, @figure:correct_approach_wrong_code_rich_2 completed the correct code, followed by an invalid postfix. The model is generally confused and instead of stopping the generation, continues in an invalid format.
+#figure(
+  codefile("/assets/code/correct_approach_wrong_code_rich_2.py"),
+  caption: [
+    Example of the correct code followed by an incorrect postfix, due to a bad format.
+  ],
+)<figure:correct_approach_wrong_code_rich_2>
+
+// Summary: Type information causes issues
+In summary, most errors are caused due to issues with type information. Some other errors are caused due to wrong formatting.
+// #todo[Search for correct looking tasks where approach is correct, but syntax error]
+// - Second group, partial results:
+// - pytorch_3
+// - dotted_1
+// - pytorch_2
+// - pydantic_1
+// - pydantic_3
+// - sklearn_2
+// - pydantic_2
+// - rich_1
+// - numpy_1
+// - textual_1
+// - dotted_2
+// - fastapi_1
 
 === RQ5: Which errors are most common when applying the approach?
 // 2. Which errors are most common?
@@ -527,26 +580,74 @@ When looking at different configurations again, it becomes clear that limiting t
   let map-error(message) = {
 
   }
-  let is-oom(code) = {
-    "torch.cuda.OutOfMemoryError: CUDA out of memory" in code
-  }
   let is-lsp-error(code) = {
-
+    "CancelledError" in code
   }
   let with-errors(evaluations, filter) = {
     evaluations.map(evaluation => evaluation.at("items").filter(item => item.at("evaluated_code_llm_lsp").at(0) == "error").filter(item => filter(item))).flatten().len()
   }
-  let total-oom = with-errors(
-    all-results,
-    item => is-oom(item.at("generated_code_llm_lsp")),
-  )
   let total-pip-eval-error = with-errors(
     all-results,
     item => " pip " in item.at("evaluation_error_llm_lsp"),
   )
+  let total-lsp-error = with-errors(
+    all-results,
+    item => is-lsp-error(item.at("generated_code_llm_lsp")),
+  )
+  let count-array-entries(list) = {
+    let counter = (:)
+    for item in list {
+      counter.insert(item, counter.at(item, default: 0) + 1)
+    }
+    counter.pairs()
+  }
+  let has-try-except-re = regex("try.*except")
+  let has-try-except = text => text.find(has-try-except-re) != none
+  let error-regex = regex("[a-zA-Z]+Error")
+  let code-error-classes = count-array-entries(
+    all-results.map(evaluation => evaluation.at("items").map(item => item.at("generated_code_llm_lsp").find(error-regex))).flatten().map(item => if item != none and has-try-except(item) {
+      none
+    } else {
+      item
+    }).filter(item => item != none),
+  ).sorted(key: item => item.at(1)).rev()
+  let evaluation-error-classes = count-array-entries(
+    all-results.map(evaluation => evaluation.at("items").map(item => if "evaluation_error_llm_lsp" in item {
+      item.at("evaluation_error_llm_lsp").find(error-regex)
+    } else {
+      none
+    })).flatten().map(item => if item != none and has-try-except(item) {
+      none
+    } else {
+      item
+    }).filter(item => item != none),
+  ).sorted(key: item => item.at(1)).rev()
+  let compress-syntax-error(text) = {
+    let lines = text.split(regex("[\n\r]+"))
+    lines = lines.filter(line => "SyntaxError" not in line and "File \"" not in line and "[notice]" not in line)
+    lines.join("\n")
+  }
+  let syntax-error-texts = all-results.map(evaluation => evaluation.at("items").map(item => {
+    if "evaluation_error_llm_lsp" in item {
+      let error = item.at("evaluation_error_llm_lsp")
+      if "SyntaxError" in error {
+        compress-syntax-error(error)
+      } else {
+        none
+      }
+    } else {
+      none
+    }
+  })).flatten().filter(item => item != none).sorted().dedup()
   let total-errors = with-errors(all-results, item => true)
-  let pip-errors = all-results.map(evaluation => evaluation.at("items").filter(item => item.at("evaluated_code_llm_lsp").at(0) == "error").filter(item => " wheel " in item.at("evaluation_error_llm_lsp")).map(item => item.at("evaluation_error_llm_lsp"))).flatten().len()
-  (total-errors, total-oom, total-pip-eval-error)
+  (
+    total-errors,
+    total-pip-eval-error,
+    total-lsp-error,
+    code-error-classes,
+    evaluation-error-classes,
+    // syntax-error-texts,
+  )
 }
 
 === RQ6: How does the availability of documentation affect the results?
