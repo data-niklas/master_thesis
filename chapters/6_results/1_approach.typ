@@ -575,80 +575,163 @@ In summary, most errors are caused due to issues with type information. Some oth
 // debug session afterwards
 // reuse previous tables
 // show error types
+This section analyses the errors occuring when applying the approach.
+It distinguishes between two types of errors:
+1. Generation errors, which occur during the generation of the code due to issues in the runtime.
+2. Evaluation errors, which occur during the evaluation of the generated code.
+
+The first table, #todo[table] displays all generation errors occuring.
+Only a single error occurs, the `OutOfMemoryError`. This error is caused by the generation trying to consume more than 24GB GPU memory (full GPU memory of 1 GPU used for generation).
+As no other error occur, the generation is robust against errors. The `OutOfMemoryError` is due to beam search consuming more memory than regular greedy search, with an even higher memory consumption if more beams are used.
+As can be seen, the error mainly occurs when 3 beams were used for generation.
+
+The second table, #todo[table] displays all evaluation errors occuring.
+
+- main syntax error
+- indenterror
+- attributeerror
+
 #{
   // get all llm_lsp data
-  let map-error(message) = {
 
-  }
-  let is-lsp-error(code) = {
-    "CancelledError" in code
-  }
-  let with-errors(evaluations, filter) = {
-    evaluations.map(evaluation => evaluation.at("items").filter(item => item.at("evaluated_code_llm_lsp").at(0) == "error").filter(item => filter(item))).flatten().len()
-  }
-  let total-pip-eval-error = with-errors(
-    all-results,
-    item => " pip " in item.at("evaluation_error_llm_lsp"),
-  )
-  let total-lsp-error = with-errors(
-    all-results,
-    item => is-lsp-error(item.at("generated_code_llm_lsp")),
-  )
-  let count-array-entries(list) = {
-    let counter = (:)
-    for item in list {
-      counter.insert(item, counter.at(item, default: 0) + 1)
+  let INDENT = "    "
+  let item-code(item) = {
+    let code = item.at("import_statements").join("\n") + "\n\n"
+    if item.at("context") != "" {
+      code += item.at("context") + "\n\n"
     }
-    counter.pairs()
+    code += item.at("function_signature") + "\n" + INDENT + item.at("function_documentation") + "\n"
+    code
   }
-  let has-try-except-re = regex("try.*except")
-  let has-try-except = text => text.find(has-try-except-re) != none
+
   let error-regex = regex("[a-zA-Z]+Error")
-  let code-error-classes = count-array-entries(
-    all-results.map(evaluation => evaluation.at("items").map(item => item.at("generated_code_llm_lsp").find(error-regex))).flatten().map(item => if item != none and has-try-except(item) {
+  let raise-regex = regex("raise [a-zA-Z]+Error")
+  let traceback-regex = regex("Traceback \\(most recent call last\\):")
+  let find-error(text) = {
+    if text.find(traceback-regex) == none {
       none
     } else {
-      item
-    }).filter(item => item != none),
-  ).sorted(key: item => item.at(1)).rev()
-  let evaluation-error-classes = count-array-entries(
-    all-results.map(evaluation => evaluation.at("items").map(item => if "evaluation_error_llm_lsp" in item {
-      item.at("evaluation_error_llm_lsp").find(error-regex)
-    } else {
-      none
-    })).flatten().map(item => if item != none and has-try-except(item) {
-      none
-    } else {
-      item
-    }).filter(item => item != none),
-  ).sorted(key: item => item.at(1)).rev()
-  let compress-syntax-error(text) = {
-    let lines = text.split(regex("[\n\r]+"))
-    lines = lines.filter(line => "SyntaxError" not in line and "File \"" not in line and "[notice]" not in line)
-    lines.join("\n")
+      text.find(error-regex)
+    }
   }
-  let syntax-error-texts = all-results.map(evaluation => evaluation.at("items").map(item => {
-    if "evaluation_error_llm_lsp" in item {
-      let error = item.at("evaluation_error_llm_lsp")
-      if "SyntaxError" in error {
-        compress-syntax-error(error)
+  let error-item-map-k(evaluation, item, key) = {
+    let evaluated_key = "evaluated_code_" + key
+    let generated_key = "generated_code_" + key
+    let evaluation_error_key = "evaluation_error_" + key
+    let is-error = item.at(evaluated_key).at(0) != 0 or item.at(evaluated_key).at(1) != 0
+    let generated_code = item.at(generated_key)
+    let generation-error = find-error(generated_code)
+    let evaluation-error = if generation-error != none or evaluation_error_key not in item {
+      none
+    } else {
+      item.at(evaluation_error_key).find(error-regex)
+    }
+    let found-error = generation-error != none or evaluation-error != none
+    let task-name = item.at("task_name")
+    let matching = not (not is-error and found-error) or (
+      is-error and not found-error
+    )
+    let code-text = item-code(item) + item.at(generated_key) + "\n" + item.at("test_code")
+    (
+      "is-error_"+key: is-error,
+      key + "_error": item.at(evaluated_key),
+      "generation-error_" + key: generation-error,
+      "evaluation-error_" + key: evaluation-error,
+      "task-name": task-name,
+      "matching_" + key: matching,
+      "evaluation-error-text_" + key: if evaluation_error_key in item {
+        item.at(evaluation_error_key)
       } else {
         none
-      }
-    } else {
-      none
+      },
+      "code_" + key: code-text,
+      // "code-block": code(raw(block: true, lang: "py", code-text)),
+      // "evaluation-name": stat-name(evaluation, "maybe"),
+      "evaluation": evaluation
+    )
+
+  }
+  let error-item-map(evaluation, item) = {
+    error-item-map-k(evaluation, item, "llm_lsp") + error-item-map-k(
+      evaluation,
+      item,
+      "vanilla",
+    )
+  }
+  let errors = all-results.map(evaluation => evaluation.at("items").map(item => error-item-map(
+    evaluation,
+    item,
+  ))).flatten()
+  let count-array-entries(list, to-str: str) = {
+    let counter = (:)
+    let map = (:)
+    for item in list {
+      map.insert(to-str(item), item)
+      counter.insert(to-str(item), counter.at(to-str(item), default: 0) + 1)
     }
-  })).flatten().filter(item => item != none).sorted().dedup()
-  let total-errors = with-errors(all-results, item => true)
+    counter.pairs().map(item => (map.at(item.at(0)), item.at(1)))
+  }
+  let create-groupings(items) = {
+    (
+      "total": items.len(),
+      "by-task": count-array-entries(
+        items.map(item => item.at("task-name")),
+        to-str: item => item,
+      ),
+      "by-model": count-array-entries(
+        items.map(item => item.at("evaluation").at("model")),
+        to-str: item => item,
+      ),
+      "by-beams": count-array-entries(
+        items.map(item => item.at("evaluation").at("config").at(
+          "num_beams",
+          default: 1,
+        )),
+        to-str: item => str(item),
+      ),
+      "by-sampling": count-array-entries(
+        items.map(item => item.at("evaluation").at("config").at(
+          "sampling",
+          default: false,
+        )),
+        to-str: item => if item {
+          "true"
+        } else {
+          "false"
+        },
+      ),
+    )
+  }
+
+  let approach-generation-errors = errors.filter(item => item.at("generation-error_llm_lsp") != none)
+  // group by model, beams, sampling
+  let approach-generation-error-groups = create-groupings(approach-generation-errors)
+  // all generation errors, by model beams and count
+  // count-array-entries(
+  //   to-str: item => item.at(0) + str(item.at(1)) + str(
+  //     item.at(2),
+  //   ),
+  //   errors.filter(item => item.at("generation-error_llm_lsp") != none).map(item => (
+  //     item.at("evaluation").at("model"),
+  //     item.at("evaluation").at("config").at("num_beams", default: 1),
+  //     item.at("generation-error_llm_lsp"),
+  //   )),
+  // ).map(item => (
+  //   get-model-name(item.at(0).at(0)),
+  //   item.at(0).at(1),
+  //   item.at(0).at(2),
+  // ) + (item.at(1),))
+
+  // errors where vanilla does not have errors, but approach has evaluation errors
+  let new-evaluation-errors = errors.filter(item => item.at("evaluation-error_llm_lsp") != none and not item.at("is-error_vanilla"))
+  let new-evaluation-error-groups = create-groupings(new-evaluation-errors)
   (
-    total-errors,
-    total-pip-eval-error,
-    total-lsp-error,
-    code-error-classes,
-    evaluation-error-classes,
-    // syntax-error-texts,
+    approach-generation-error-groups,
+    new-evaluation-error-groups,
   )
 }
+
+In summary, the approach is quite robust against runtime errors. The
 
 === RQ6: How does the availability of documentation affect the results?
 // 2: How does the length of available documentation affect the results?
@@ -681,7 +764,7 @@ In summary, most errors are caused due to issues with type information. Some oth
         dependency-stats.pairs().sorted(key: item => item.at(1).at("lines_of_code")).rev().map(item => (
           [#item.at(0)],
           [#item.at(1).at("lines_of_code")],
-          [#calc.round(item.at(1).at("lines_of_doc")/item.at(1).at("lines_of_code")*100, digits: 2)%],
+          [#calc.round(item.at(1).at("documentation_percentage"), digits: 2)%],
         )).flatten()
       ),
     ),

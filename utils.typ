@@ -752,6 +752,15 @@
     ),
   )
 }
+#let get-model-name(model) = {
+  if model == codellama {
+    "CodeLlama"
+  } else if model == magicoder {
+    "Magicoder"
+  } else {
+    "MistralHermes"
+  }
+}
 #let stat-name(evaluation, run-name) = {
   let config = evaluation.at("config")
   let sampling-text = if config.at("do_sample") {
@@ -766,13 +775,7 @@
   }
   // add sampling and num beams
   let model = evaluation.at("model")
-  let model-name = if model == codellama {
-    "CodeLlama"
-  } else if model == magicoder {
-    "Magicoder"
-  } else {
-    "MistralHermes"
-  }
+  let model-name = get-model-name(model)
   let name = run-name + " " + model-name + " " + sampling-text + " " + str(beams) + if beams == 1 {
     " beam"
   } else {
