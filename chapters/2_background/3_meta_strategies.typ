@@ -34,9 +34,9 @@ A useful instruction is to define the desired output format. For example, by spe
 Specifying the desired format increases the predictability of the response, which allows automated processing of the response.
 Specifying to respond in an unknown format does not work. Steering the model does not raise the capabilities of the model, but raises the efficiency with which its capabilities are used.
 
-If the model does not have enough knowledge to respond to a prompt, the prompt itself can be structured to supply the needed information. Given the model has the ability to understand the provided information, it can then act on the information. A popular technique is *few-shot prompting*@brownLanguageModelsAre2020.
+If the model does not have enough knowledge to respond to a prompt, the prompt itself can be structured to supply the needed information. Given the model has the ability to understand the provided information, it can then act on the information. A popular technique is *few-shot prompting* @brownLanguageModelsAre2020.
 
-Few-shot prompting involves providing the model with several examples in the prompt. The goal is that the model understands the provided examples to learn the pattern and apply it to its response. The learning is undertaken "in context" and not persisted outside the prompt itself@brownLanguageModelsAre2020. The knowledge provided to the model is the format of the task and matching response.
+Few-shot prompting involves providing the model with several examples in the prompt. The goal is that the model understands the provided examples to learn the pattern and apply it to its response. The learning is undertaken "in context" and not persisted outside the prompt itself @brownLanguageModelsAre2020. The knowledge provided to the model is the format of the task and matching response.
 
 #example(
   caption: "Few-shot prompting",
@@ -94,9 +94,9 @@ Meta-strategies are applied to e.g. remedy the model lack of up-to-date knowledg
 
 // TODO rewrite
 ==== Chain of Thought
-Chain of Thought is one very central meta-strategy, as it significantly improves the reasoning capabilities of a model@weiChainofThoughtPromptingElicits2023.
+Chain of Thought is one very central meta-strategy, as it significantly improves the reasoning capabilities of a model @weiChainofThoughtPromptingElicits2023.
 
-The key idea of chain of thought is to apply the divide and conquer strategy to the text generation process. Instead of the model trying to solve a complex reasoning problem in a single step, the meta-strategy divides the problem into several intermediate steps. The model is then able to solve the simpler intermediate steps. Each intermediate step is a thought the model contributes to the final solution. The sequence of intermediate steps forms the "chain" of thoughts@weiChainofThoughtPromptingElicits2023.
+The key idea of chain of thought is to apply the divide and conquer strategy to the text generation process. Instead of the model trying to solve a complex reasoning problem in a single step, the meta-strategy divides the problem into several intermediate steps. The model is then able to solve the simpler intermediate steps. Each intermediate step is a thought the model contributes to the final solution. The sequence of intermediate steps forms the "chain" of thoughts @weiChainofThoughtPromptingElicits2023.
 
 Additionally, the model will use thoughts of previous steps to reason about the next step.
 
@@ -107,12 +107,12 @@ Additionally, the model will use thoughts of previous steps to reason about the 
 // TODO: self consistency with CoT?
 ==== Tree of Thought
 #todo()[Check if section can be removed]
-Tree of thoughts is a generalization of chain of thought. Chain of thought is only capable of performing linear decision-making@weiChainofThoughtPromptingElicits2023. Ultimately, performing complex reasoning is a search problem and thus, linear reasoning is insufficient.
-The tree of thoughts meta-strategy generalizes the thoughts into a tree structure. Each intermediate problem is then a node in this search tree. The root of the tree is the initial problem. The goal of this search problem then is to find an accepted end node - a finishing thought@yaoTreeThoughtsDeliberate2023a.
+Tree of thoughts is a generalization of chain of thought. Chain of thought is only capable of performing linear decision-making @weiChainofThoughtPromptingElicits2023. Ultimately, performing complex reasoning is a search problem and thus, linear reasoning is insufficient.
+The tree of thoughts meta-strategy generalizes the thoughts into a tree structure. Each intermediate problem is then a node in this search tree. The root of the tree is the initial problem. The goal of this search problem then is to find an accepted end node - a finishing thought @yaoTreeThoughtsDeliberate2023a.
 
-By structuring the thoughts into a tree, common tree search algorithms can be applied to the problem. Various algorithms such as a breadth-first search or depth-first search can be applied@yaoTreeThoughtsDeliberate2023a.
+By structuring the thoughts into a tree, common tree search algorithms can be applied to the problem. Various algorithms such as a breadth-first search or depth-first search can be applied @yaoTreeThoughtsDeliberate2023a.
 
 // Benefits
-In general, the tree of thoughts meta-strategy is more powerful than the chain of thoughts. It is a very powerful and flexible strategy, which even allows following thoughts and then backtracking@yaoTreeThoughtsDeliberate2023a.
+In general, the tree of thoughts meta-strategy is more powerful than the chain of thoughts. It is a very powerful and flexible strategy, which even allows following thoughts and then backtracking @yaoTreeThoughtsDeliberate2023a.
 
 // TODO: details? math, drawbacks, images, examples

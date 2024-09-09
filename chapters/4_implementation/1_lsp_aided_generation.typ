@@ -152,7 +152,7 @@ The toggle allows for a seamless switch between a baseline and the approach itse
 Another form of implicit initialization is the control of the default device placement. The device placement regulates on which physical device `PyTorch` tensors are placed on initialization.
 It is important that all tensors used during the approach are placed on the same device, else the generation fails.
 
-To control the device placement, the `Generator` class implements a context manager@ContextlibUtilitiesWithstatement, which changes the default device to the device the model was initialized on. The context manager is implemented through the method `device_placement` in the mixin `PipelineMixin`. It sets default device through the `torch.device` function and is inspired by the same behavior occurring in the high level abstraction `pipeline` in the `Transformers` library.
+To control the device placement, the `Generator` class implements a context manager @ContextlibUtilitiesWithstatement, which changes the default device to the device the model was initialized on. The context manager is implemented through the method `device_placement` in the mixin `PipelineMixin`. It sets default device through the `torch.device` function and is inspired by the same behavior occurring in the high level abstraction `pipeline` in the `Transformers` library.
 
 Before starting the neural code completion, the context manager is entered to ensure that all tensors are placed on the correct device. The context manager is exited after the neural code completion is finished:
 #figure(
@@ -410,7 +410,7 @@ As described in the design section, the filtered completion items are split into
 The #acr("LSP") defines that completion items include a list of associated tags, which include the information if the item is deprecated. In theory this enables easy splitting of completion items into deprecated and non-deprecated items. In practice not every language server correctly detects deprecated items.
 The widely used language server for Python, `python-lsp-server`, does not correctly detect deprecated items.
 
-Thus, this work implements the custom function `is_deprecated`, to properly detect deprecated items. The function relies on the behavior described in #acr("PEP") 702@PEP702Marking and reads the meta-attribute `__deprecated__` of the item, which is present in deprecated items.
+Thus, this work implements the custom function `is_deprecated`, to properly detect deprecated items. The function relies on the behavior described in #acr("PEP") 702 @PEP702Marking and reads the meta-attribute `__deprecated__` of the item, which is present in deprecated items.
 The function is implemented in @code:is_deprecated:
 
 #figure(
@@ -520,7 +520,7 @@ To read only the generated code or the full code sample, the methods `get_genera
 ==== Tokenization Issues.
 This class heavily relies on simple string processing of the prompt, i.e. removing a known prefix from the completed prompt.
 This works under the assumption that tokenization is reversible, that $x = "detokenize"("tokenize"(x))$ for all prompts $x$.
-In practice this is not true. As investigated by Imgrund@imgrundLocatingEditingKnowledge2024, 31% of tokenized then detokenized tokens yield a different token.
+In practice this is not true. As investigated by Imgrund @imgrundLocatingEditingKnowledge2024, 31% of tokenized then detokenized tokens yield a different token.
 This especially affects this work when using CodeLlama in the following example:
 "#bos#inst" will be tokenized then detokenized to "#bos #inst".
 This affects every single generation and is a critical problem. Other issues were observed infrequently.

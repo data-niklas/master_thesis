@@ -211,4 +211,4 @@ The method `clear_meta_and_links` of the `Style` class in the rich library has t
   codefile("/assets/code/clear_meta_and_links_signature.py"),
   caption: [Signature of the `clear_meta_and_links` method],
 )<code:signature:clear_meta_and_links>
-As seen, the signature is not as expected, as the method is decorated with `@lru_cache`, which destroys the original signature@FunctoolsCacheDestroys.
+As seen, the signature is not as expected, as the method is decorated with `@lru_cache`, which destroys the original signature @FunctoolsCacheDestroys.

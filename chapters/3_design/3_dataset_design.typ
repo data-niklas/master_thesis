@@ -86,7 +86,7 @@ analyze these datasets towards the above requirements and note important finding
 ==== MBPP.
 #acr("MBPP") contains, as the name implies, mostly simple Python code snippets. It has around 1000 rows of data, each
 containing a problem statement, a working code solution and test cases to check the functional
-correctness@austinProgramSynthesisLarge2021b.
+correctness @austinProgramSynthesisLarge2021b.
 
 It does not specify the exact environment in which the code is executed, nor does it need to, as it only contains simple
 Python code snippets that can be run in any modern Python environment. The only dependencies are $9$ different Python
@@ -101,7 +101,7 @@ nor does it contain a secure execution environment.
 programming problems for code completion. Each programming problem has the scope of a single function and includes the
 function head with the docstring, the solution and test cases for the functional correctness. The solution is the
 completion of the function head and docstring and they can be combined to form the complete
-function@chenEvaluatingLargeLanguage2021.
+function @chenEvaluatingLargeLanguage2021.
 
 Similar to #acr("MBPP"), `HumanEval` lacks the same requirements. It only imports 8 packages, all of which are part of
 the standard library. In contrast, `HumanEval` contains a evaluation pipeline, but it only secures the execution
@@ -114,7 +114,7 @@ serves as a quick fix unsuited to rigorous evaluation.
 Next to #acr("MBPP") and `HumanEval`, the dataset `EvalPlus` has recently gained popularity, as it contains a more
 rigorous evaluation framework and includes `MBPP+` and `HumanEval+`, which extend the aforementioned datasets with
 further tests. It lacks the exact same issues, as it only uses a reliability guard for execution and the fundamental
-data for testing is similar@liuYourCodeGenerated.
+data for testing is similar @liuYourCodeGenerated.
 
 ==== ClassEval.
 `ClassEval` is the first dataset containing Python tests at the class-eval. It contains 100 tasks, each with a class and
@@ -123,7 +123,7 @@ types of dependencies. Most dependencies are to different parts of the class its
 Dependencies". Of the 100 tasks, only 49% use imports, of which 13% use 6 different external dependencies. Even though
 the dataset contains external dependencies, it does not specify the exact version of the dependencies used, or the
 version of the Python interpreter. Also, the tests only test the functional
-correctness@duClassEvalManuallyCraftedBenchmark2023.
+correctness @duClassEvalManuallyCraftedBenchmark2023.
 
 A benefit of `ClassEval` is the fine-grained separation of the provided code snippets. Import statement, code skeletons,
 class information, test cases and solution are all provided separately and can easily be combined for testing.
@@ -166,8 +166,8 @@ The `import_statements` contains a list of import statements to be performed at 
 `context` field contains additional definitions of classes, functions or variables that are required for the code
 snippet to run. The remaining three fields form the function body. By combining the fields without the `solution`, the
 code snippet can be used as input to a neural code completion model, to compare against the gold standard solution.
-Each `docstring` is a Python docstring in the Google docstring format@Styleguide, which was chosen over the many other
-docstring formats, such as ReST@PEP287ReStructuredText, as it is widely used and has a compact layout.
+Each `docstring` is a Python docstring in the Google docstring format @Styleguide, which was chosen over the many other
+docstring formats, such as ReST @PEP287ReStructuredText, as it is widely used and has a compact layout.
 // other are sphinx and numpy style
 // no reference for widely used
 
@@ -178,7 +178,7 @@ contains the version of the Python interpreter used to run the code snippet. Thi
 needing a specific version of Python and else failing.
 
 The field `test_code` contains the full test cases for the functional and approach correctness. It leverages the builtin
-`unittest` module for defining the test cases@UnittestUnitTesting. To run the full unit tests, the generated above code
+`unittest` module for defining the test cases @UnittestUnitTesting. To run the full unit tests, the generated above code
 is prepended to the `test_code` field.
 
 Further fields are for transparency and interpretation of the results. They contain additional information on the name
@@ -195,7 +195,7 @@ The `kind` field contains the code kind targeted by the task, such as a changed 
 moved to a different section of the dependency.
 
 ==== Data sourcing.
-The data is obtained by searching for public Python dependencies on the #acr("PyPI")@PyPIPythonPackage that have a
+The data is obtained by searching for public Python dependencies on the #acr("PyPI") @PyPIPythonPackage that have a
 changelog. Repositories are then selected based on the different mentioned scenarios. Additionally, only the repositories
 are kept, for which test cases can easily be written and executed, removing dependencies requiring a complex setup to
 use the changed functionality.
@@ -219,7 +219,7 @@ The following two examples serve as important test cases for the evaluation of n
   caption: "Example code snippet for Pydantic showing the correct completion",
 )<code:dataset:pydantic>
 @code:dataset:pydantic targets the major change from `Pydantic` version `1.x.x` to `2.x.x`, renaming a few core
-methods@SerializationPydantic. `Pydantic` is a data validation library for Python, capable of converting complex data
+methods @SerializationPydantic. `Pydantic` is a data validation library for Python, capable of converting complex data
 types to and from Python dictionaries. To convert a `Pydantic` model to a dictionary, previously the method `dict`
 would be called. This was renamed to `model_dump`. The previous method is still available and marked as deprecated. As
 the library is widely used and the change in April 2023, lots of publicly available code snippets contain the old
@@ -237,7 +237,7 @@ the two.
 )<code:dataset:textual>
 While the previous example targets the dereferencing of a method, the example @code:dataset:textual targets the
 signature of a function. The parameter `tab_behaviour` was renamed to `tab_behavior` in the widely used library
-`Textual` in February 2024@TextualHome. As the change occurred recently, we assume and later evaluate that most #acrpl("CLM") were
+`Textual` in February 2024 @TextualHome. As the change occurred recently, we assume and later evaluate that most #acrpl("CLM") were
 trained on older versions and do not complete the correct parameter.
 
 Both examples serve as core test cases for the different included information sources, such as completion items and
@@ -264,7 +264,7 @@ The code completion occurs inside the venv, such that the approach has access to
 Afterward, the generated code snippets are evaluated inside `Docker` containers and the results transmitted back to the
 pipeline via the standard output. `Docker` is a containerization platform that allows for the isolation of processes and
 the restriction of resources. Through the use of `Docker`, the pipeline can restrict access to resources, such as the
-number of CPUs@DockerRunDocker.
+number of CPUs @DockerRunDocker.
 
 To ensure that the pipeline is robust, all calls to the containerized evaluation or neural code completion are wrapped
 in a timeout and errors are caught and logged.

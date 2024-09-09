@@ -4,13 +4,13 @@ This section briefly introduces the main components of causal language modeling.
 It touches on topics such as the general modeling, autoregressivity, the problem of vocabulary and special tokens.
 
 // langauge modeling:
-A language model determines the probability of a sequence of words. The following formula calculates the probability of the sequence of words $w_1...w_n$, where $w_i$ is the $i$-th word@goodmanBitProgressLanguage2001:
+A language model determines the probability of a sequence of words. The following formula calculates the probability of the sequence of words $w_1...w_n$, where $w_i$ is the $i$-th word @goodmanBitProgressLanguage2001:
 $
   P(w_1...w_n).
 $
 // probability of sequence of words
 
-The probability of a sequence of words can be broken down into the product of the probabilities of each word given the previous words@goodmanBitProgressLanguage2001:
+The probability of a sequence of words can be broken down into the product of the probabilities of each word given the previous words @goodmanBitProgressLanguage2001:
 $
   P(w_1...w_n) = product_(i=1)^n P(w_i|w_1...w_(i-1)).
 $
@@ -34,13 +34,13 @@ $
 #acrpl("CLM") are neural statistical language models.
 Statistical language models model the probability function as a parameterized function, which is learned from a given corpus.
 The parameterized function requires a high number of parameters, as many different word combinations are possible, many of them unseen in the corpus.
-To battle the high dimensionality of the problem, neural statistical language models are used, as they generalize well to unseen data@SpeechLanguageProcessing.
+To battle the high dimensionality of the problem, neural statistical language models are used, as they generalize well to unseen data @SpeechLanguageProcessing.
 Neural statistical language models are composed of the following components:
 1. A distributed representation of words, called word feature vectors or embeddings. Given a fixed vocabulary $V$ and $m$ features, the embeddings are obtained from the embedding function:
 $
   f_"embedding": V arrow.r RR^m.
 $
-2. Parameterized probability function, working on the embeddings@bengioNeuralProbabilisticLanguage:
+2. Parameterized probability function, working on the embeddings @bengioNeuralProbabilisticLanguage:
 $
   P: RR^m times...times RR^m arrow.r RR^(|V|).
 $
@@ -70,7 +70,7 @@ Prominent examples include teenage slang, technical terms, and word combinations
 Using a fixed vocabulary comprised of words makes it impossible to model the language accurately.
 In contrast, using a vocabulary at the character level is not feasible, as many eastern languages feature thousands of characters. Additionally, encoding a sentence of a western language into characters would require a sequence of many vocabulary "words".
 The solution lies in-between, using sub-word fragments as vocabulary items.
-Popular choices used in modern language models are #acr("BPE") and SentencePiece@gageNewAlgorithmData@kudoSentencePieceSimpleLanguage2018.
+Popular choices used in modern language models are #acr("BPE") and SentencePiece @gageNewAlgorithmData @kudoSentencePieceSimpleLanguage2018.
 The vocabulary entries are called tokens, with the process of encoding natural language into tokens called tokenization. The reverse process is called detokenization.
 The tokenization function is defined as follows:
 $
@@ -113,7 +113,7 @@ Not only does the vocabulary contain tokens for natural language, but also speci
 // argmax
 Especially vital to modern language models is the decomposition of the probability function into a series of next word predictions.
 This enables easy unsupervised training through the following learning objective: maximize the likelihood of the next word given the previous words over the corpus.
-To increase the stability of the training, the log-likelihood is maximized instead of the likelihood@radfordImprovingLanguageUnderstanding@radfordLanguageModelsAre:
+To increase the stability of the training, the log-likelihood is maximized instead of the likelihood @radfordImprovingLanguageUnderstanding @radfordLanguageModelsAre:
 $
   "argmax"_theta sum_(i=1)^n log P_theta(w_i|w_1...w_(i-1)).
 $

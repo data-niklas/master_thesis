@@ -31,10 +31,10 @@ Top-k is a generalization of greedy decoding and a sampling strategy. Sampling s
 // k could be changed
 As top-k is a generalization of greedy decoding, it has the advantage of being more powerful.
 
-The main drawback is the loss of determinism. Lacking determinism may complicate interpretability methods@fanHierarchicalNeuralStory2018.
+The main drawback is the loss of determinism. Lacking determinism may complicate interpretability methods @fanHierarchicalNeuralStory2018.
 
 === Top-p
-Top-k always chooses from the top $k$ most probable token ids, even if most token ids are very unlikely and only few of the $k$ token ids are probable. Top-p allows for more dynamic shapes of probability distributions, by only sampling from the top $p$ percent of token ids@holtzmanCuriousCaseNeural2020.
+Top-k always chooses from the top $k$ most probable token ids, even if most token ids are very unlikely and only few of the $k$ token ids are probable. Top-p allows for more dynamic shapes of probability distributions, by only sampling from the top $p$ percent of token ids @holtzmanCuriousCaseNeural2020.
 
 === Temperature sampling
 Temperature sampling takes a different approach to top-p. It does not adapt to the shape of the probability distribution, but reshapes it. It divides the raw probability scores by a temperature $tau$:

@@ -177,7 +177,7 @@ Ultimately, this creates the specific environment needed for the task. The Pytho
 The code to evaluate is mounted into the container, next to the requirements file.
 The compute is limited to a single CPU.
 
-Docker supports a filesystem size limit using the `--storage-opt` flag, which could be used to limit the size of the filesystem. In practice, this requires support by the Docker storage driver, of which filesystems like `btrfs` and `zfs` are favoured@DockerRunDocker.
+Docker supports a filesystem size limit using the `--storage-opt` flag, which could be used to limit the size of the filesystem. In practice, this requires support by the Docker storage driver, of which filesystems like `btrfs` and `zfs` are favoured @DockerRunDocker.
 This implementation does not limit the filesystem size for compatibility reasons.
 
 The container execution time is limited to two minutes, which is enough time to install larger dependencies, such as PyTorch.

@@ -16,11 +16,11 @@ This list is not exhaustive, and the features between different editors may vary
 These many features take a significant effort to implement for a *single* programming language and editor. Providing support for several programming languages massively increases the implementation effort. In addition, the created features must be maintained next to the editor itself. As more programming languages are designed and adopted, the need for tooling for these programming languages arises. Editor maintainers must then integrate these features for the new programming language.
 // Example Rust a few years ago, zig now, koka in the feature, crystal, ...
 
-Providing support for an ever-increasing amount of programming languages is hard, but supporting these features for an ever-increasing amount of programming languages in every editor is impossible. Many diverse editors exist, such as Emacs@GNUEmacsGNU@LSPModeLanguage, VSCode@VisualStudioCode@LanguageServerExtension, Neovim (modern fork of Vim)@HomeNeovim@LspNeovimDocs, Zed (the successor of Atom)@ZedCodeSpeed@AddingNewLanguages, Jetbrains #acrpl("IDE")@JetBrainsIDEsEnjoy@LanguageServerProtocol, Helix@HelixeditorHelix2024@LanguageSupport and many more.
+Providing support for an ever-increasing amount of programming languages is hard, but supporting these features for an ever-increasing amount of programming languages in every editor is impossible. Many diverse editors exist, such as Emacs @GNUEmacsGNU @LSPModeLanguage, VSCode @VisualStudioCode @LanguageServerExtension, Neovim (modern fork of Vim) @HomeNeovim @LspNeovimDocs, Zed (the successor of Atom) @ZedCodeSpeed @AddingNewLanguages, Jetbrains #acrpl("IDE") @JetBrainsIDEsEnjoy @LanguageServerProtocol, Helix @HelixeditorHelix2024 @LanguageSupport and many more.
 // TODO: reference every editor
 
 Thus, a solution is needed to extract the *common* features from the editors and provide them centrally, such that every editor need only implement an interface to integrate the common features.
-The #acrl("LSP") is an effort to standardize a common feature set for programming language tooling for use in #acrpl("IDE"). The protocol was designed my Microsoft for use in its Visual Studio Code editor, but is now an open standard. This thesis will focus on version `3.17` of the protocol. The protocol includes many different features, of which the following sections introduce a few important. The full specification may be accessed #link("https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#languageFeatures")[here]@Specification.
+The #acrl("LSP") is an effort to standardize a common feature set for programming language tooling for use in #acrpl("IDE"). The protocol was designed my Microsoft for use in its Visual Studio Code editor, but is now an open standard. This thesis will focus on version `3.17` of the protocol. The protocol includes many different features, of which the following sections introduce a few important. The full specification may be accessed #link("https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#languageFeatures")[here] @Specification.
 
 === Design
 The protocol is based on a bidirectional client-server architecture. The client is a tool such as the #acr("IDE"). The server, henceforth called the language server, is programming language specific tooling that provides a subset of the protocol. Both the client and server must not implement the full protocol.
@@ -127,7 +127,7 @@ The content part is a #acr("JSON") object, as defined by the #acr("JSON-RPC") sp
 Many #acrpl("RPC") share common structures needed to communicate about language features. The following section introduces a few necessary ones.
 
 // URI
-The first important structure is the #acr("URI"), as defined by rfc3986@berners-leeUniformResourceIdentifier2005. #acrpl("URI") are passed as strings and are used to uniquely identify files the language server and client work with.
+The first important structure is the #acr("URI"), as defined by rfc3986 @berners-leeUniformResourceIdentifier2005. #acrpl("URI") are passed as strings and are used to uniquely identify files the language server and client work with.
 
 // Position
 To identify a position inside such a file, the protocol defines the `Position` structure:

@@ -3,7 +3,7 @@
 #{
   if not print-mode {
     footnote[
-      "Die KI ist immer Schuld"@cicchettiAI2024
+      "Die KI ist immer Schuld" @cicchettiAI2024
     ]
   }
 }

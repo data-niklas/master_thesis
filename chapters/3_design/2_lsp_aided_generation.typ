@@ -18,7 +18,7 @@ The key thought guiding the work is:
 
 // Developers base their decisions on contextual information provided by the #acr("LSP") server.
 // Why can't the neural code completion do the same?
-Developers use a wide variety of tools to guide their programming decisions. Code completion is the most frequently used tool inside #acrpl("IDE")@amannStudyVisualStudio2016.
+Developers use a wide variety of tools to guide their programming decisions. Code completion is the most frequently used tool inside #acrpl("IDE") @amannStudyVisualStudio2016.
 It displays available symbols, their documentation and type information.
 Next to code completion, signature help is another important tool, as it displays available parameters of selected functions and their types, thus providing information about the structure of the data.
 Additionally, #acrpl("IDE") highlight the code with diagnostics information, such as important errors or warnings which may be ignored. The diagnostics information guide the developer to potential problems, such wrong symbols, or code smells, such as dead code.

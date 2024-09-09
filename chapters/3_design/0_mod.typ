@@ -70,7 +70,7 @@ Specifically, the approach should be able to handle the following scenarios:
 2. The approach should be able to handle any type of dependency, irrelevant of the size or complexity of the dependency. It shall not matter if the dependency has no documentation or has pages full of documentation.
 
 === Generalizability <r:4>
-The programming language ecosystem is vast and diverse. Even though only a few programming languages are widely used@StackOverflowDeveloper, the approach should be able to handle most programming languages.
+The programming language ecosystem is vast and diverse. Even though only a few programming languages are widely used @StackOverflowDeveloper, the approach should be able to handle most programming languages.
 By supporting lesser used programming languages, this approach can be used to help developers in a wider range of projects, such as hobby projects. It could be even used to maintain legacy code.
 
 === Performance <r:5>
@@ -95,7 +95,7 @@ Additionally, other code items, such as function signature parameters are not co
 
 As the work depends on the #acr("LSP"), it is robust under the assumption, that the running language server is robust.
 By abstracting language dependent features, the work is generalizable to other programming languages, though the implementation of the work relies on Java specific functionality.
-Through the use of #acr("MGD"), the only performance overhead of this method is the additional processing for each token. The bulk of the processing is shifted towards the language server, which performs the static analysis. As the language servers are optimized towards these analyses, the performance impact is $O(n)$, where $n$ is the token count@agrawalMonitorGuidedDecodingCode.
+Through the use of #acr("MGD"), the only performance overhead of this method is the additional processing for each token. The bulk of the processing is shifted towards the language server, which performs the static analysis. As the language servers are optimized towards these analyses, the performance impact is $O(n)$, where $n$ is the token count @agrawalMonitorGuidedDecodingCode.
 
 === RepoCoder
 The work by Zhang et al. fails in most requirements, only fulfilling basic requirements.
