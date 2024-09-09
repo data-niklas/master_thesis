@@ -106,7 +106,10 @@ Concretely, the class overwrites the two methods `process` and `finalize`, addin
 
 A later section will detail how the `BeamIndexStoringSearchScores` replaces another instance of the `BeamSearchScorer`.
 
-=== InterruptStoppingCriteria
+=== StoppingCriteria
+Three custom stopping criteria are implemented for the approach. The first class, `InterruptStoppingCriteria`, enables the core interrupt mechanism.
+The last two criteria are enhancements, reducing the generation time for verbose models.
+
 The `InterruptStoppingCriteria` class is a utility class, which is used to determine if an interrupt occurred inside a monitor and the generation loop should be stopped.
 Colloquially, it propagates the interrupt signal to the interrupt loop.
 It subclasses the `Transformers` `StoppingCriteria` class.
@@ -115,6 +118,14 @@ The class implements the method seen in @code:interrupt_stopping_criteria:
   codefile("/assets/code/interrupt_stopping_criteria.py"),
   caption: [The `InterruptStoppingCriteria` class, which determines that the generation loop should be stopped when the interrupt token id occurs.],
 )<code:interrupt_stopping_criteria>
+
+The next two classes `CodeBlockEndStoppingCriteria` and `CodeBlockEndStoppingCriteria` are both enhancements and serve the same purpose. Each class stops the generation when a finishing structure is detected in the last $n$ tokens.
+The first class is used in the case of the regular code generation, where the generation is stopped, when a closing markdown code block is detected in the last $10$ tokens.
+The second class is used when the `predict_correct_completion_symbol` configuration is enabled. It stops the generation of the predicted code completion symbol. The generation is stopped when encountering a '#raw("`")' in the last token, as the model output should be enclosed by the character.
+
+For each class, the token ids of the last $n$ tokens are detokenized at each step, after which a simple string search is performed.
+
+This drastically reduces the generation time in cases, where the model follows the desired output by several sentences describing the response, even when discouraged by the prompt.
 
 === Generator
 The `Generator` component is implemented by the class `Generator` in `generator.py`. It is the main component of the approach and orchestrates the generation process.
@@ -367,10 +378,10 @@ Lastly, the abstraction `LspCodeFile` is used to interact with the language serv
 The returned `lsp_code_file` object is used to firstly retrieve the completion items and then the signature help items.
 As detailed in @chapter:bg:lsp, retrieving the completions is a two-step process, as the completions must be resolved to include detailed information needed for filtering.
 
-To prevent the use of completion items, if the completion is not needed, the method `should_complete` is called. If the current code ends in one of the following symbols, the completions are not needed: ")", "\\n", " ", "\\t", "]", "}". This effectively limits the use of completion items to the following scenarios:
-- Completion of a symbol.
-- Start of the dereference operator.
-, and reduces model confusion after completing a single function call and reduces completion of unneeded symbols everywhere.
+To prevent the use of completion items, if the completion is not needed, the method `should_complete` is called. If the current code ends in one of the following symbols, the completions are not needed: ")", "\\n", " ", "\\t", "]", "}". This effectively limits the use of completion items to the scenarios:
+- completion of a symbol,
+- start of the dereference operator,
+and reduces completions of single function calls and unneeded symbols.
 // TODO: reformulate?
 
 To prepare for the filtering, a `trigger_phrase` is determined. The trigger phrase is used to determine if a completion item is already partially completed, the current code ends in a prefix of a completion item. This trigger phrase is obtained by finding any symbol the code ends with through the regular expression `[A-Za-z_]*$`.
@@ -381,13 +392,13 @@ Lastly, the signature cache is increased using the retrieved completion items. T
 First the signature help items are filtered, after which the completion items are filtered.
 Each filtering is performed through a chain of methods, each taking at least a list of items and returning the filtered list.
 
-From the signature help items, the following filters are applied:
+On the signature help items, the following filters are applied:
 #block(breakable: false)[
   1. Remove signature help items of builtin functions.
   2. Remove items without parameters.
 ]
 
-The method should improve completion of functions with changed parameters and complex signatures. As such the second filter ignores the case in which a function does not have parameters. The first filter reduces the model confusion by completing probably known functions unchanged.
+The method should improve completion of functions with changed parameters and complex signatures. As such, the second filter ignores the case in which a function does not have parameters. By filtering cases where context is not needed (as the models can complete builtin functions correctly in most cases), further errors due to model controlling are prevented.
 To obtain the information if a signature help item is a builtin function, the signature cache is used, as the information is stored in the completion items. If a matching completion items is a builtin item, the signature help item is skipped.
 
 From the completion items, the following filters are applied:
