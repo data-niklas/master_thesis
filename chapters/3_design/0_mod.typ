@@ -1,15 +1,15 @@
 #import "/utils.typ": *
-= Design <design>
+= Approach <design>
 After introducing the necessary background in @background,
 this section will first derive the requirements from the motivation and goals in @chapter:design:requirements.
 
 By analyzing the shortcomings of existing solutions in @chapter:design:analysis,
-the thesis will propose a new design to integrate high quality context into neural code completion. Context retrieval is enhanced with handcrafted filtering rules, to reduce noise and improve completion accuracy.
+the thesis will propose a new approach to integrate high quality context into neural code completion. Context retrieval is enhanced with handcrafted filtering rules, to reduce noise and improve completion accuracy.
 
-Lastly, a dataset design is proposed to evaluate the effectiveness of the new design.
+Lastly, a dataset is introduced to evaluate the effectiveness of the new approach.
 
 == Requirements <chapter:design:requirements>
-The general requirements of this thesis are derived from the motivation and goals, namely the design of a `Copilot` like solution which has *full* knowledge of the local development environment.
+The general requirements of this thesis are derived from the motivation and goals, namely the approach of a `Copilot` like solution which has *full* knowledge of the local development environment.
 
 The general requirements in descending order of importance are seen in @requirements.
 #figure(
@@ -79,7 +79,7 @@ Using editor tooling feels fast, as responses in interactions with toolings only
 While the goal of this thesis is not to reduce the latency in neural code generation, the approach should not impose a significant overhead on the default code completion.
 
 == Analysis <chapter:design:analysis>
-After introducing the five requirements in the previous section, this section will analyze the shortcomings of existing solutions in regard to the requirements. In particular, the analysis will focus on the work by Agrawal et al.@agrawalMonitorGuidedDecodingCode, as it is the most promising work.
+After introducing the five requirements in the previous section, this section will analyze the shortcomings of existing solutions in regard to the requirements. In particular, the analysis will focus on the work by Agrawal et al. @agrawalMonitorGuidedDecodingCode, as it is the most promising work.
 While this thesis has evolved without the knowledge of the work by Agrawal et al. and is not based on it, the general design choices are similar enough to show initial observations and design choices.
 
 === Monitor-Guided Decoding
@@ -120,8 +120,8 @@ A full #acr("MGD") is not possible, due to deprecated completion items. A typica
 When combined with deprecated completion items, tokens of deprecated completion items would need to be masked, *while* tokens of non deprecated completion items would not be masked.
 The problem arises when deprecated and non deprecated completion items share the same prefix when represented as a token sequence. Now the same token would need masking and retaining.
 
-The thesis will thus propose a new alternative design, which enables the use of both types of information sources, by reranking logits of the #acr("CLM") locally in the monitor and globally by altering the prompt with injected information.
-The design is threefold and includes a novel meta-strategy to guide the model through prompt-engineering, with dynamically obtained information from static analysis. The second part is the approach based on the first novel meta-strategy. Lastly, the design of a new dataset is introduced, to evaluate the performance of the proposed approach.
+The thesis will thus propose an alternative approach, which enables the use of both types of information sources, by reranking logits of the #acr("CLM") locally in the monitor and globally by altering the prompt with injected information.
+The approach is threefold and includes a novel meta-strategy to guide the model through prompt-engineering, with dynamically obtained information from static analysis. The second part is the approach based on the first novel meta-strategy. Lastly, the approach of a new dataset is introduced, to evaluate the performance of the proposed approach.
 
 #{
   include "1_interrupt_based_meta_strategy.typ"

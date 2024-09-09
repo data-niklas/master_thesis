@@ -1,6 +1,6 @@
 #import "/utils.typ": *
 
-== Approach Research Questions <chapter:experiments:approach>
+== Research Questions <chapter:experiments:approach>
 The research questions for the approach are directly derived from the requirements of the thesis listed in @requirements.
 To evaluate the research questions, the following general experiment is conducted.
 

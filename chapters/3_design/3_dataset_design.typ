@@ -206,7 +206,7 @@ Currently, the dataset contains #num-dataset entries for 16 different dependenci
   figure(
     box(
       columns(2, csvtable("/assets/tables/dataset_dependencies.csv")),
-      height: 150pt,
+      height: 160pt,
     ),
     caption: "Dependencies in DependencyEval",
   )

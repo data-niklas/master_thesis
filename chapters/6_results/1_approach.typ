@@ -232,7 +232,7 @@ As other behavior around the task has not changed over time, the model baseline 
 The next $60% (15)$ tasks (up and including `textual_2`) are not fully solved, but at least partially solved. These tasks mainly include tasks with recent deprecations. The baseline still predicts old behavior, passing the output correctness test, but failing the approach correctness test. A prime example are the `pydantic` examples, as introduced in previous chapters.
 
 The last group of tasks are never solved by the baseline. This group includes especially complex tasks that may require multiple steps, or completely unknown packages, that do not see a widespread use.
-The three models especially struggle with unknown dependencies, or unknown features in better known dependencies, such as `theflow_1`@code:dataset:task:theflow_1, `tsv2py_1`@code:dataset:task:theflow_1 and `sqlalchemy_1`@code:dataset:task:sqlalchemy_1.
+The three models especially struggle with unknown dependencies, or unknown features in better known dependencies, such as `theflow_1` @code:dataset:task:theflow_1, `tsv2py_1` @code:dataset:task:theflow_1 and `sqlalchemy_1` @code:dataset:task:sqlalchemy_1.
 Tasks with recent deprecations in established dependencies are more easily solved, such as `pydantic` examples. The easiest tasks feature other changes, such as changes to imports and code changed in the father past.
 
 The first group of tasks fully solved by the baseline serve to check if the approach worsens the results. The second group of tasks partially solved by the baseline serve to check if the approach can improve the results. The last group of tasks never solved by the baseline serve to check if the approach can solve tasks that are not solvable by the baseline, and to find further interesting results.
@@ -531,7 +531,7 @@ The used function and parameters use the correct approach, similar to the correc
 // correct method, but invalid parameters, due to LRU cache decorator proxying
 Next, @figure:correct_approach_wrong_code_rich_1 calls the correct method, but is confused by the method parameters.
 While the `clear_meta_and_links` takes no parameters (except `self`), the completed code passes the value `True`.
-This can be explained by the method being decorated with `@lru_cache`, which proxies the method. This destroys the original function signature@FunctoolsCacheDestroys, leading to the function signature found in @code:signature:clear_meta_and_links.
+This can be explained by the method being decorated with `@lru_cache`, which proxies the method. This destroys the original function signature @FunctoolsCacheDestroys, leading to the function signature found in @code:signature:clear_meta_and_links.
 
 #figure(
   codefile("/assets/code/correct_approach_wrong_code_rich_1.py"),

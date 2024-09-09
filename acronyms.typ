@@ -10,7 +10,7 @@
   "CLM": ("Causal Language Model"),
   "EOS": ("End of Sequence"),
   "GQA": ("Grouped-Query Attention"),
-  "IBMS": ("Interrupt-based meta-strategy"),
+  "IBMS": ("Interrupt-Based Meta-Strategy"),
   "IDE": (
     "Integrated Development Environment",
     "Integrated Development Environments",

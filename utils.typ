@@ -15,6 +15,17 @@
   placement: none,
 )
 
+#let exampletext(body, caption: "") = example(
+  {
+    {
+      set align(left)
+      set par(hanging-indent: 0.5cm, justify: true)
+      pad(x: 12pt, body)
+    }
+  },
+  caption: caption,
+)
+
 #let rq(number) = link(label("rq:" + str(number)))[*RQ#str(number)*]
 #let rqdataset(number) = link(
   label("rqdataset:" + str(number)),

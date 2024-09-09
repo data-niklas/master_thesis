@@ -10,7 +10,7 @@ It reduces the mental burden of remembering method names, properties, their type
 In addition, it saves time by reducing written boilerplate code by suggesting code snippets.
 Using the code completion saves time spent searching for corresponding documentation outside the #acrpl("IDE").
 
-As Amann et al.@amannStudyVisualStudio2016 found, code completion is the most frequently used tool inside #acrpl("IDE") with a frequency of 19.7%.
+As Amann et al. @amannStudyVisualStudio2016 found, code completion is the most frequently used tool inside #acrpl("IDE") with a frequency of 19.7%.
 Moreover, developers spend 22.4% of their time inside #acrpl("IDE") navigating code, in contrast to 28.5% editing and executing the code. They hypothesize that a significant amount of time navigating code is spent due to a lack of understanding of the code.
 Moreover, 39.8% of the total time is spent outside the #acr("IDE"), which likely includes time spent searching for documentation.
 // Even displays information like deprecation information

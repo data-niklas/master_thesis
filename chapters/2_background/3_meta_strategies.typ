@@ -11,7 +11,7 @@ The #acr("CLM") generates a text, by iteratively choosing the next token ids. Th
 Guided generation is a technique to modify the logits before the decoding strategy is applied. The logits are modified according to a set of domain specific rules. The rules not only have access to the current logits, but also to the previously generated text. This allows for complex rules.
 
 Consider the following example:
-#example(caption: "Enforcing \"yes\" or \"no\" answers")[
+#exampletext(caption: "Enforcing \"yes\" or \"no\" answers")[
   A model is tasked with answering a "yes" or "no" question. The model should only respond with either of both words, without discussing any details or making small talk.
 
   The rules for the guided generation are to set the logits of all token ids to $-oo$, except when the token ids contribute to a "yes" or "no" answer.
@@ -24,8 +24,6 @@ Guided generation has the benefit of allowing complex rules to be applied to the
 
 The downside of guided generation is, that for complex scenarios, the rules may become very complex and hard to define. In these cases prompting strategies might be more appropriate.
 // Downside is that model does not know why it was guided, so follow up token prediction bad?
-
-@wengControllableNeuralText2021
 
 === Prompting strategies
 Prompting strategies are a set of techniques to control the generation of the model externally. The model itself, or the model runtime itself is not modified. As such this technique is model agnostic. The general goal is to control the output through structured prompts. In addition, the model may be incorporated into external tooling to enable complex workflows.

@@ -1,5 +1,5 @@
 #import "/utils.typ": *
-== Interrupt-based meta-strategy<chapter:design:ibms>
+== Interrupt-Based Meta-Strategy<chapter:design:ibms>
 As sketched in @chapter:introduction:contributions, the #acrf("IBMS") is a novel approach to integrate context into model generation.
 It is heavily focused on integrating multiple information sources independently. The context shall be integrated seamlessly, without affecting the generation flow of the initial generation, except providing the additional information.
 The strategy shall serve as a basis for globally guiding the model generation, by dynamically injecting relevant context into the prompt.
@@ -35,7 +35,7 @@ The last requirement is for the strategy to have minimal overhead over the defau
 While previous sections introduced the need for this strategy, this section will discuss the observations leading to the design of the strategy.
 
 // derived from meta-strategies that generate a result in multiple steps
-While the strategy was developed independently of Agrawal et al.@agrawalMonitorGuidedDecodingCode, the design uses the same observation made for the `Monitor` component in their work.
+While the strategy was developed independently of Agrawal et al. @agrawalMonitorGuidedDecodingCode, the design uses the same observation made for the `Monitor` component in their work.
 The `Monitor` not only allows controlling model logits at runtime, but it also allows *observing the generation in real time*.
 This allows a fine-grained control over the model generation, which is not possible with general prompt engineering or meta-strategies.
 Coupled with any form of static analysis, the monitor can find additional relevant context.
@@ -97,7 +97,7 @@ The edited prompt is then passed into the model generation again, repeating the 
 
 Inside the model generation, the component `Monitor` watches the generation process, deciding if an interrupt is necessary. It was injected into the default model generation process by the `Generator`.
 The `Monitor` is called for each token prediction, receiving the previous token sequence and the next token prediction and optionally modifying the prediction logits.
-In its functionality it is similar to the monitor in Agrawal et al.@agrawalMonitorGuidedDecodingCode, but with the difference that it only controls the prediction of the special interrupt token.
+In its functionality it is similar to the monitor in Agrawal et al. @agrawalMonitorGuidedDecodingCode, but with the difference that it only controls the prediction of the special interrupt token.
 If an interrupt is necessary, the `Monitor` will force the prediction of the interrupt token.
 In addition, it will store the retrieved context for access by the `Generator` and `Prompt Editor` after interruption.
 

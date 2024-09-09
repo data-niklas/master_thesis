@@ -11,9 +11,10 @@ Greedy decoding is the simplest of sampling strategies. The strategy always choo
 Its main advantage is the simplicity. The strategy does not require additional state. Only the current probabilities are needed. This also leads to low hardware requirements, compared to other strategies.
 
 As the current best next token id is not often the best token id overall, the strategy does not produce the highest quality documents.
+The next token id is chosen by the following formula:
 
 $
-  hat(w) = "argmax"_(w in V) P(w_i | w_1...w_(i-1))
+  hat(w) = "argmax"_(w in V) P(w_i | w_1...w_(i-1)).
 $<greedy_decoding>
 
 // TODO fix all the can's and remove them
@@ -30,15 +31,15 @@ Top-k is a generalization of greedy decoding and a sampling strategy. Sampling s
 // k could be changed
 As top-k is a generalization of greedy decoding, it has the advantage of being more powerful.
 
-The main drawback is the loss of determinism. Lacking determinism may complicate interpretability methods.
+The main drawback is the loss of determinism. Lacking determinism may complicate interpretability methods@fanHierarchicalNeuralStory2018.
 
 === Top-p
-Top-k always chooses from the top $k$ most probable token ids, even if most token ids are very unlikely and only few of the $k$ token ids are probable. Top-p allows for more dynamic shapes of probability distributions, by only sampling from the top $p$ percent of token ids.
+Top-k always chooses from the top $k$ most probable token ids, even if most token ids are very unlikely and only few of the $k$ token ids are probable. Top-p allows for more dynamic shapes of probability distributions, by only sampling from the top $p$ percent of token ids@holtzmanCuriousCaseNeural2020.
 
 === Temperature sampling
 Temperature sampling takes a different approach to top-p. It does not adapt to the shape of the probability distribution, but reshapes it. It divides the raw probability scores by a temperature $tau$:
 $
-  y = "softmax"(u / tau)
+  y = "softmax"(u / tau).
 $<temperature_sampling>
 
 // TODO define all symbols centrally and check consistency
