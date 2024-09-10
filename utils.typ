@@ -890,4 +890,51 @@
   stats
 }
 
+#let stats-pie-charts(results, diff: false) = {
+  cetz.canvas(
+    {
+      import cetz.chart
+      import cetz.draw: *
+
+      let colors = gradient.linear(red, blue, green, yellow)
+      colors = gradient.linear(
+        ..(
+          "#dc8a78",
+          "#8839ef",
+          "#d20f39",
+          "#d20f39",
+          "#40a02b",
+          "#04a5e5",
+          "#7287fd",
+        ).map(color.rgb),
+      )
+      for result in results {
+        let name = result.at(0)
+        let stat = result.at(1)
+        let full = stat.at("full")
+        let partial = stat.at("partial")
+        let nil = stat.at("none")
+        let error = stat.at("error")
+        let data = (
+          ("Full", full),
+          ("Partial", partial),
+          ("None", nil),
+          ("Error", error),
+        )
+
+        chart.piechart(
+          data,
+          outset: 0.3,
+          value-key: 1,
+          label-key: 0,
+          slice-style: colors,
+        )
+        set-origin((3, 0))
+      }
+    },
+    length: 30pt,
+  )
+
+}
+
 #let num-dataset = 25

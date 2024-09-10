@@ -195,6 +195,14 @@ This is as expected, as sampling combined with beam search is a common method to
   ],
 )<table:results:approach:baseline-stats-config>
 
+#stats-pie-charts((
+  ("Sampling", sampling-baseline),
+  ("No Sampling", no-sampling-baseline),
+  ("1 Beam", one-beam-baseline),
+  ("2 Beams", two-beams-baseline),
+  ("3 Beams", three-beams-baseline),
+))
+
 // // different approach configurations
 // differences due to sampling TODO, difference is not large
 // #figure(
