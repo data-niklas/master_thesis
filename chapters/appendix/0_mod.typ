@@ -1,4 +1,6 @@
 #import "/utils.typ": *
+#import "/eval.typ": *
+
 #let masking = load-evaluations("2024-08-27-masking")
 #let default = load-evaluations("2024-08-26-default")
 #let use-completions = load-evaluations("2024-08-28-use-completions")

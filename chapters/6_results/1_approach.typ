@@ -1,4 +1,6 @@
 #import "/utils.typ": *
+#import "/plot.typ": *
+#import "/eval.typ": *
 #set figure(placement: none)
 #let masking = load-evaluations("2024-08-27-masking")
 #let default = load-evaluations("2024-08-26-default")
