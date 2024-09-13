@@ -86,7 +86,7 @@ analyze these datasets towards the above requirements and note important finding
 ==== MBPP.
 #acr("MBPP") contains, as the name implies, mostly simple Python code snippets. It has around 1000 rows of data, each
 containing a problem statement, a working code solution and test cases to check the functional
-correctness @austinProgramSynthesisLarge2021b.
+correctness @austinProgramSynthesisLarge2021a.
 
 It does not specify the exact environment in which the code is executed, nor does it need to, as it only contains simple
 Python code snippets that can be run in any modern Python environment. The only dependencies are $9$ different Python

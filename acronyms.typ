@@ -1,5 +1,6 @@
 #let acronyms = (
   "ABC": ("Abstract Base Class"),
+  "API": ("Application Programming Interface"),
   "BOS": ("Begin of Sequence"),
   "BPE": ("Byte Pair Encoding"),
   "Code LLM": (
@@ -9,6 +10,7 @@
   "CLI": ("Command Line Interface"),
   "CLM": ("Causal Language Model"),
   "EOS": ("End of Sequence"),
+  "FiD": ("Fusion-in-Decoder"),
   "GQA": ("Grouped-Query Attention"),
   "IBMS": ("Interrupt-Based Meta-Strategy"),
   "IDE": (
