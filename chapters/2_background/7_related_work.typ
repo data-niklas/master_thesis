@@ -40,7 +40,7 @@ CodeScope: An Execution-based Multilingual Multitask Multidimensional Benchmark 
 
 */
 
-== Related Work
+== Related Work <chapter:bg:related_work>
 Several prior works pave the way towards enhancing neural code completion through the integration of additional context.
 The prior works use different strategies to control the generation process.
 The first group focuses on improving the training process itself, to enhance future code completion. While these approaches are static and cannot adapt to specific dependencies, they serve as auxiliary steps in more dynamic approaches, by improving the general robustness of improved models.
@@ -199,32 +199,21 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 - does not allow for nuanced information, such as integrating documentation, which is more easily integrated into the prompt, but allows for guided generation, when guidance is certain
 - generalizes, is fast
 */
+Previous works can be widely integrated into different runtimes an even be used with cloud-based model offerings. However, common issues include the slow runtime due to multiple generation steps and unrelevant context due to the "context retrieval problem".
+More recent works propose to control the generation process itself, by modifying the logits during generation. This allows for a more nuanced control over the generation process, but may require a higher level of integration with the model.
+#acr("MGD") by Zhang et al. @agrawalMonitorGuidedDecodingCode is one such technique.
+The authors note that the model way be monitored during generation, such that relevant context may be retrieved and used ad-hoc. This allows for a quicker guided generation, as only a single generation step is necessary.
+The proposed approach combines a generation hook with static analysis through language servers with logits manipulation. The generation hook obtains the current incomplete version of the code, enabling online static analysis.
+#acr("MGD") focuses on type-consistent object-dereferencing, guiding the model when generating a dereference operation on an object, such as accessing a member function or attribute.
+The generation is restricted to only allow available member functions or attributes of the type. Restriction occurs by modifying the logits of the current generation step.
 
-== Related Work <chapter:bg:related_work>
-Several prior works introduce repository level context or global context into neural code completion.
-The work `Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context` @agrawalMonitorGuidedDecodingCode by Agrawal et al. is the most advanced framework and uses static analysis to supplement code completion.
-Other works, such as `RepoCoder` @zhangRepoCoderRepositoryLevelCode2023 or `DocPrompting` @zhouDocPromptingGeneratingCode2023, use #acr("RAG") techniques to retrieve supplemental context.
+In contrast to previous approaches, this work is more complex. It uses both static analysis through a language server and operating during the generation itself. While this increases the overall complexity, it achieves higher speeds while accurately pinpointing relevant context. Using the language server even enables the model to generate type-consistent object-dereferences for types of any source, such as third-party dependencies @agrawalMonitorGuidedDecodingCode.
+#acr("MGD") is the first listed approach to correctly provide accurate context information for third-party dependencies.
+While this is a great basis for further works, it fails to address the issue of code versioning, such as deprecated functions.
+When guiding the model towards an attribute of a type, no distinction is made between deprecated and non-deprecated attributes.
+This leads to models generating code using deprecated attributes.
 
-=== Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
-The work by Agrawal et al. introduces #acr("MGD"), a technique to guide the decoding by observing the generation using a monitor, combined with static analysis.
-
-During the generation process, the monitor has access to the current token sequence and the logits of the prediction. The monitor then retrieves information from the static-analysis, based on the current token sequence. Depending on internal rules, the monitor decides if the logits should be guided and to what extent @agrawalMonitorGuidedDecodingCode.
-
-The work uses the *#acr("LSP")* to retrieve information about the global context.
-It suggests rules to guide the generation of the dereference operator "`.`", names of instantiated classes, the number of arguments in a function call and enumeration options in a switch statement.
-They show that smaller models can be augmented to outperform larger models through the use of the monitor. Additionally, compilation rates are consistently improved @agrawalMonitorGuidedDecodingCode.
-
-=== RepoCoder
-The work by Zhang et al. introduces `RepoCoder`, a framework to improve neural code completion on a repository level through iterative retrieval and generation of code.
-
-`RepoCoder` is based on a conventional #acr("RAG"), which uses a similarity-based retriever to locate relevant code snippets in the repository and enhance the code completion using the relevant code.
-The key insight is to enhance the similarity-based retriever by retrieving code similar to the generated code and regenerating the code with the new retrieved code snippets iteratively @zhangRepoCoderRepositoryLevelCode2023.
-
-// TODO: results
-
-=== DocPrompting
-The work by Zhou et al. introduces `DocPrompting`, a framework to improve neural code completion by using documentation as context.
-
-In contrast to Zhang et al., the work uses documentation as context to improve code completion and does not work iteratively. The documentation is sourced from globally available documentation, such as `DevDocs`@DevDocs.
-
-// TODO: results
+Additionally, the scope of retrieved information is limited. By using a constraint based guided generation, modifying logits, embedding information such as docstrings is hard.
+Simple guidance with little state between generated tokens is feasible, but shifting logit scores based on docstrings is not.
+As shown before, guiding the model using docstrings is more easily done through the prompt.
+A hybrid approach could leverage a language server to integrate textual information into the prompt, then further guide the model during generation using other context.
