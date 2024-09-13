@@ -97,7 +97,7 @@
   show figure.where(kind: image): set figure.caption(position: bottom)
   show figure.where(kind: "listing"): set figure.caption(position: top)
   show figure.where(kind: "example"): set figure.caption(position: top)
-  set figure(supplement: auto, placement: auto)
+  set figure(supplement: auto, placement: bottom)
   show figure.where(kind: "listing"): fig => {
     align(
       center,

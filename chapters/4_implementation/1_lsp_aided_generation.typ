@@ -471,8 +471,8 @@ For the reranking, the `LSP Processor` first applies a constant adjustment to th
 
 In contrast, `ensure_deprecated_below_non_deprecated` determines the minimum non-deprecated token score. Then any scores of deprecated token ids above the minimum are fixed to the delta value below the minimum, to ensure a gap of at least the delta.
 
-The masking is skipped if masking is disabled in the `LspGenerationConfig`. The implementation was adapted from the masked generation in Agrawal et al. @agrawalMonitorGuidedDecodingCode. For details see #link("https://github.com/microsoft/monitors4codegen/blob/022c65efb19cf6046d0b67960ca232ae7a351af4/src/monitors4codegen/monitor_guided_decoding/hf_gen.py#L30C15-L30C49", "their logits processor").
-#footnote[While the design of the strategy was developed independently of Agrawal et al, the implementation was retrofitted to support masked generation.]
+The masking is skipped if masking is disabled in the `LspGenerationConfig`. The implementation was adapted from the masked generation in Agrawal et al. @agrawalMonitorGuidedDecodingCode. For details see #link("https://github.com/microsoft/monitors4codegen/blob/022c65efb19cf6046d0b67960ca232ae7a351af4/src/monitors4codegen/monitor_guided_decoding/hf_gen.py#L30C15-L30C49", "their logits processor")
+#footnote[While the design of the strategy was developed independently of Agrawal et al, the implementation was retrofitted to support masked generation.].
 
 When an interrupt should occur, the score of the interrupt token is fixed to $1000.0$.
 This score was picked empirically, as all other observed scores were below $1000.0$ and it is unlikely for scores to be higher.
