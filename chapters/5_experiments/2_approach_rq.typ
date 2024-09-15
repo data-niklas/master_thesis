@@ -1,51 +1,74 @@
 #import "/utils.typ": *
 
-== Research Questions <chapter:experiments:approach>
-The research questions for the approach are directly derived from the requirements of the thesis listed in @requirements.
-To evaluate the research questions, the following general experiment is conducted.
+/*
 
-The DependencyEval dataset is used in conjunction with the listed models, to evaluate neural code completion both with and without the approach.
-The evaluation using normal code completion is used as a baseline to compare the results with the approach.
-The three evaluations are run using the three different approach configurations:
-/ Default: The config as seen in @code:lsp_generation_config without masked generation.
-/ Masked: The config as seen in @code:lsp_generation_config.
-/ Use completion: The config as seen in @code:lsp_generation_config without masked generation, but using the completion context.
+    - Dependency Accuracy
+        - In which scenarios does regular code completion fail to use dependencies correctly?
+        - Which scenarios does the approach improve best and under which conditions?
+        - Why does the approach not improve the results in other cases?
+    - General Correctness
+        - How does the approach confuse the model?
+        - Which errors are most common when applying the approach?
+    - Robustness
+        - How does the availability of documentation affect the results?
+        - How does the approach handle differently sized code bases?
+    - generalizability
+        - How well can the approach (implementation) be extended to other languages?
+        - For which languages does the approach not work?
+    - Performance
+        - How much overhead does the approach introduce?
 
-Additionally, the six model configurations are used:
-- Sampling with 3 beams
-- Sampling with 2 beams
-- Sampling without beam search
-- Greedy decoding with 3 beams
-- Greedy decoding with 2 beams
-- Greedy decoding without beam search
+    Group into top level research questions with subquestions:
 
-Each model configuration includes the following base parameters:
-#figure(
-  codefile("/assets/code/evaluation_base_model_config.json"),
-  caption: [Base model configuration used for all models.],
-)
+    - How does the approach affect the use of dependencies?
+        - In which scenarios does regular code completion fail to use dependencies correctly?
+        - Which scenarios does the approach improve best and under which conditions?
+        - Why does the approach not improve the results in other cases?
+            - How does the approach confuse the model?
+            - Which errors are most common when applying the approach?
+    // Does the type of dependency make a difference? size and documentation percentage
+    - How does the approach handle different types of dependencies?
+        - How does the availability of documentation affect the results?
+        - How does the approach handle differently sized code bases?
+    - How well can the approach be extended to other languages?
+    - How much overhead does the approach introduce?
 
-The base parameters ensure that the model finishes in at most 90 seconds, which is especially important as to limit the total evaluation time.
-The repetition penalty of $1.3$ has proven itself to prevent repetition of e.g. `\\n` in CodeLlama, over a value of $1.1$.
-Additionally, sampling uses the parameter `"top_k": 50` and `"top_p": 0.95`.
+*/
 
-All model configurations are combined with the three models CodeLlama, MistralHermes and Magicoder.
-Each evaluation of one of the three runs "Default", "Masked" and "Use completion" runs one dataset evaluation for all model configurations, with and without the approach, totaling to $3*6*3*2=108$ dataset evaluations. The repeated dataset evaluations of the baseline are used to average results.
+== Research Questions <chapter:experiments:rq>
+This section lists the research question for the thesis.
+The research questions for the approach are directly derived from the requirements of the thesis listed in @requirements. Each research question corresponds to one or several requirements.
+The following research questions are posed to evaluate the approach in the results chapter:
+#blist(
+  [RQ1],
+  [How does the approach affect the use of dependencies?],
+  [RQ2],
+  [How does the approach handle different types of dependencies?],
+  [RQ3],
+  [How well can the approach be extended to other languages?],
+  [RQ4],
+  [How much overhead does the approach introduce?],
+)<rq>
 
-After collecting the results, they are processed and analyzed to answer the research questions.
-As each research question requires different parts of the results, the data is split, grouped and analyzed accordingly.
+#v(10pt)
 
-=== Dependency Accuracy
-To measure and evaluate the accuracy on how the model uses dependencies, the following research questions are posed.
-For each of the research questions, the evaluation will focus on the deprecation scenarios introduced in the design section.
-E.g. the section will allow functionally incorrect code, as long as the dependencies are used correctly, no deprecated code is used and the correct function parameters are used.
-// TODO: say denpendency test is used
+=== *RQ1* How does the approach affect the use of dependencies?<rq:1>
+The first research question combines questions derived from the requirements #r(1) and #r(2).
+It aims to understand how the models use of dependencies changes when applying the approach.
+This research question is further divided into three subquestions:
+#blist(
+  [RQ1.1],
+  [In which scenarios does regular code completion fail to use dependencies correctly?],
+  [RQ1.2],
+  [Which scenarios does the approach improve best and under which conditions?],
+  [RQ1.3],
+  [Why does the approach not improve the results in other cases?],
+)<rq1sub>
 
-==== RQ1: In which scenarios does regular code completion fail to use dependencies correctly?<rq:1>
-// 1. In which scenarios does normal code completion fail to use dependencies correctly?
-While further research questions focus on possible improvements using the approach, this question starts with the current state of code completion.
+==== *RQ1.1* In which scenarios does regular code completion fail to use dependencies correctly?<rq:1.1>
+While further subquestions focus on possible improvements using the approach, this question starts with the current state of code completion.
 It goes beyond simply evaluating the accuracy of the baseline, but aims to identify concrete scenarios where the baseline fails to use dependencies correctly.
-Further research questions shall analyze how the approach impacts these scenarios.
+Further research subquestions shall analyze how the approach impacts these scenarios.
 
 In the evaluation, only the results of the baseline are considered. The results are mainly grouped by the scenario of the task.
 To further distinguish trends between model configurations and models, the results are also grouped by each model and different configurations.
@@ -53,84 +76,49 @@ For each scenario, failing tasks are analyzed, concretely identifying the issues
 
 Additionally, Copilot is used to evaluate DependencyEval, obtaining further baseline results.
 
-==== RQ2: Which scenarios does the approach improve best and under which conditions?<rq:2>
-// 2. Which scenarios does the approach improve best and under which conditions?
-After identifying issues with the baseline, the approach is applied to improve the results. This research question focuses on the cases where the approach improves the results the most.
+==== *RQ1.2* Which scenarios does the approach improve best and under which conditions?<rq:1.2>
+After identifying issues with the baseline, the approach is applied to improve the results. This research subquestion focuses on the cases where the approach improves the results the most.
 It aims to understand why the improvement occurs and under which conditions the approach is most effective.
 Next to analyzing differences in the prompt and logits manipulation, also differences between model configurations and capabilities are considered.
 
 Both the results of the baseline and the approach are considered.
-Similar to #rq(1), the results are mainly grouped by the scenario of the task, and secondly by each model and different configurations.
+Similar to #rq(1.1), the results are mainly grouped by the scenario of the task, and secondly by each model and different configurations.
 The difference is that now only the successful tasks are analyzed.
 
-==== RQ3: Why does the approach not improve the results in other cases?<rq:3>
-// 3. Why does the approach not improve the results in other cases?
-In contrast to the previous research question, this questions focuses on the remaining cases where the approach does *not* improve the results, or even worsens them.
+==== *RQ1.3* Why does the approach not improve the results in other cases?<rq:1.3>
+In contrast to the previous research subquestion, this subquestions focuses on the remaining cases where the approach does _not_ improve the results, or even worsens them.
 It aims to understand why the approach fails, to identify shortcomings and limitations of current models, model configurations, and the approach itself.
 
 The remaining tasks in the experiments are analyzed, focusing on the differences between the baseline and the approach.
 
-=== General Correctness
-After evaluating the accuracy of the models when using dependencies, the general correctness of the models is evaluated.
-// TODO: say functional test is used
+=== *RQ2* How does the approach handle different types of dependencies?<rq:2>
+The second research question focuses on the dependencies themselves. It is derived from the requirements #r(3). In contrast to #rq(1), which analyzes code scenarios of DependencyEval, this research question discusses the performance of the approach on used dependencies, based on different attributes of the dependency.
+It analyzes and discusses the attributes dependency size and documentation availability.
+This research question is further divided into two subquestions:
+#blist(
+  [RQ2.1],
+  [How does the availability of documentation affect the results?],
+  [RQ2.2],
+  [How does the approach handle differently sized code bases?],
+)<rq2sub>
 
-==== RQ4: How does the approach confuse the model?<rq:4>
-The research question focuses on the general robustness of the approach and checks if the approach can improve scenarios without affecting the functional result.
-To answer this question, the results are analyzed for tasks, where the functional result is incorrect, but the approach is correct. This will be referred to as a model confusion in following chapters.
-By looking at those examples, the research question aims to understand issues in injecting context into the model generation using the approach.
-These findings may lead to improvements in future approaches.
-
-==== RQ5: Which errors are most common when applying the approach?<rq:5>
-// 2. Which errors are most common?
-This question goes a step further and analyzes the exact errors that occur when applying the approach.
-It aims to understand the perturbations that are most likely to confuse the model.
-It differs from #rq(3), as #rq(3) focuses on the failings on improving dependency handling.
-
-=== Robustness
-The following two research questions focus on different aspects of robustness.
-
-// ==== RQ6: How does the approach handle exceptions and edge cases?<rq:6>
-// 1: How does the approach handle exceptions and edge cases?
-
-==== RQ6: How does the availability of documentation affect the results?<rq:6>
-// 2: How does the length of available documentation affect the results?
-The first aspect analyzes the use of information sources, namely code documentation.
+==== *RQ2.1* How does the availability of documentation affect the results?<rq:2.1>
+The first subquestion analyzes the use of the information source, code documentation.
 Can the approach improve the results when almost no documentation is available?
-Does the approach have issues with too much documentation?
+Does the approach struggle with too much documentation?
 
-The analysis will split the results into groups, based on the amount of documentation available in the dependency.
-It will then proceed to separately compare results and trace how the approach uses the documentation.
+==== *RQ2.2* How does the approach handle differently sized code bases?<rq:2.2>
+Similar to #rq(2.1), this research question aims to understand the impact of the size of the code base on the performance of the approach. Are there any distinguishable patterns?
 
-==== RQ7: How does the approach handle differently sized code bases?<rq:7>
-// 3: Does the approach scale from single code files to large code bases?
+=== *RQ3* How well can the approach be extended to other languages?<rq:3>
+The third research question focuses on the generalizability of the approach. It is derived from the requirements #r(4).
+The approach should be generalizable to all programming languages.
+This research question investigates if the approach is extensible to other languages and if there any limitations.
+How large is the effort to add support for a new language?
+The form of the research question will be a discussion.
+Furthermore, it will quickly analyze the state of the current implementation.
 
-Similarly to #rq(6), the results are split into groups based on the size of the code base of the dependencies.
-Does the approach scale from single code files to large code bases?
+=== *RQ4* How much overhead does the approach introduce?<rq:4>
+Lastly, this thesis will analyze the performance overhead introduced by the approach.
+After discussing the theoretical overhead, the results section will display the runtime compared against the baseline.
 
-=== Generalizability
-Next to the robustness, the generalizability to new programming languages is evaluated.
-While the approach was implemented in Python and the implementation has support for Python, the approach should be generalizable to other languages.
-
-==== RQ8: How well can the approach (implementation) be extended to other languages?<rq:8>
-// 1: How well can the approach be extended to other languages?
-#rq(8) focuses on how well the approach works with different programming languages.
-It aims to understand the requirements needed to add support for a new language.
-As the implementation is limited to Python, the research question also evaluates how well the implementation can be extended to other languages.
-Thus, it also evaluates how high the effort of scaling the approach to other languages is.
-
-==== RQ9: For which languages does the approach not work?<rq:9>
-// 2: For which languages does the approach not work?
-As an addition, #rq(9) focuses on the limitations of the approach. It goes a step further and analyzes the requirements for adding support for a new language in-depth.
-It differs from #rq(8), as #rq(8) focuses on the implementation and effort, while #rq(9) focuses on the limitations of the approach itself.
-
-=== Performance
-The final research question focuses on the performance of the approach. As described in the requirements, the approach should not introduce significant overhead.
-
-==== RQ10: How much overhead does the approach introduce?<rq:10>
-// 1: How much overhead does the approach introduce?
-Thus, the first research question focuses on the overhead incurred by the approach.
-After analyzing the theoretical overhead, the actual overhead is measured and compared to the baseline.
-
-For each experiment, the time to completion is measured and compared to the baseline.
-
-// Is this even measurable?

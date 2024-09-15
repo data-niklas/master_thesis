@@ -55,3 +55,39 @@ The design section listed several scenarios, such as the use of alternatives to 
 The consequence is that this thesis created a new dataset, the DependencyEval dataset.
 The experiments will use the #num-dataset hand chosen tasks from the dataset to evaluate the new approach in a controlled environment on several different scenarios.
 As the dataset only contains #num-dataset tasks, a few experiment results will additionally be evaluated by hand.
+
+=== Model and Approach configurations
+
+The DependencyEval dataset is used in conjunction with the listed models, to evaluate neural code completion both with and without the approach.
+The evaluation using normal code completion is used as a baseline to compare the results with the approach.
+The three evaluations are run using the following three approach configurations:
+
+#blist(
+  [Default:],
+  [The config as seen in @code:lsp_generation_config without masked generation.],
+  [Masked:],
+  [The config as seen in @code:lsp_generation_config.],
+  [Use completion:],
+  [The config as seen in @code:lsp_generation_config without masked generation, but using the completion context.],
+)
+
+Additionally, the six model configurations are used:
+- Sampling with 3 beams,
+- Sampling with 2 beams,
+- Sampling without beam search,
+- Greedy decoding with 3 beams,
+- Greedy decoding with 2 beams,
+- Greedy decoding without beam search.
+
+Each model configuration includes the base parameters seen in @code:experiments:base_model_config.
+#figure(
+  codefile("/assets/code/evaluation_base_model_config.json"),
+  caption: [Base model configuration used for all models.],
+)<code:experiments:base_model_config>
+
+The base parameters ensure that the model finishes in at most $90$ seconds, which is especially important as to limit the total evaluation time.
+The repetition penalty of $1.3$ has proven itself to prevent repetition of e.g. `\\n` in CodeLlama, over a value of $1.1$.
+Additionally, sampling uses the parameter `"top_k": 50` and `"top_p": 0.95`.
+
+All model configurations are combined with the three models CodeLlama, MistralHermes and Magicoder.
+Each evaluation of one of the three runs "Default", "Masked" and "Use completion" runs one dataset evaluation for all model configurations, with and without the approach, totaling to $3*6*3*2=108$ dataset evaluations. The repeated dataset evaluations of the baseline are used to average results.

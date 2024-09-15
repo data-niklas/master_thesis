@@ -267,4 +267,33 @@
   baseline: (1em - measure([T]).height) / 2,
 )
 
+#let blist(..items) = {
+  let bitems = items.pos().enumerate().map(((i, item)) => {
+    if calc.rem(i, 2) == 0 {
+      strong(item)
+    } else {
+      item
+    }
+  })
+  table(
+    columns: 2,
+    stroke: none,
+    inset: (x, y) => {
+      let inset = if x == 0 {
+        (left: 0pt, right: 0pt, rest: 5pt)
+      } else {
+        (right: 0pt, rest: 5pt)
+      }
+      if y == 0 {
+        inset.insert("top", 0pt)
+      }
+      if y == bitems.len() / 2 - 1 {
+        inset.insert("bottom", 0pt)
+      }
+      inset
+    },
+    ..bitems,
+  )
+}
+
 #let num-dataset = 25
