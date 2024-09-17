@@ -83,6 +83,16 @@
   show table: set text(spacing: 100%)
   // citations have no element attached, so do not show refs in figures
   show figure: it => {
+    let caption-position = if it.kind in (
+      table,
+      "listing",
+      "example",
+    ) {
+      top
+    } else {
+      bottom
+    }
+    set figure.caption(position: caption-position)
     show ref: it2 => {
       if it2.element == none {
         none
@@ -93,11 +103,7 @@
     it
   }
 
-  show figure.where(kind: table): set figure.caption(position: top)
-  show figure.where(kind: image): set figure.caption(position: bottom)
-  show figure.where(kind: "listing"): set figure.caption(position: top)
-  show figure.where(kind: "example"): set figure.caption(position: top)
-  set figure(supplement: auto, placement: bottom)
+  set figure(supplement: auto)
   show figure.where(kind: "listing"): fig => {
     align(
       center,
@@ -129,6 +135,10 @@
   }
   let heading-align = left
   let cell-align = left
+  set table.hline(stroke: (
+    paint: black,
+    thickness: 0.4pt,
+  ))
   set table(
     align: (x, y) => {
       if y == 0 {
@@ -154,7 +164,7 @@
   )
   show table: it => {
     let other_table = it.stroke == none
-    if it.children.len() > 0 and it.children.at(it.children.len() - 1) == table.hline() or other_table {
+    if it.children.len() > 0 and it.children.at(it.children.len() - 1).func() == table.hline or other_table {
       it
     } else {
       let items = it.fields()
@@ -162,7 +172,10 @@
       table(
         ..items,
         ..children,
-        table.hline(),
+        table.hline(stroke: (
+          paint: black,
+          thickness: 0.7pt,
+        )),
       )
     }
   }

@@ -1,5 +1,7 @@
 #import "/utils.typ": *
 #import "/eval.typ": *
+#import "/plot.typ": *
+#import "/eval-values.typ": *
 
 #let masking = load-evaluations("2024-08-27-masking")
 #let default = load-evaluations("2024-08-26-default")
@@ -148,8 +150,92 @@
   caption: [Task: `tsv2py_1.py`],
 )<code:dataset:task:tsv2py_1>
 
-== Full Evaluation Results
+== Evaluation Result Tables
 #show figure: set block(breakable: true)
+
+#figure(
+  stats-table((
+    ("CodeLlama", codellama-baseline-stats),
+    (
+      "Magicoder",
+      magicoder-baseline-stats,
+    ),
+    (
+      "MistralHermes",
+      codestral-baseline-stats,
+    ),
+    (
+      "Copilot",
+      copilot,
+    ),
+    (
+      [Averaged w.o.\ Copilot],
+      average-stats((
+        default-baseline,
+        masking-baseline,
+        use-completions-baseline,
+      )),
+    ),
+    (
+      [Averaged],
+      average-stats((
+        default-baseline,
+        masking-baseline,
+        use-completions-baseline,
+        copilot,
+      )),
+    ),
+  )),
+  caption: [
+    Overview over the baseline evaluation. The first three models are averaged due to the use of sampling.
+  ],
+)<table:results:approach:baseline-stats>
+
+#figure(
+  stats-table((
+    ("Sampling", sampling-baseline),
+    ("No Sampling", no-sampling-baseline),
+    ("1 Beam", one-beam-baseline),
+    ("2 Beams", two-beams-baseline),
+    ("3 Beams", three-beams-baseline),
+  )),
+  caption: [
+    Overview over the baseline evaluation using different model configurations. Copilot is not considered.
+  ],
+)<table:results:approach:baseline-stats-config>
+
+#figure(
+  stats-table((
+    ("Default", default-baseline),
+    (
+      "Masking",
+      masking-baseline,
+    ),
+    (
+      "Use Completions",
+      use-completions-baseline,
+    ),
+  )),
+  caption: [
+    Overview over the baseline evaluation using different approach configurations.
+  ],
+)<table:results:approach:baseline-stats-approach-config>
+
+#figure(
+  stats-table(
+    all-stats.map(stat-with-name => (
+      stat-with-name.at(0),
+      stat-with-name.at(1).at(0),
+    )).sorted(key: task-sorted-key).rev().slice(0, 3),
+  ),
+  caption: [
+    Overview over the top 3 baseline configurations.
+  ],
+)<table:results:approach:baseline-all-stats-best>
+#figure(
+  csvtable("/assets/tables/results/copilot.csv"),
+  caption: [Copilot evaluation results],
+)<table:results:copilot>
 // === Baseline
 // #figure(
 //   stats-table(

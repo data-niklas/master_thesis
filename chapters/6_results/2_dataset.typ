@@ -1,3 +1,3 @@
 #import "/utils.typ": *
-== Dataset Results <chapter:results:dataset>
+== Dataset Discussion <chapter:results:dataset>
 - discuss dataset issues

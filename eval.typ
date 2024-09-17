@@ -422,9 +422,10 @@
     " beams"
   }
   let content-name = [
+    #set par(leading: 0.5em)
     #run-name\
     #model-name\
-    #sampling-text #beams #{
+    #sampling-text\ #beams #{
       if beams == 1 {
         " beam"
       } else {
