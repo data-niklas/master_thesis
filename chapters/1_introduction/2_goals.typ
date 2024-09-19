@@ -4,7 +4,7 @@ This thesis aims to combine up-to-date information through static analysis with 
 The contextual information shall be provided at specific instances to guide the model *away* from incorrect suggestions *towards* correct suggestions.
 Additionally, the performance impact of the proposed approach shall be kept low, to ensure a responsive system. This will enable integration into #acrpl("IDE") and other tools.
 
-Initially, the thesis will introduce important concepts and technologies, from Causal Language Modeling to Controllable Generation, followed by implementation specific libraries.
+Initially, the thesis will introduce important concepts and technologies, from Causal Language Modeling to Controllable Generation, followed by important details on libraries implementing these concepts for use in the approach implementation.
 Moreover, related work will be introduced to provide a basis for the proposed approach.
 
 Afterward, the thesis will introduce the requirements for a proposed approach, then

@@ -3,7 +3,7 @@
 This chapter provides important background information and related work necessary to understand the main contributions of this thesis.
 
 Firstly, #acrpl("CLM") are introduced in @chapter:bg:llms. Thereafter, @chapter:bg:text_generation discusses commonly used text generation strategies.
-The section @chapter:bg:controllable_generation showcases strategies to modify the text generation of a fixed pretrained #acr("CLM").
+The @chapter:bg:controllable_generation showcases strategies to modify the text generation of a fixed pretrained #acr("CLM").
 @chapter:bg:transformers displays important components of the popular Hugging Face library, which enables #acr("CLM") workflows using all the techniques introduced in the sections before.
 Thereafter, @chapter:bg:lsp introduces the functionality of the #acr("LSP"). At last, @chapter:bg:related_work introduces previous work.
 

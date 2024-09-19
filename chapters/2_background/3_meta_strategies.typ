@@ -93,10 +93,10 @@ In contrast, common drawbacks of meta-strategies are the added complexity toward
 Meta-strategies are applied to e.g. remedy the model lack of up-to-date knowledge. A model may not have the necessary knowledge for a task, or the knowledge it has is outdated. In such cases the meta-strategy can supply up-to-date information and focus the model towards the problem.
 
 // TODO rewrite
-==== Chain of Thought
+==== Chain of Thought.
 Chain of Thought is one very central meta-strategy, as it significantly improves the reasoning capabilities of a model @weiChainofThoughtPromptingElicits2023.
 
-The key idea of chain of thought is to apply the divide and conquer strategy to the text generation process. Instead of the model trying to solve a complex reasoning problem in a single step, the meta-strategy divides the problem into several intermediate steps. The model is then able to solve the simpler intermediate steps. Each intermediate step is a thought the model contributes to the final solution. The sequence of intermediate steps forms the "chain" of thoughts @weiChainofThoughtPromptingElicits2023.
+The key idea of Chain of Thought is to apply the divide and conquer strategy to the text generation process. Instead of the model trying to solve a complex reasoning problem in a single step, the meta-strategy divides the problem into several intermediate steps. The model then is able to solve the simpler intermediate steps. Each intermediate step is a thought the model contributes to the final solution. The sequence of intermediate steps forms the "chain" of thoughts @weiChainofThoughtPromptingElicits2023.
 
 Additionally, the model will use thoughts of previous steps to reason about the next step.
 
@@ -105,14 +105,14 @@ Additionally, the model will use thoughts of previous steps to reason about the 
 // Only introduce it, do not mention code related stuff here yet.
 
 // TODO: self consistency with CoT?
-==== Tree of Thought
+==== Tree of Thought.
 #todo()[Check if section can be removed]
-Tree of thoughts is a generalization of chain of thought. Chain of thought is only capable of performing linear decision-making @weiChainofThoughtPromptingElicits2023. Ultimately, performing complex reasoning is a search problem and thus, linear reasoning is insufficient.
-The tree of thoughts meta-strategy generalizes the thoughts into a tree structure. Each intermediate problem is then a node in this search tree. The root of the tree is the initial problem. The goal of this search problem then is to find an accepted end node - a finishing thought @yaoTreeThoughtsDeliberate2023a.
+Tree of Thoughts is a generalization of chain of thought. Chain of Thought is only capable of performing linear decision-making @weiChainofThoughtPromptingElicits2023. Ultimately, performing complex reasoning is a search problem and thus, linear reasoning is insufficient.
+The Tree of Thoughts meta-strategy generalizes the thoughts into a tree structure. Each intermediate problem is then a node in this search tree. The root of the tree is the initial problem. The goal of this search problem then is to find an accepted end node - a finishing thought @yaoTreeThoughtsDeliberate2023a.
 
 By structuring the thoughts into a tree, common tree search algorithms can be applied to the problem. Various algorithms such as a breadth-first search or depth-first search can be applied @yaoTreeThoughtsDeliberate2023a.
 
 // Benefits
-In general, the tree of thoughts meta-strategy is more powerful than the chain of thoughts. It is a very powerful and flexible strategy, which even allows following thoughts and then backtracking @yaoTreeThoughtsDeliberate2023a.
+In general, the Tree of Thoughts meta-strategy is more powerful than the Chain of Thoughts. It is a very powerful and flexible strategy, which even allows following thoughts and then backtracking @yaoTreeThoughtsDeliberate2023a.
 
 // TODO: details? math, drawbacks, images, examples

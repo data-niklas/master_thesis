@@ -61,7 +61,7 @@ general purpose programming languages
 The prior work "Program Synthesis with Large Language Models" by Austin et al. @austinProgramSynthesisLarge2021a is the oldest prior related work, being published in 2021.
 It serves as the basis for the following works, as it analyzes the limits of #acrpl("CLM") for program synthesis in general purpose programming languages.
 
-One observation the paper presents is the chosen sampling strategy is critical for good performance in code synthesis.
+One observation the paper presents is that the chosen sampling strategy is critical for good performance in code synthesis.
 Beam search performs extremely poorly, greedy decoding performs better and sampling performs best when allowing several samples. As the paper empirically determines, beam search often produces looped or repeated code @austinProgramSynthesisLarge2021a.
 The effect of a sampling beam search is not analyzed. The observations of Austin et al. mirror the results obtained by evaluating neural code completion using this approach.
 
