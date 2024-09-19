@@ -69,7 +69,7 @@
               } else {
                 supervisor
               },
-              [Datum der Abgabe],
+              [Datum der Abgabe:],
               date-of-submission.display(),
             ),
           )

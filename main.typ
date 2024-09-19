@@ -9,12 +9,8 @@
   print-mode: print-mode,
   // Insert your abstract after the colon, wrapped in brackets.
   // Example: `abstract: [This is my abstract...]`
-  abstract-en: [
-        #lorem(300)
-  ],
-  abstract-de: [
-        #lorem(300)
-  ],
+  abstract-en: include "/chapters/0_abstract/en.typ",
+  abstract-de: include "/chapters/0_abstract/de.typ",
   acronyms: acronyms,
   bibliography-file: "/bibliography.bib",
   matriculation-number: "3737339",
