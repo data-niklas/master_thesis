@@ -32,7 +32,7 @@ Then, the changelog is skimmed for potential scenarios, while the previous crite
 At last, the functional tests are run to validate the gold solution.
 
 The manual collection process is time-consuming and increases per found scenario, as it is difficult to find dependencies which match all criteria.
-E.g. the time spent on finding a suitable 22nd task took ~$30$-$60$minutes, while the first three tasks took ~$10$-$20$minutes each.
+E.g. the time spent on finding a suitable 22#super[nd] task took \~$30$-$60$ minutes, while the first three tasks took \~$10$-$20$ minutes each.
 
 === Dependencies
 To achieve the listed functionality, DependencyEval relies on several dependencies:
@@ -99,11 +99,12 @@ The test setup requires three components to fit together:
 2. disabling logging to access and log the test results, while
 3. mocking used objects to introspect the used approach.
 
-Typically, unit tests are either run through the command line using the unit test module:
-```bash
-python -m unittest path/to/file.py
-```,
-or by running the Python script directly and calling the function `unittest.main`.
+Typically, unit tests are either run through the command line using the unit test module, or by running the Python script directly and calling the function `unittest.main`.
+#exampletext(caption: "Typical execution of Python unit tests through the command line.")[
+  ```bash
+  python -m unittest path/to/file.py
+  ```
+]
 In either case, all defined unit tests are found and executed, after which the result is printed to the standard output. The result looks similar to @terminal:unittest:
 #figure(
   codefile("/assets/code/unit_test_output.terminal"),

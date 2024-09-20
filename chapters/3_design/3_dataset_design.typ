@@ -203,6 +203,15 @@ use the changed functionality.
 Currently, the dataset contains #num-dataset entries for 16 different dependencies:
 #{
   show figure: set block(breakable: true)
+  set table(align: (c, r) => {
+    if (r == 0) {
+      center
+    } else if (c == 0) {
+      left
+    } else {
+      right
+    }
+  })
   figure(
     box(
       columns(2, csvtable("/assets/tables/dataset_dependencies.csv")),

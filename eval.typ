@@ -32,6 +32,16 @@
   }
 }
 
+#let approach-configuration-name-map = (
+  "masking": "Masking",
+  "default": "Default",
+  use-completions: "Use Completions",
+)
+
+#let map-approach-configuration-name(
+  name,
+) = approach-configuration-name-map.at(name)
+
 #let load-evaluation(directory, configuration) = {
   let path = "/assets/evaluations/" + directory + "/" + configuration + ".json"
   let data = json(path)

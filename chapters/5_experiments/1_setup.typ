@@ -7,6 +7,15 @@ They were run on a single server with the following specifications:
 #figure(
   table(
     columns: 2,
+    align: (column, row) => {
+      if (row == 0) {
+        center
+      } else if (column == 0) {
+        left
+      } else {
+        right
+      }
+    },
     table.header([*Component*], [*Value*]),
     [*CPU*],
     [2x AMD EPYC 7713 64-Core],

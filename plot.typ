@@ -1,5 +1,5 @@
 #import "/utils.typ": cetz, strfmt
-#import "/eval.typ": total-stats, average-stats
+#import "/eval.typ": total-stats, average-stats, map-approach-configuration-name
 
 #let bwr-colors = csv("/assets/colors/bwr.csv")
 
@@ -360,7 +360,7 @@
   // 2. errors-by-field
   // 3. model, configurations (model, approach)
   // 4. by scenario
-  items += ([*Total*], [#error-groups.at("total")])
+  items += ([Total], [#error-groups.at("total")])
   items += (table.hline(), header("Models"))
   for model in error-groups.at("by-model") {
     items += (model.at(0), format-value(model.at(1)))
@@ -380,7 +380,10 @@
   }
   items += (table.hline(), header("Approach Configurations"))
   for value in error-groups.at("by-approach") {
-    items += ([#value.at(0)], format-value(value.at(1)))
+    items += (
+      map-approach-configuration-name(value.at(0)),
+      format-value(value.at(1)),
+    )
   }
   items += (table.hline(), header("Tasks"))
   for value in error-groups.at("by-task") {
