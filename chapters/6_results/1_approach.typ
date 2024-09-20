@@ -4,8 +4,12 @@
 #import "/eval-values.typ": *
 #set figure(placement: none)
 == Approach Results <chapter:results:approach>
+This section answers the research questions posed in the previous chapter. All percentages are given as percentage points, if not stated otherwise.
 
 === *RQ1* How does the approach affect the use of dependencies?
+
+// under which conditions does the approach improve the results?
+// analyze different types of failings, from misguided generation, runtime errors, evaluation errors etc.
 
 ==== *RQ1.1* In which scenarios does regular code completion fail to use dependencies correctly?
 // --------- Models ---------------
@@ -451,38 +455,117 @@ When looking at error categories, unexpectedly, a large portion of errors are du
 In summary, some tasks like "theflow_1" in DependencyEval are very hard, leading to a $100%$ error rate in the baseline and approach. Additionally, the added complexity of the approach causes some simple tasks to fail, such as "pytorch_1". Next to such evaluation errors, the model Magicoder causes indentation errors when using greedy decoding. Additionally, the approach configuration "Use Completions" causes a high GPU usage, sometimes causing out of memory exceptions at runtime.
 
 === *RQ2* How does the approach handle different types of dependencies?
-#{
-  figure(
-    table(
-      columns: 3,
-      align: (row, column) => {
-        if row == 0 {
-          center
-        } else if column == 0 {
-          left
-        } else {
-          right
-        }
-      },
-      table.header(
-        [Dependency],
-        [Lines of Code],
-        [Documentation Percentage],
-      ),
-      ..(
-        dependency-stats.pairs().sorted(key: item => item.at(1).at("lines_of_code")).rev().map(item => (
-          [#item.at(0)],
-          [#item.at(1).at("lines_of_code")],
-          [#calc.round(item.at(1).at("documentation_percentage"), digits: 2)%],
-        )).flatten()
-      ),
+To answer this questions, in particular the two subquestions #rq(2.1) and #rq(2.2), this section presents @table:results:approach:dependency-stats.
+The table shows the size of the dependencies used in DependencyEval, as counted using pygount.
+The number of pure lines of code, comments and empty lines are counted. Additionally, the documentation percentage relative to the lines of code is calculated.
+
+#let cleaned-dependency-stats = dependency-stats.pairs().sorted(key: item => item.at(1).at("documentation_percentage")).rev().map(item => (
+  item.at(0),
+  item.at(1).at("lines_of_code"),
+  calc.round(item.at(1).at("documentation_percentage"), digits: 2),
+))
+
+// #cetz.canvas({
+//   import cetz.draw: content
+//   import cetz.plot: *
+//   let c = range(cleaned-dependency-stats.len()).map(i => color.hsl(
+//     i / (cleaned-dependency-stats.len() + 2) * 360deg,
+//     100%,
+//     45%,
+//   ))
+//   // Example data: group connections (input -> output)
+//   plot(
+//     size: (12, 4),
+//     x-format: f => [#calc.round(calc.pow(10, f), digits: 0)],
+//     y-format: f => [#f%],
+//     x-label: "Lines of Code",
+//     y-label: "Documentation Percentage",
+//     legend: "legend.east",
+//     {
+//       for (i, (name, lines, doc)) in cleaned-dependency-stats.enumerate() {
+//         add(
+//           ((calc.log(lines), doc), (calc.log(lines), doc + 0.1)),
+//           mark: "o",
+//           label: name,
+//           mark-style: (stroke: none, fill: c.at(i)),
+//           style: cetz.palette.new(),
+//         )
+//       }
+//     },
+//   )
+// })
+
+#figure(
+  table(
+    columns: 3,
+    align: (column, row) => {
+      if row == 0 {
+        center
+      } else if column == 0 {
+        left
+      } else {
+        right
+      }
+    },
+    table.header(
+      [Dependency],
+      [Lines of Code],
+      [Documentation Percentage],
     ),
-    caption: [Size of dependencies, as counted using pygount. Documentation percentage is relative to the lines of code, thus excluding empty lines, etc.],
-  )
-}
+    ..(
+      cleaned-dependency-stats.map(item => (
+        [#item.at(0)],
+        [#item.at(1)],
+        [#item.at(2)%],
+      )).flatten()
+    ),
+  ),
+  caption: [Size of dependencies, as counted using pygount. Documentation percentage is relative to the lines of code, thus excluding empty lines, etc.],
+)<table:results:approach:dependency-stats>
+
 ==== *RQ2.1* How does the availability of documentation affect the results?
+// 1. results are inconclusive using current methods
+// 2. while table approach:diff-task-stats shows improvements by dependencies, it is hard to draw conclusions
+// 3. simple methods like counting documentation
+
+The results are inconclusive using the current evaluation method.
+While @table:results:approach:diff-task-stats shows changes when applying the approach to different dependencies, it is hard to draw conclusions on the effect of documentation.
+Methods such as counting lines of documentation and comparing the results are simple, but not a good indicator.
+To correctly analyze the effect of documentation, the amount of available documentation in the retrieved context must be analyzed.
+This leads to another metric, the amount of documentation available per code item, such as a method. This greatly increases the score for different libraries in comparison to the simple lines of code method, as the length of functions becomes irrelevant.
+The upside of such a new method would be that it would correctly find problems imposed due to too little or too much documentation, such as context length issues.
+
+After reviewing documentation of different libraries by hand, it becomes clear that especially libraries like Numpy have extensive documentation, not represented by the documentation percentage in @table:results:approach:dependency-stats. Each function documentation includes a short description, parameter documentation and even often notes and examples.
+This extensive documentation has proven to be tricky to inject into the model prompt, which is why the approach has chosen to reduce the function documentation to the short descriptive sentence, using the documentation parser `docstring_parser`.
+While this has solved the issue of too much documentation, analyzing the effects of including notes and examples would be desired.
+
 ==== *RQ2.2* How does the approach handle differently sized code bases?
-=== *RQ3* How well can the approach be extended to other languages?
+In a similar manner, the results are inconclusive using the current evaluation method.
+While lines of code are a good indicator for the total size of the dependency, it is not a good indicator for the size of the dependency in the context of the task.
+As the model is guided using a language server, the model navigates on a subset of the dependency, being presented a list of completions for the current context.
+When imagining dependencies as a code item tree, where the dependency is the root, submodules are branches, files form branches in the next level, followed by classes, methods and finally parameters, the branching factor becomes important for the approach.
+The branching factor determines, how many entries a code completion request to the language server returns. This is especially important for the approach, as the model is guided by the completions and too many completions or too few may pose an issue.
+This proves difficult to measure over the whole repository, as the language server would need to navigate the whole repository to find the branching factor.
+
+In practice, how the approach handles different amounts of completion entries depends on the configuration used.
+When using the "Use Completions" configuration, completion entry information is used to determine the next code symbol, such as a method call. Instead of only guiding the next token, the model is asked separately to directly predict the whole method call, based on all available method calls, while being noted about deprecations.
+While this configuration handles small to medium amounts of completion items, it fails for especially large amounts.
+
+In any case, all completion items are used to rerank the logits of the predicted next token in the logits processor. This approach has proven to handle any amounts of completion items in practice.
+In summary, the measured results an inconclusive, empirically obtained results are positive, but further complex testing is necessary.
+
+=== *RQ3* How well does the approach generalize to other languages?
+While the approach theoretically generalizes well to other languages, as it used the language independent #acr("LSP"), in practice there are many restrictions.
+The first restriction is that a language server must be available for use. This is not the case for every programming language#footnote[E.g. no publicly available language server was found for the ABAP programming language.].
+If no language server is available, creating a new language server takes a significant amount of effort, which is often undertaken by the community.
+Even if a language server is available, it may not support the needed functionality of the approach, such as retrieving completion items and a signature help.
+
+Additionally, generalizing over project setups may prove difficult. Language servers are often customizable by passing options from the client to the server, controlling behavior such as finding project dependencies. Adding support for a new language includes understanding and setting these options, such that the language servers of a potential new language correctly determine all project dependencies.
+At last, the current implementation has assumptions about common code structure. This will prove wrong for some other languages, especially esoteric languages like Brainfuck.
+In practice these assumptions may be removed and the implementation improved, which will require further effort.
+
+In summary, the approach current generalizes well over similar and widely used languages, which have a language server. Adding support for other esoteric programming languages is possible, but requires a significant effort.
+
 === *RQ4* How much overhead does the approach introduce?
 // reminder scenarios:
 // new feature
@@ -541,34 +624,52 @@ In summary, some tasks like "theflow_1" in DependencyEval are very hard, leading
       calc.round(llm-lsp-average, digits: 2),
       calc.round(vanilla-median, digits: 2),
       calc.round(llm-lsp-median, digits: 2),
-    ).map(str)
-  }).flatten()
+    )
+  })
 }
+
 #figure(
-  table(
-    columns: 5,
-    align: (row, column) => {
-      if row == 0 {
-        center
-      } else if column == 0 {
-        left
-      } else {
-        right
-      }
-    },
-    table.header(
-      [Name],
-      [Average\ Baseline (s)],
-      [Average\ Approach (s)],
-      [Median\ Baseline (s)],
-      [Median\ Approach (s)],
-    ),
-    ..duration-entries((
-      ("All", all-results),
+  cetz.canvas({
+    import cetz.chart
+    import cetz.draw: *
+    let stats = duration-entries((
       ("Default", default),
       ("Masking", masking),
       ("Use Completions", use-completions),
-    )),
-  ),
-  caption: [Average runtime in seconds per task, comparing the baseline and the approach.],
-)
+    ))
+    let colors = (
+      "#52D726",
+      "#1ea881",
+      "#d229db",
+      "#991b5e",
+    ).map(color.rgb)
+    let names = (
+      "Average Baseline",
+      "Average Approach",
+      "Median Baseline",
+      "Median Approach",
+    )
+    chart.columnchart(
+      stats,
+      mode: "clustered",
+      label-key: 0,
+      value-key: (1, 2, 3, 4),
+      size: (11, 4),
+      bar-style: cetz.palette.new(colors: colors),
+      y-label: [Runtime in seconds],
+      x-label: "Approach configurations",
+      labels: names,
+      // axis-style: "left",
+    )
+  }),
+  caption: [Average runtime in seconds per task, comparing the baseline and the approach. When comparing the median, the approach only less than doubles the runtime. When looking at the average runtime, it becomes clear that the approach incurs a larger penalty, sometimes tripling the runtime.],
+)<plot:results:overhead>
+To evaluate the runtime overhead, @plot:results:overhead compares the runtime of the approach to the baseline. As can be seen, the approach less than doubles the runtime in most cases. When looking at the average runtime, it becomes clear that a few code completions take significantly longer, on average it takes thrice the baseline runtime.
+
+The used approach configuration will not impact the approach runtime under a best-case scenario. Each configuration causes the median runtime to rise from about 10 seconds to 20 seconds, doubling the runtime.
+Under a worst-case scenario, performance is most impacted by the "Use Completions" configuration. This is most likely due to the second generation performed when e.g. directly predicting the next possible method.
+When the model responds with an additionally long message, it adds to the total runtime quickly.
+
+The approach only incurs a small performance penalty, as the static analysis performs many performance heavy tasks, which are heavily optimized, from which the approach may profit.
+Due to the #acr("IBMS") further runtime overhead may be saved, compared to typical multi-step generation meta-strategies.
+The current implementation is not fully optimized towards a short runtime. Through heavier caching, a lower runtime may be achieved. Especially in beam search configurations, separate beams generate similar code, retrieving similar code context, which may be shared between beams. The current implementation does not share such data between beams.

@@ -110,7 +110,7 @@ Does the approach struggle with too much documentation?
 ==== *RQ2.2* How does the approach handle differently sized code bases?<rq:2.2>
 Similar to #rq(2.1), this research question aims to understand the impact of the size of the code base on the performance of the approach. Are there any distinguishable patterns?
 
-=== *RQ3* How well can the approach be extended to other languages?<rq:3>
+=== *RQ3* How well does the approach generalize to other languages?<rq:3>
 The third research question focuses on the generalizability of the approach. It is derived from the requirements #r(4).
 The approach should be generalizable to all programming languages.
 This research question investigates if the approach is extensible to other languages and if there any limitations.
