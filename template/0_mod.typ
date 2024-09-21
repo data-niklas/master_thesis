@@ -146,6 +146,8 @@
   show outline: set heading(numbering: none, outlined: true, level: 2)
 
   heading()[Listings]
+  // Do not show the different listings in the main Table of Contents
+  show outline: set heading(outlined: false)
   outline(
     title: [List of Figures],
     target: figure.where(kind: image),
@@ -163,6 +165,7 @@
     title: [List of Examples],
     target: figure.where(kind: "example"),
   )
+  show outline: set heading(outlined: true)
 
   pagebreak(weak: true)
   set figure(supplement: auto, placement: none)

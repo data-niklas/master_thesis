@@ -3,8 +3,6 @@
 #import "/eval.typ": *
 #import "/eval-values.typ": *
 #set figure(placement: none)
-== Approach Results <chapter:results:approach>
-This section answers the research questions posed in the previous chapter. All percentages are given as percentage points, if not stated otherwise.
 
 === *RQ1* How does the approach affect the use of dependencies?
 
