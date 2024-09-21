@@ -93,7 +93,11 @@
 #let spread(count, has-header: false, body) = context {
   let header-height = 0pt
   if has-header {
-    let header = body.children.at(0)
+    let inner = body
+    if inner.func() == link {
+      inner = inner.body
+    }
+    let header = inner.children.at(0)
     header-height = measure(table(header)).height
   }
   let height = ((measure(body).height - header-height) / count) + header-height

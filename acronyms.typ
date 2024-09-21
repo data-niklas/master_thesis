@@ -21,7 +21,7 @@
   "JSON": ("JavaScript Object Notation"),
   "JSON-RPC": ("JavaScript Object Notation-Remote Procedure Call"),
   "LM": ("Language Model"),
-  "LLM": ("Large Language Models"),
+  "LLM": ("Large Language Model"),
   "LRU": ("Least Recently Used"),
   "LSP": ("Language Server Protocol"),
   "MBPP": ("Mostly Basic Python Problems"),

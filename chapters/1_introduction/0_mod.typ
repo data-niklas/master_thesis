@@ -4,7 +4,7 @@
 Code completion provides code suggestions to developers extending their incomplete code.
 The suggestions used multimodal data sources to combine a variety of information.
 
-It is one of the most used productivity tools in #acrpl("IDE"). Every major #acr("IDE") from VSCode, Jetbrains #acrpl("IDE"), Eclipse, Neovim and Emacs with plugins support code completion.
+It is one of the most used productivity tools in #acrpl("IDE"). Every major #acr("IDE") from Visual Studio Code, Jetbrains #acrpl("IDE"), Eclipse, Neovim and Emacs with plugins supports code completion.
 // Shows methods, properties of objects including documentation
 It reduces the mental burden of remembering method names, properties, their types and associated information, such as documentation and if the item is deprecated.
 In addition, it saves time by reducing written boilerplate code by suggesting code snippets.

@@ -81,3 +81,5 @@ text_area_signature.py
 clear_meta_and_links_signature.py
 error_indent_dotted_2.py
 error_empty_sklearn_2.py
+huggingface_stopping_criteria.py
+huggingface_logits_processor.py

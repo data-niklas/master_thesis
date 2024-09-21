@@ -24,7 +24,7 @@ The #acrl("LSP") is an effort to standardize a common feature set for programmin
 
 === Design Principles
 The protocol is based on a bidirectional client-server architecture. The client is a tool such as the #acr("IDE"). The server, henceforth called the language server, is programming language specific tooling that provides a subset of the protocol. Both the client and server must not implement the full protocol.
-The protocol is capability based. Both parties define and communicate their capabilities, then find common capabilities and restrict their use to them.
+The protocol is capability-based. Both parties define and communicate their capabilities, then find common capabilities and restrict their use to them.
 Each client can connect to multiple language servers, and each language server can serve multiple clients. As such a client could use a language server for the Rust programming language while the user is coding on a Rust project. As soon as the user switches projects to a web project, the editor could then connect to several language servers to provide support for HTML, CSS and JavaScript at once. In that scenario several simultaneous language servers are necessary, as CSS and JavaScript can be embedded into HTML.
 // Embedded programming languages!? Code block in markdown
 The communication between the client and server must be bidirectional, as the server must be able to notify the client about events occurring, such as new diagnostic information.

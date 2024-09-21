@@ -7,7 +7,7 @@ The main contributions of the thesis are:
 
 The main contribution integrates information from the currently used packages and local repository into the code completion. The information is retrieved through the code completion and signature help functionality, provided by typical language servers, which generalize this work over different programming languages.
 The information includes deprecation information, preventing the model from completing old methods and guiding it towards replacements, using the provided documentation.
-Performance wise, the framework only incurs a small performance penalty over the usual predicted code completion.
+Performance-wise, the framework only incurs a small performance penalty over the usual predicted code completion.
 // mostly engineering due to complexity of combining different conceptual aspects
 The contribution combines the novel concept of an #acr("IBMS") with the concepts of a language server and logits manipulation with code completion.
 Even so, the contribution is heavily engineering focused, as implementing the #acr("IBMS") for code completion has proven to be a complex task, as it requires a high level of integration into the code completion. Moreover, many improvements were made to the implementation, improving the robustness and performance under different circumstances.

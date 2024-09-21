@@ -56,7 +56,7 @@ As often the detokenization is not the inverse of the tokenization, the `Prompt 
 To reconstruct the edited prompt, the `Prompt State` passes the initial prompt and injected contexts to the `Prompt Formatter`.
 
 ==== Prompt Formatter.
-The `Prompt Formatter` abstracts different prompt formats used in different models. For Llama based models, it would use the format defined in @code:clm:format.
+The `Prompt Formatter` abstracts different prompt formats used in different models. For models based on Llama, it would use the format defined in @code:clm:format.
 Different models allow different prompt sections, such as a system and a user prompt. Depending on the availability of such sections, the component decides how to embed the context.
 
 ==== LSP Processor.

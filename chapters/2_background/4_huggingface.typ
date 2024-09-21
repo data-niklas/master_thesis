@@ -18,7 +18,8 @@ The base classes are `PreTrainedModel`, `PreTrainedTokenizer` and `PretrainedCon
 Instances of these classes are created through the `AutoClasses` abstraction. The `AutoClasses` abstraction allows for easy loading of models, tokenizers and configurations, without the need to know the specific class names. The abstraction guesses the correct class based on the provided model name @AutoClasses.
 
 HuggingFace supports a wide variety of code generation models#footnote[
-    More code generation models can be found in the #link("https://huggingface.co/spaces/bigcode/bigcode-models-leaderboard")[Bigcode models leaderboard]
+    More code generation models can be found in the Bigcode models leaderboard.\
+    #h(13pt) (https://huggingface.co/spaces/bigcode/bigcode-models-leaderboard)
 ]
 ], such as:
 - `codellama/CodeLlama-7b-Instruct-hf`,
@@ -276,16 +277,7 @@ Custom stopping criteria are defined by subclassing the `StoppingCriteria` class
 
 A subclass of `StoppingCriteria` only needs to implement the `__call__` method:
 #figure(
-  code(
-    lang: "Python",
-    ```python
-    __call__(
-        input_ids: torch.LongTensor,
-        scores: torch.FloatTensor,
-        **kwargs
-    ) -> bool
-    ```,
-  ),
+  codefile("/assets/code/huggingface_stopping_criteria.py"),
   caption: [Stopping criteria signature @UtilitiesGeneration],
 )<code:stopping_criteria>
 The method in @code:stopping_criteria returns whether the generation should be stopped, based on the previous token ids `input_ids` and the current `scores`. The method must support batching, as `input_ids` has the shape `(batch_size, sequence_length)` and `scores` the shape `(batch_size, vocab_size)` @UtilitiesGeneration.
@@ -296,16 +288,7 @@ The second control mechanism are the logits processors. Logits processors manipu
 Custom logits processors are defined by subclassing the `LogitsProcessor` class and adding an instance of the new class to the `logits_processor` list in the `generate` method.
 A subclass of `LogitsProcessor` only needs to implement the `__call__` method:
 #figure(
-  code(
-    lang: "Python",
-    ```python
-    __call__(
-        input_ids: torch.LongTensor,
-        scores: torch.FloatTensor,
-        **kwargs
-    ) -> torch.FloatTensor
-    ```,
-  ),
+  codefile("/assets/code/huggingface_logits_processor.py"),
   caption: [Logits processor signature @UtilitiesGeneration],
 )<code:logits_processor>
 The arguments in @code:logits_processor are identical to the arguments in @code:stopping_criteria. The method must return the manipulated logits, which have the same shape as the input `scores`.

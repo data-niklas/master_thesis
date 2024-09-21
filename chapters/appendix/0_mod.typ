@@ -19,12 +19,16 @@
 // torch.nn.functional
 
 == Language Server Protocol
-#columns(2)[
-  #figure(
-    csvtable("/assets/tables/lsp_language_ids.csv"),
-    caption: "Possible language ids defined in the LSP specification",
-  )<table:language_ids>
-]
+// #columns(2)[
+//   #figure(
+//     csvtable("/assets/tables/lsp_language_ids.csv"),
+//     caption: "Possible language ids defined in the LSP specification",
+//   )<table:language_ids>
+// ]
+#figure(
+  spread(2, has-header: true, csvtable("/assets/tables/lsp_language_ids.csv")),
+  caption: "Possible language ids defined in the LSP specification",
+)<table:language_ids>
 
 #figure(
   codefile("/assets/code/lsp_completion_item_kind.ts"),
