@@ -1,6 +1,16 @@
 #import "@preview/hydra:0.4.0": hydra
 #import "@preview/equate:0.2.0": equate
 
+#let hydra-header = context {
+  if calc.odd(here().page()) {
+    align(right, smallcaps(hydra(1, book: true)))
+  } else {
+    align(left, smallcaps(hydra(2, book: true)))
+  }
+  line(length: 100%)
+  counter(footnote).update(0)
+}
+
 #let link-style(print-mode, link-circle-exception-cb, doc) = {
   show link: it => {
     // Workaround for ctheorems package so that its labels keep the default link styling.
@@ -191,15 +201,7 @@
       top: 2.5cm,
       bottom: 2.5cm,
     ),
-    header: context {
-      if calc.odd(here().page()) {
-        align(right, smallcaps(hydra(1, book: true)))
-      } else {
-        align(left, smallcaps(hydra(2, book: true)))
-      }
-      line(length: 100%)
-      counter(footnote).update(0)
-    },
+    header: hydra-header,
   )
   set par(
     leading: 0.7em,

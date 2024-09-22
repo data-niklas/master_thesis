@@ -2,7 +2,7 @@
 #import "1_title_page.typ": title-page
 #import "2_i_did_not_cheat_i_swear.typ": i-did-not-cheat-i-swear
 #import "3_abstract.typ": show-abstract
-#import "styling.typ": style
+#import "styling.typ": style, hydra-header
 #import "generate_bib.typ": generate_bib_entry
 
 #import "@preview/codetastic:0.2.2": qrcode
@@ -131,7 +131,7 @@
   counter(heading).update(0)
 
   body
-  set page(header: none)
+  set page(header: hydra-header)
   counter(heading).update(0)
   set heading(numbering: none, outlined: true)
   show outline: it => {
@@ -174,6 +174,7 @@
   set figure(supplement: auto, placement: none)
   show figure.where(kind: table): set figure.caption(position: bottom)
   appendix
+  set page(header: none)
   pagebreak(weak: true)
   if thesis-repo != none {
     align(
