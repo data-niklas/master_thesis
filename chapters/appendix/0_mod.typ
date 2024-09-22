@@ -161,68 +161,77 @@
 #show figure: set block(breakable: true)
 
 #figure(
-  stats-table((
-    ("CodeLlama", codellama-baseline-stats),
+  stats-table(
+    show-total: false,
     (
-      "Magicoder",
-      magicoder-baseline-stats,
-    ),
-    (
-      "MistralHermes",
-      codestral-baseline-stats,
-    ),
-    (
-      "Copilot",
-      copilot,
-    ),
-    (
-      [Averaged w.o.\ Copilot],
-      average-stats((
-        default-baseline,
-        masking-baseline,
-        use-completions-baseline,
-      )),
-    ),
-    (
-      [Averaged],
-      average-stats((
-        default-baseline,
-        masking-baseline,
-        use-completions-baseline,
+      ("CodeLlama", codellama-baseline-stats),
+      (
+        "Magicoder",
+        magicoder-baseline-stats,
+      ),
+      (
+        "MistralHermes",
+        codestral-baseline-stats,
+      ),
+      (
+        "Copilot",
         copilot,
-      )),
+      ),
+      (
+        [Averaged w.o.\ Copilot],
+        average-stats((
+          default-baseline,
+          masking-baseline,
+          use-completions-baseline,
+        )),
+      ),
+      (
+        [Averaged],
+        average-stats((
+          default-baseline,
+          masking-baseline,
+          use-completions-baseline,
+          copilot,
+        )),
+      ),
     ),
-  )),
+  ),
   caption: [
     Overview over the baseline evaluation. The first three models are averaged due to the use of sampling.
   ],
 )<table:results:approach:baseline-stats>
 
 #figure(
-  stats-table((
-    ("Sampling", sampling-baseline),
-    ("No Sampling", no-sampling-baseline),
-    ("1 Beam", one-beam-baseline),
-    ("2 Beams", two-beams-baseline),
-    ("3 Beams", three-beams-baseline),
-  )),
+  stats-table(
+    show-total: false,
+    (
+      ("Sampling", sampling-baseline),
+      ("No Sampling", no-sampling-baseline),
+      ("1 Beam", one-beam-baseline),
+      ("2 Beams", two-beams-baseline),
+      ("3 Beams", three-beams-baseline),
+    ),
+  ),
   caption: [
     Overview over the baseline evaluation using different model configurations. Copilot is not considered.
   ],
 )<table:results:approach:baseline-stats-config>
 
 #figure(
-  stats-table((
-    ("Default", default-baseline),
+  stats-table(
+    show-total: false,
     (
-      "Masking",
-      masking-baseline,
+      ("Default", default-baseline),
+      (
+        "Masking",
+        masking-baseline,
+      ),
+      (
+        "Use Completions",
+        use-completions-baseline,
+      ),
     ),
-    (
-      "Use Completions",
-      use-completions-baseline,
-    ),
-  )),
+  ),
   caption: [
     Overview over the baseline evaluation using different approach configurations.
   ],
@@ -230,6 +239,7 @@
 
 #figure(
   stats-table(
+    show-total: false,
     all-stats.map(stat-with-name => (
       stat-with-name.at(0),
       stat-with-name.at(1).at(0),
@@ -308,3 +318,9 @@ The method `clear_meta_and_links` of the `Style` class in the rich library has t
   caption: [Signature of the `clear_meta_and_links` method],
 )<code:signature:clear_meta_and_links>
 As seen, the signature is not as expected, as the method is decorated with `@lru_cache`, which destroys the original signature @FunctoolsCacheDestroys.
+
+The code block @code:evaluation:invalid_copilot_pydantic displays how Copilot fails to complete the `pydantic_1` task (without the function docstring), even when the prompt contains guiding comments.
+#figure(
+  codefile("/assets/code/invalid_copilot_pydantic.py"),
+  caption: [Copilot unable to correctly complete the `pydantic_1` task, even with direct guiding comments in the prompt. The function call was completed.],
+)<code:evaluation:invalid_copilot_pydantic>

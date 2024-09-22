@@ -40,8 +40,6 @@ Lastly, the submodule `interrupts` contains the behavior for the different types
 
 The other files and submodules contain various types of utilities, fixes, and configurations needed to enable the approach and make it configurable for evaluation. The next sections will focus on the components introduced in @chapter:design:lsp and then continue on with important details on the various other files and submodules.
 
-#todo()[List all design components and classes in this section, to provide an overview]
-
 === Environment Separation
 The approach separates the runtime environment of the approach from the project environment, to prevent conflicts in dependencies.
 While e.g. the approach requires a specific version of the Transformers library, the project may also use Transformers, but a different version.
@@ -143,9 +141,10 @@ Configuring the behavior of the approach through the `LspGenerationConfig` objec
 Then the embeddings of the passed model and the vocabulary of tokenizer are initialized, by adding the special tokens needed for the #acr("IBMS").
 Additional special tokens are added to the tokenizer through the `add_special_tokens` method. Then the model embeddings are resized to match the new vocabulary size through the `resize_token_embeddings` method.
 
-Not every model has a padding token. As the approach relies on padding tokens to pad the token sequences, the initialization adds a custom padding token to the additional special tokens, if no padding token is present.
+Not every model has a padding token#footnote[
+ CodeLlama does not define a padding token @Tokenizer_configjsonCodellamaCodeLlama7bhf2023.
+]. As the approach relies on padding tokens to pad the token sequences, the initialization adds a custom padding token to the additional special tokens, if no padding token is present.
 In addition to adding the new padding token, the custom padding must be specified as the used padding token through the `pad_token_id` attribute of the tokenizer. The padding token id can be obtained from the tokenizer through the `convert_tokens_to_ids` method after adding the new token.
-#todo()[Reference codellama tokenizer -> llama2 tokenizer -> llama1 tokenizer -> sentencepiece implementation: https://arxiv.org/pdf/2307.09288, https://arxiv.org/pdf/1808.06226]
 
 The `Generator` performs two distinct types of explicit initialization: the general initialization and generation specific initialization.
 The general initialization creates objects upfront, which can be reused between neural code completions, as they do not depend on the input code.
@@ -436,7 +435,6 @@ To use the function in the `LSP Processor`, the import path of the value is cons
 As this function needs to be run in the project environment, the function is extracted into a separate file `venv_language_features.py`, which is then executed using the Python interpreter of the project environment. All variables are communicated via standard streams.
 As importing, starting many processes is slow, and the function is called repeatedly, the results are memoized using the `lru_cache` decorator.
 
-#todo[Talk about scope, so when can items be removed? in design]
 After splitting the items, each of the three interrupt types completion, deprecation and signature help checks if context needs to be inserted. Each of the three checks works similarly:
 #block(breakable: false)[
   1. If the interrupt type is disabled in the configuration, the check is skipped.
@@ -549,7 +547,6 @@ The implementation of the base class is shown in @code:interrupt_type:
 )<code:interrupt_type>
 
 As can be seen in @code:interrupt_type, each subclass must provide a (unique) type name through the method `type_name`, and must be able to create a comment, given a context and a `CodeUtil` instance.
-#todo[Define process from retrieval, context, comment, prompt clearly]
 The created comment is optional. In the case that no comment is returned, the `PromptState` will remove previous comments as described in the previous section.
 
 In the case of the "completion", the created comment will have the following structure:

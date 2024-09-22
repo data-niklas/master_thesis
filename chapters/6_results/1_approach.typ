@@ -18,6 +18,7 @@ As can be seen, there is a need for the approach to transform the $28.8%$ partia
 
 To note is that Magicoder and MistralHermes perform more errors than CodeLlama and Copilot, but at the same time have less unsolved tasks.
 Possibly Magicoder and MistralHermes fail harder on some tasks.
+Additionally, code models fail to complete the correct solution, even when directly prompted. Copilot fails to use the correct method, even when supplied with a code comment stating otherwise (@code:evaluation:invalid_copilot_pydantic). This further shows why approaches only modifying the prompt do not suffice.
 
 #figure(
   stats-column-charts((

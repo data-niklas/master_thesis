@@ -235,10 +235,8 @@ the library is widely used and the change in April 2023, lots of publicly availa
 method. In addition, the standard library method `dict` is used similarly, making it hard to distinguish between
 the two.
 
-#todo()[Example copilot]
 // Consequently, all #acrpl("CLM") tested using this code entry could not complete the correct method, but instead are biased towards the method `dict`.
 // Even when specifying the name of the correct method, some #acrpl("")
-#todo()[Mention in evaluation that all LLMs cannot complete the pydantic example previously, cause biased]
 
 #figure(
   codefile("/assets/code/dataset/textual_1.py"),
