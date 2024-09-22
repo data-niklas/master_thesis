@@ -319,8 +319,8 @@ The method `clear_meta_and_links` of the `Style` class in the rich library has t
 )<code:signature:clear_meta_and_links>
 As seen, the signature is not as expected, as the method is decorated with `@lru_cache`, which destroys the original signature @FunctoolsCacheDestroys.
 
-The code block @code:evaluation:invalid_copilot_pydantic displays how Copilot fails to complete the `pydantic_1` task (without the function docstring), even when the prompt contains guiding comments.
+The code block @code:evaluation:invalid_copilot_pydantic displays how Copilot fails to complete the `pydantic_1` task, even when the prompt contains guiding comments.
 #figure(
   codefile("/assets/code/invalid_copilot_pydantic.py"),
-  caption: [Copilot unable to correctly complete the `pydantic_1` task, even with direct guiding comments in the prompt. The function call was completed.],
+  caption: [Copilot unable to correctly complete the `pydantic_1` task, even with direct guiding comments in the prompt. The function call was completed by Copilot.],
 )<code:evaluation:invalid_copilot_pydantic>

@@ -259,7 +259,7 @@
   )
 }
 
-#let stats-column-charts(results, diff: false, two-rows: false) = {
+#let stats-column-charts(results, diff: false, two-rows: false, width: none) = {
   cetz.canvas(
     {
       import cetz.chart
@@ -308,12 +308,17 @@
       }
       group(
         {
+          let chart-width = if width != none {
+            width
+          } else {
+            11 / 5 * results.len()
+          }
           chart.columnchart(
             stats,
             mode: "stacked",
             label-key: 0,
             value-key: value-keys,
-            size: (11 / 5 * results.len(), 3.8),
+            size: (chart-width, 3.8),
             bar-style: cetz.palette.new(colors: colors),
             y-label: [Task Completion $(%)$],
             x-label: "Tasks",

@@ -133,6 +133,7 @@ While a fully solved rate of up to $20%$ is more impressive, it is not sufficien
 
 #figure(
   stats-column-charts(
+    width: 9,
     all-stats.map(stat-with-name => (
       stat-with-name.at(0),
       stat-with-name.at(1).at(0),
@@ -317,7 +318,7 @@ When looking at different configurations again, it becomes clear that limiting t
 There are several cases where using the approach led to a model confusion. The following four examples show different types of confusions occuring:
 
 // '...' is a fill value for unneeded parameters
-In the first example @figure:correct_approach_wrong_code_pydantic_1, the approach guides the generation towards the correct method `model_dump`. The error lies in the uneeded parameter `by_alias`, with the wrong value `...`. As can be seen in the signature of `model_dump`(@code:signature:model_dump), the parameter `by_alias` accepts a boolean. The completed code uses the wrong value, the ellipsis constant.
+In the first example @figure:correct_approach_wrong_code_pydantic_1, the approach guides the generation towards the correct method `model_dump`. The error lies in the uneeded parameter `by_alias`, with the wrong value "`...`". As can be seen in the signature of `model_dump` (@code:signature:model_dump), the parameter `by_alias` accepts a boolean. The completed code uses the wrong value, the ellipsis constant.
 #figure(
   codefile("/assets/code/correct_approach_wrong_code_pydantic_1.py"),
   caption: [
