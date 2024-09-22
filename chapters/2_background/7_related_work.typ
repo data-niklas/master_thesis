@@ -213,7 +213,7 @@ While this is a great basis for further works, it fails to address the issue of 
 When guiding the model towards an attribute of a type, no distinction is made between deprecated and non-deprecated attributes.
 This leads to models generating code using deprecated attributes.
 
-Additionally, the scope of retrieved information is limited. By using a constraint based guided generation, modifying logits, embedding information such as docstrings is hard.
+Additionally, the scope of retrieved information is limited. By using a constraint-based guided generation, modifying logits, embedding information such as docstrings is hard.
 Simple guidance with little state between generated tokens is feasible, but shifting logit scores based on docstrings is not.
 As shown before, guiding the model using docstrings is more easily done through the prompt.
 A hybrid approach could leverage a language server to integrate textual information into the prompt, then further guide the model during generation using other context.

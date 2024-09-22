@@ -30,11 +30,13 @@
   caption: "Possible language ids defined in the LSP specification",
 )<table:language_ids>
 
+#pagebreak(weak: true)
 #figure(
   codefile("/assets/code/lsp_completion_item_kind.ts"),
   caption: "CompletionItemKind enum",
 )<code:completion_item_kind>
 
+#pagebreak(weak: true)
 == DependencyEval Dataset
 === Schema
 #let schema-code = raw(
@@ -154,6 +156,7 @@
   caption: [Task: `tsv2py_1.py`],
 )<code:dataset:task:tsv2py_1>
 
+#pagebreak(weak: true)
 == Evaluation Result Tables
 #show figure: set block(breakable: true)
 
@@ -284,6 +287,7 @@
 //   ],
 // )<table:results:approach:diff-all-stats-all>
 //
+#pagebreak(weak: true)
 == Evaluation Result Details
 The following code snippets contain signature help information on different functions used in tasks from the DependencyEval dataset.
 The Pydantic `model_dump` method has the following signature:

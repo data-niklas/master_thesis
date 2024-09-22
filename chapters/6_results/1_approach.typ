@@ -12,7 +12,7 @@
 ==== *RQ1.1* In which scenarios does regular code completion fail to use dependencies correctly?
 // --------- Models ---------------
 @plot:results:approach:baseline-stats displays the average completion rate using the baseline (approach is disabled).
-The three models CodeLlama, MistralHermes and Magicoder are able to solve $34.52%$ of the tasks in a traditional sense (fully- + partially solved). When considering the used approach of the model, now only $6%$ are solved (fully solved).
+The three models CodeLlama, MistralHermes and Magicoder are able to solve $34.52%$ of the tasks in a traditional sense (fully and partially solved). When considering the used approach of the model, now only $6%$ are solved (fully solved).
 In comparison, Copilot is the superior baseline model, solving $52%$ in a traditional sense and still solving $8%$ when considering the approach.
 As can be seen, there is a need for the approach to transform the $28.8%$ partially solved tasks (over all models) into fully solved tasks, by using the correct approach.
 
@@ -62,7 +62,7 @@ This paper notes that the high repetition penalty ($1.3$ for CodeLlama), combine
 )<plot:results:approach:baseline-stats-config>
 
 // ------------ Approach configurations -----------
-Next, @plot:results:approach:baseline-stats-approach-config compares the three approach configurations. Thankfully, as can be seen, the three configurations only display a neglegible difference.
+Next, @plot:results:approach:baseline-stats-approach-config compares the three approach configurations. As expected, the three configurations only display a negligible difference.
 As fully expected, the approach configuration does not affect the generation when the approach is disabled. Thus, the plot displays the average task completion over the baseline results, as the approach configuration should not affect the baseline.
 
 #figure(
@@ -96,14 +96,14 @@ As the baseline evaluations are able to solve the task consistently, it can be a
 
 The five other tasks feature recent (2024) changes. It is theoretisized that the baseline models solve these tasks due to their easily predictable result, due to e.g. the information found in the documentation string provided in each task, which is especially true for `bidict_2`.
 
-`dateutil_1` tests the behavior when facing changed import behavior. The recent modification in 2024 added lazy import of submodules. Submodules must not be explicitly imported, but can be imported implicitly through the base module. E.g.: `dateutil.tz` can be used by only importing `dateutil`.
+The task `dateutil_1` tests the behavior when facing changed import behavior. The recent modification in 2024 added lazy import of submodules. Submodules must not be explicitly imported, but can be imported implicitly through the base module. E.g.: `dateutil.tz` can be used by only importing `dateutil`.
 As other behavior around the task has not changed over time, the model baseline still solves the task in some cases, not explicitly importing the submodule.
 
 The next $60% (15)$ tasks (up and including `textual_2`) are not fully solved, but at least partially solved. These tasks mainly include tasks with recent deprecations. The baseline still predicts old behavior, passing the output correctness test, but failing the approach correctness test. A prime example are the `pydantic` examples, as introduced in previous chapters.
 
 The last group of tasks are never solved by the baseline. This group includes especially complex tasks that may require multiple steps, or completely unknown packages, that do not see a widespread use.
 The three models especially struggle with unknown dependencies, or unknown features in better known dependencies, such as `theflow_1` @code:dataset:task:theflow_1, `tsv2py_1` @code:dataset:task:theflow_1 and `sqlalchemy_1` @code:dataset:task:sqlalchemy_1.
-Tasks with recent deprecations in established dependencies are more easily solved, such as `pydantic` examples. The easiest tasks feature other changes, such as changes to imports and code changed in the father past.
+Tasks with recent deprecations in established dependencies are more easily solved, such as `pydantic` examples. The easiest tasks feature other changes, such as changes to imports and code changed in the further past.
 
 The first group of tasks fully solved by the baseline serve to check if the approach worsens the results. The second group of tasks partially solved by the baseline serve to check if the approach can improve the results. The last group of tasks never solved by the baseline serve to check if the approach can solve tasks that are not solvable by the baseline, and to find further interesting results.
 #figure(
@@ -166,7 +166,7 @@ The first table, @table:results:approach:diff-stats, shows the differences betwe
     ),
   ),
   caption: [
-    Effects of using different models for evaluation of the approach, compared against the baseline.
+    Effects of using different models for evaluation of the approach, compared to the baseline.
   ],
 )<table:results:approach:diff-stats>
 
@@ -305,7 +305,7 @@ These tasks seem to be unaffected due to their proportionally high difficulty, a
 The only outlier being `bidict_2`, which is one of the best performing tasks in the baseline, but is not improved by the approach. This task is likely to be too simple for the approach to improve, as the baseline already solves it consistently.
 // bidict_1, textual_2, emoji_1, sklearn_1, theflow_1, sqlalchemy_1, tsv2py_1, bidict_2
 
-The last group of tasks worsened by the approach mainly correspond to the some of the best performing baseline tasks. This is especially true for the `pytorch` tasks, with `pytorch_1` the main example.
+The last group of tasks worsened by the approach mainly correspond to some of the best performing baseline tasks. This is especially true for the `pytorch` tasks, with `pytorch_1` the main example.
 The conclusion is that the simpleness of the tasks is worsened by the approach, as the approach introduces additionaly complexity to the completion, which in some cases causes the generation to end in faulty code, where the model without the approach would not have been guided towards.
 
 // pick examples
@@ -453,7 +453,7 @@ When looking at error categories, unexpectedly, a large portion of errors are du
 In summary, some tasks like "theflow_1" in DependencyEval are very hard, leading to a $100%$ error rate in the baseline and approach. Additionally, the added complexity of the approach causes some simple tasks to fail, such as "pytorch_1". Next to such evaluation errors, the model Magicoder causes indentation errors when using greedy decoding. Additionally, the approach configuration "Use Completions" causes a high GPU usage, sometimes causing out of memory exceptions at runtime.
 
 === *RQ2* How does the approach handle different types of dependencies?
-To answer this questions, in particular the two subquestions #rq(2.1) and #rq(2.2), this section presents @table:results:approach:dependency-stats.
+To answer this question, in particular the two subquestions #rq(2.1) and #rq(2.2), this section presents @table:results:approach:dependency-stats.
 The table shows the size of the dependencies used in DependencyEval, as counted using pygount.
 The number of pure lines of code, comments and empty lines are counted. Additionally, the documentation percentage relative to the lines of code is calculated.
 
@@ -550,7 +550,7 @@ When using the "Use Completions" configuration, completion entry information is 
 While this configuration handles small to medium amounts of completion items, it fails for especially large amounts.
 
 In any case, all completion items are used to rerank the logits of the predicted next token in the logits processor. This approach has proven to handle any amounts of completion items in practice.
-In summary, the measured results an inconclusive, empirically obtained results are positive, but further complex testing is necessary.
+In summary, the measured results are inconclusive, empirically obtained results are positive, but further complex testing is necessary.
 
 === *RQ3* How well does the approach generalize to other languages?
 While the approach theoretically generalizes well to other languages, as it used the language independent #acr("LSP"), in practice there are many restrictions.

@@ -5,7 +5,7 @@
 // to customize this template and discover how it works.
 #show: project.with(
   title: "Interrupt-Guided Neural Code Completion with Static Analysis of Dependencies",
-  author: "Niklas Loeser",
+  author: "Niklas Henrik Loeser",
   print-mode: print-mode,
   // Insert your abstract after the colon, wrapped in brackets.
   // Example: `abstract: [This is my abstract...]`

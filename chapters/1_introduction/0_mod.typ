@@ -2,7 +2,7 @@
 = Introduction <introduction>
 // Code completion is
 Code completion provides code suggestions to developers extending their incomplete code.
-The suggestions used multimodal data sources to combine a variety of information.
+The suggestions use multimodal data sources to combine a variety of information.
 
 It is one of the most used productivity tools in #acrpl("IDE"). Every major #acr("IDE") from Visual Studio Code, Jetbrains #acrpl("IDE"), Eclipse, Neovim and Emacs with plugins supports code completion.
 // Shows methods, properties of objects including documentation

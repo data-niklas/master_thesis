@@ -152,15 +152,18 @@
     title: [List of Figures],
     target: figure.where(kind: image),
   )
+  pagebreak(weak: true)
   // TODO: remove bold text
   outline(
     title: [List of Tables],
     target: figure.where(kind: table),
   )
+  pagebreak(weak: true)
   outline(
     title: [List of Code],
     target: figure.where(kind: raw),
   )
+  pagebreak(weak: true)
   outline(
     title: [List of Examples],
     target: figure.where(kind: "example"),

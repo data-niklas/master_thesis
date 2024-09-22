@@ -99,7 +99,7 @@ $
     [_{"\<BOS\>", "The", "\_", "quick", "\_", "brown", "\_", "fox", "\_", "jumps"}_],
 
   ),
-  caption: [Natural language encoded into tokens and token ids using a word based vocabulary.],
+  caption: [Natural language encoded into tokens and token ids using a word-based vocabulary.],
 )<example:tokens>
 
 @example:tokens showcases the tokenization for the start of the famous English pangram. The token values correspond to the index in the given vocabulary.
