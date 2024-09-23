@@ -1,7 +1,7 @@
 #import "/utils.typ": *
 
 == Transformers Library <chapter:bg:transformers>
-Transformers is the name of the popular Python machine learning library developed by HuggingFace. It provides broad support for many different machine learning domains, such as computer vision, audio processing, multimodal models and *natural language processing* @Transformers.
+Transformers is the name of the popular Python machine learning library developed by HuggingFace. It provides broad support for many different machine learning domains, such as computer vision, audio processing, multimodal models and _natural language processing_ @Transformers.
 For each domain, the library enables simple training and inference of state-of-the-art models.
 The thesis heavily relies on functionality provided by this library, as it provides in-depth features to implement the more advanced features. It provides support for all techniques introduced in @chapter:bg:llms and @chapter:bg:text_generation @Transformers.
 
@@ -20,7 +20,6 @@ Instances of these classes are created through the `AutoClasses` abstraction. Th
 HuggingFace supports a wide variety of code generation models#footnote[
     More code generation models can be found in the Bigcode models leaderboard.\
     #h(13pt) (https://huggingface.co/spaces/bigcode/bigcode-models-leaderboard)
-]
 ], such as:
 - `codellama/CodeLlama-7b-Instruct-hf`,
 - `deepseek-ai/deepseek-coder-6.7b-instruct`,

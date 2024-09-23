@@ -403,7 +403,7 @@ To obtain the information if a signature help item is a builtin function, the si
 From the completion items, the following filters are applied:
 #block(breakable: false)[
   1. Remove builtin completion items.
-  2. Constrain completion items to relevant #link(label("code:completion_item_kind"), "Kinds").
+  2. Constrain completion items to relevant #link(label("code:completion_item_kind"), "kinds").
   3. Remove items from the current partial completion.
   4. Constrain to public items.
   5. Remove items which are already fully completed.
@@ -411,7 +411,7 @@ From the completion items, the following filters are applied:
 
 The steps are as described in @chapter:design:lsp. Most filtering steps are straightforward, as they only require fields directly present in the completion items, or simple string matching.
 The following minor details are required:
-- Builtins are recognized by matching the value `"builtins"` in the `detail` field..
+- Builtins are recognized by matching the value `"builtins"` in the `detail` field.
 - Private methods are recognized through the name starting with an underscore.
 
 ==== LSP Processor Interrupt Triggering.
@@ -469,8 +469,7 @@ For the reranking, the `LSP Processor` first applies a constant adjustment to th
 
 In contrast, `ensure_deprecated_below_non_deprecated` determines the minimum non-deprecated token score. Then any scores of deprecated token ids above the minimum are fixed to the delta value below the minimum, to ensure a gap of at least the delta.
 
-The masking is skipped if masking is disabled in the `LspGenerationConfig`. The implementation was adapted from the masked generation in Agrawal et al. @agrawalMonitorGuidedDecodingCode. For details see #link("https://github.com/microsoft/monitors4codegen/blob/022c65efb19cf6046d0b67960ca232ae7a351af4/src/monitors4codegen/monitor_guided_decoding/hf_gen.py#L30C15-L30C49", "their logits processor")
-#footnote[While the design of the strategy was developed independently of Agrawal et al, the implementation was retrofitted to support masked generation.].
+The masking is skipped if masking is disabled in the `LspGenerationConfig`. The implementation was adapted from the masked generation in Agrawal et al. @agrawalMonitorGuidedDecodingCode. For details see #link("https://github.com/microsoft/monitors4codegen/blob/022c65efb19cf6046d0b67960ca232ae7a351af4/src/monitors4codegen/monitor_guided_decoding/hf_gen.py#L30C15-L30C49", "their logits processor")#footnote[While the design of the strategy was developed independently of Agrawal et al, the implementation was retrofitted to support masked generation.].
 
 When an interrupt should occur, the score of the interrupt token is fixed to $1000.0$.
 This score was picked empirically, as all other observed scores were below $1000.0$ and it is unlikely for scores to be higher.
@@ -533,7 +532,7 @@ In practice this is not true. As investigated by Imgrund @imgrundLocatingEditing
 This especially affects this work when using CodeLlama in the following example:
 "#bos#inst" will be tokenized then detokenized to "#bos #inst".
 This affects every single generation and is a critical problem. Other issues were observed infrequently.
-To address this issues, the method `get_generated_code` first fixes the received prompt by applying several string replacements to fix the issues. It for example replaces "#bos " with "#bos".
+To address this issues, the method `get_generated_code` first fixes the received prompt by applying several string replacements to fix the issues. It e.g. replaces "#bos " with "#bos".
 
 === Interrupt Types
 The approach uses the two context sources completion items and signature help items to provide the three types of interrupts "completion", "deprecation" and "signature".

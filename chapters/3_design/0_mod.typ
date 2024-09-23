@@ -9,7 +9,7 @@ the thesis will propose a new approach to integrate high quality context into ne
 Lastly, a dataset is introduced to evaluate the effectiveness of the new approach.
 
 == Requirements <chapter:design:requirements>
-The general requirements of this thesis are derived from the motivation and goals, namely the approach of a `Copilot` like solution which has *full* knowledge of the local development environment.
+The general requirements of this thesis are derived from the motivation and goals, namely the approach of a `Copilot` like solution which has _full_ knowledge of the local development environment.
 
 The general requirements in descending order of importance are seen in @requirements.
 #figure(
@@ -40,11 +40,11 @@ In contrast, the approach does not work for dependencies which are either too ne
 The second option, in-context learning, allows the #acr("CLM") to dynamically learn a small subset of the dependency. The benefit of such a dynamic approach is that the #acr("CLM") has accurate knowledge of dependency knowledge previously unknown. The huge flaw is that the #acr("CLM") can only copy the developer, thus only achieving quality on par, but not above the developer.
 Additionally, the developer has to write the initial code, in which case the developer either misuses the dependency or already acquired knowledge of the dependency, in which case the #acr("CLM") cannot support him in that regard.
 
-1. The proposed approach shall provide neural code completions with a high accuracy, by always considering the *exact local development environment* and the full feature set of each dependency.
+1. The proposed approach shall provide neural code completions with a high accuracy, by always considering the _exact local development environment_ and the full feature set of each dependency.
 2. It shall differentiate between nuances of different versions of the same dependency.
 3. To enable diverse code completions, the approach shall be able to handle a wide range of dependencies, even if they have never been used in other public projects before.
 
-The second dependency accuracy requirement has the implication that the approach should follow (some) clean code practices. Dependencies use a "Deprecation" mechanism to gradually change features, without breaking dependent code directly by providing a time window, in which the code can be changed, before the old feature is removed or replaced.
+The second dependency accuracy requirement has the implication that the approach should follow (some) clean code practices. Dependencies use a "deprecation" mechanism to gradually change features, without breaking dependent code directly by providing a time window, in which the code can be changed, before the old feature is removed or replaced.
 By differentiating between nuances in different versions, the approach can suggest code which is future-proof and does not rely on deprecated features.
 The following different scenarios between dependency versions can be distinguished:
 1. The dependency has a new feature, which is not available in the old version.
@@ -52,10 +52,10 @@ The following different scenarios between dependency versions can be distinguish
 3. The dependency has a feature, which is not available in the new version.
 
 It should be noted, that local code bases are a special case of a dependency and should not be treated differently, as many different works do.
-Locally available code is also imported and used alongside remote dependencies. As such, the *scope* of this thesis includes prediction of all possible code.
+Locally available code is also imported and used alongside remote dependencies. As such, the _scope_ of this thesis includes prediction of all possible code.
 
 === General Correctness <r:2>
-The proposed approach builds upon other work to improve especially dependency handling in neural code completion. Still, the basic assumptions on code correctness should still stand.
+The proposed approach builds upon other works to improve especially dependency handling in neural code completion. Still, the basic assumptions on code correctness should still stand.
 In particular, the approach should suggest syntactically correct code.
 Additionally, the approach should suggest code that is functionally correct and solves the given task.
 
@@ -80,13 +80,13 @@ While the goal of this thesis is not to reduce the latency in neural code genera
 
 == Analysis <chapter:design:analysis>
 After introducing the five requirements in the previous section, this section will analyze the shortcomings of existing solutions in regard to the requirements. In particular, the analysis will focus on the work by Agrawal et al. @agrawalMonitorGuidedDecodingCode, as it is the most promising work.
-While this thesis has evolved without the knowledge of the work by Agrawal et al. and is not based on it, the general design choices are similar enough to show initial observations and design choices.
+While this thesis has evolved without the knowledge of the work by Agrawal et al. and is not based on it, the general design choices are similar enough to show initial observations and design choices. Additionally, the term #acr("MGD") is borrowed from that work, as it is a fitting name for the method it represents.
 
 === Monitor-Guided Decoding
 In short, the work by Agrawal et al. fulfills all requirements except the `Dependency Accuracy`, but is limited in scope when considering dependencies.
 
 By guiding the neural code completion selectively through the monitor, the approach improves upon the default code completion and fulfills the requirement of `General Correctness`.
-Meanwhile, the `Dependency Accuracy` is only partially fulfilled. The work takes an important step in using #acr("LSP"), as it enables retrieving context globally of the exact version of used dependencies.
+Meanwhile, the `Dependency Accuracy` is only partially fulfilled. The work takes an important step in using the #acr("LSP"), as it enables retrieving context globally of the exact version of used dependencies.
 As the work only guides the dereference operation and function arguments count, the approach does not consider changes between dependency versions, such as deprecated items.
 // second case does not work
 It cannot guide the model away from now deprecated features.
@@ -117,7 +117,7 @@ Furthermore, additional language features, such as signature completions, could 
 
 A full #acr("MGD") is not possible, due to deprecated completion items. A typical #acr("MGD") approach would keep the logits of completion item to guide the dereference operation, as seen in Agrawal et al., but mask other tokens.
 
-When combined with deprecated completion items, tokens of deprecated completion items would need to be masked, *while* tokens of non deprecated completion items would not be masked.
+When combined with deprecated completion items, tokens of deprecated completion items would need to be masked, _while_ tokens of non deprecated completion items would not be masked.
 The problem arises when deprecated and non deprecated completion items share the same prefix when represented as a token sequence. Now the same token would need masking and retaining.
 
 The thesis will thus propose an alternative approach, which enables the use of both types of information sources, by reranking logits of the #acr("CLM") locally in the monitor and globally by altering the prompt with injected information.

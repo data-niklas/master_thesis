@@ -99,7 +99,7 @@
     print-mode: print-mode,
   )
   set page(numbering: "I", number-align: center)
-  i-did-not-cheat-i-swear(author, print-mode)
+  i-did-not-cheat-i-swear(author, print-mode, date-of-submission)
   // set text(spacing: 150%) // Space text to make it readable (\onehalfspacing)
   // // Apparently in LaTeX the spacing is not applied to the following elements
   // show footnote: set text(spacing: 100%)
@@ -173,6 +173,14 @@
   pagebreak(weak: true)
   set figure(supplement: auto, placement: none)
   show figure.where(kind: table): set figure.caption(position: bottom)
+  set heading(
+    numbering: (..nums) => if nums.pos().len() < 2 {
+      none
+    } else {
+      numbering("A", nums.pos().at(1))
+    },
+    outlined: true,
+  )
   appendix
   set page(header: none)
   pagebreak(weak: true)

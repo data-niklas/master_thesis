@@ -157,7 +157,7 @@ This trick enables running the neural code completion inside the exact environme
 
 Similar to before, `eval_prompt.py` suppressed the standard output, as it prints the completed code into the standard output.
 
-Isolating the generation from the evaluation pipeline process increases the robustness, which is vital as the pipeline may run for several hours. Ff the generation should fail due to out of memory issues, issues in the communication with the language server or other places, the evaluation pipeline can resume.
+Isolating the generation from the evaluation pipeline process increases the robustness, which is vital as the pipeline may run for several hours. If the generation should fail due to out of memory issues, issues in the communication with the language server or other places, the evaluation pipeline can resume.
 
 === Code Evaluation Sandbox
 To securely evaluate foreign code, a special evaluation sandbox is created using Docker.

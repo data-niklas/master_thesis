@@ -9,7 +9,7 @@ These multi-line completions reduce the need to write boilerplate code further, 
 
 // Copilot and other models
 // Typical code completion uses static analysis through language servers
-While typical code completion tools use static analysis to provide completions, neural code completion tools use causal language models trained on code to predict the next tokens.
+While typical code completion tools use static analysis to provide completions, neural code completion tools use #acrpl("CLM") trained on code to predict the next tokens.
 // neural code completion uses causal language models trained on code to predict the next tokens
 // can predict more than just a symbol
 // accepted and changed, as they are used as a starting point / used as example

@@ -66,7 +66,7 @@ Several strategies will be introduced in the next section.
 // problem of vocabulary:
 A problem in language modeling is the vocabulary size.
 While the vocabulary $V$ of a #acr("CLM") is fixed, the number of possible words in a language is infinite. Languages change frequently, with old words falling out of use and new words emerging.
-Prominent examples include teenage slang, technical terms, and word combinations.
+Prominent examples include teenage slang, technical terms, and word combinations @WeAdded690.
 Using a fixed vocabulary comprised of words makes it impossible to model the language accurately.
 In contrast, using a vocabulary at the character level is not feasible, as many eastern languages feature thousands of characters. Additionally, encoding a sentence of a western language into characters would require a sequence of many vocabulary "words".
 The solution lies in-between, using sub-word fragments as vocabulary items.
@@ -115,5 +115,5 @@ Especially vital to modern language models is the decomposition of the probabili
 This enables easy unsupervised training through the following learning objective: maximize the likelihood of the next word given the previous words over the corpus.
 To increase the stability of the training, the log-likelihood is maximized instead of the likelihood @radfordImprovingLanguageUnderstanding @radfordLanguageModelsAre:
 $
-  "argmax"_theta sum_(i=1)^n log P_theta(w_i|w_1...w_(i-1)).
+  "argmax"_theta sum_(i=1)^n log P_theta (w_i|w_1...w_(i-1)).
 $

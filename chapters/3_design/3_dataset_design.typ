@@ -55,13 +55,13 @@ The third requirement is pertaining to the type of collected code snippets. To e
 dependencies, the dataset requires examples of changing dependencies.
 
 As noted in #r(1), there are three scenarios for dependency changes:
-1. A feature is added to a dependency
-2. An old deprecated feature is removed or changed in a dependency
-3. A feature is removed in a dependency
+1. A feature is added to a dependency.
+2. An old deprecated feature is removed or changed in a dependency.
+3. A feature is removed in a dependency.
 
 In addition, the included examples should cover the following other scenarios listed in #r(1):
-4. A widely unknown dependency is used
-5. A dependency with a widely unknown feature is used
+4. A widely unknown dependency is used.
+5. A dependency with a widely unknown feature is used.
 
 The last two scenarios cover the case that the number of examples of the dependency or the specific feature in the
 training dataset of a #acr("CLM") are too low to be learned correctly.
@@ -116,6 +116,8 @@ rigorous evaluation framework and includes `MBPP+` and `HumanEval+`, which exten
 further tests. It lacks the exact same issues, as it only uses a reliability guard for execution and the fundamental
 data for testing is similar @liuYourCodeGenerated.
 
+// Added pagebreak for readability
+#pagebreak(weak: true)
 ==== ClassEval.
 `ClassEval` is the first dataset containing Python tests at the class-eval. It contains 100 tasks, each with a class and
 about 33.1 test cases per class. In contrast to previous datasets, `ClassEval` explicitly mentions the use of different
@@ -186,8 +188,8 @@ of the function to be executed (`entry_point`), why, when and where the code sni
 contains the date the dependency was modified, enabling e.g. quick analysis of if the code snippet could be contained in
 a training dataset. `changelog` is a direct link to the changelog of the dependency, detailing the change made. The "why"
 is stored in the `reason` field, detailing why the dependency and feature was used. This is one of:
-- `modification`: The dependency was recently changed
-- `uncommon`: The dependency is rarely used and most likely unknown to a model
+- `modification`: The dependency was recently changed.
+- `uncommon`: The dependency is rarely used and most likely unknown to a model.
 
 The `kind` field contains the code kind targeted by the task, such as a changed `field`, `parameter`, `function`,
 `method` or `block`. The exact type of modification is stored in the `modification_kind` field, such as `addition`,

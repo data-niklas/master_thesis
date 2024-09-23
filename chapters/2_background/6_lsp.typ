@@ -13,13 +13,13 @@ Many modern editors and #acrpl("IDE") provide features such as:
 This list is not exhaustive, and the features between different editors may vary. These features are vital for any programmer, as the effort to create and maintain code is significantly reduced. Navigating large code bases and finding documentation on used code is highly beneficial.
 
 // High effort
-These many features take a significant effort to implement for a *single* programming language and editor. Providing support for several programming languages massively increases the implementation effort. In addition, the created features must be maintained next to the editor itself. As more programming languages are designed and adopted, the need for tooling for these programming languages arises. Editor maintainers must then integrate these features for the new programming language.
+These many features take a significant effort to implement for a _single_ programming language and editor. Providing support for several programming languages massively increases the implementation effort. In addition, the created features must be maintained next to the editor itself. As more programming languages are designed and adopted, the need for tooling for these programming languages arises. Editor maintainers must then integrate these features for the new programming language.
 // Example Rust a few years ago, zig now, koka in the feature, crystal, ...
 
 Providing support for an ever-increasing amount of programming languages is hard, but supporting these features for an ever-increasing amount of programming languages in every editor is impossible. Many diverse editors exist, such as Emacs @GNUEmacsGNU @LSPModeLanguage, VSCode @VisualStudioCode @LanguageServerExtension, Neovim (modern fork of Vim) @HomeNeovim @LspNeovimDocs, Zed (the successor of Atom) @ZedCodeSpeed @AddingNewLanguages, Jetbrains #acrpl("IDE") @JetBrainsIDEsEnjoy @LanguageServerProtocol, Helix @HelixeditorHelix2024 @LanguageSupport and many more.
 // TODO: reference every editor
 
-Thus, a solution is needed to extract the *common* features from the editors and provide them centrally, such that every editor need only implement an interface to integrate the common features.
+Thus, a solution is needed to extract the _common_ features from the editors and provide them centrally, such that every editor need only implement an interface to integrate the common features.
 The #acrl("LSP") is an effort to standardize a common feature set for programming language tooling for use in #acrpl("IDE"). The protocol was designed my Microsoft for use in its Visual Studio Code editor, but is now an open standard. This thesis will focus on version `3.17` of the protocol. The protocol includes many different features, of which the following sections introduce a few important. The full specification may be accessed #link("https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#languageFeatures")[here] @Specification.
 
 === Design Principles
@@ -193,13 +193,13 @@ Further details on the lifecycle and document synchronization messages can be fo
 
 === Language Features
 This section displays messages to query language features. The #acr("LSP") specification defines many different features, of which this section highlights the few relevant ones:
-- Auto-Completion
-- Signature help
-- Provide diagnostics data on the current file
+- Auto-Completion,
+- Signature help,
+- Provide diagnostics data on the current file.
 
 // Completion
 The auto-completion feature provides a list of completion items for a given position in a document. The completion items can be selected to provide more detailed information. On applying the selected completion item, the completion text is inserted into the document at the given position.
-The feature is split into the two messages `textDocument/completion` and `completionItem/resolve`.The first message queries the completion items for the given position in a text document. Each completion item only contains basic information. If further details are required, the second message `completionItem/resolve` asks the server to extend a single completion item with in depth details.
+The feature is split into the two messages `textDocument/completion` and `completionItem/resolve`. The first message queries the completion items for the given position in a text document. Each completion item only contains basic information. If further details are required, the second message `completionItem/resolve` asks the server to extend a single completion item with in depth details.
 
 #figure(
   codefile("/assets/code/lsp_completion_item.ts"),

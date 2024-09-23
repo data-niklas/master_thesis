@@ -47,7 +47,7 @@ The first group focuses on improving the training process itself, to enhance fut
 
 The second group of papers embed additional context into the prompt, modifying the generation externally. This often leads to a simpler integration, allowing the approach to be used with even cloud-based model offerings, where there is almost no control over the generation.
 
-Other papers modify the logits during the generation itself, increasing the flexibility even furthe, but integrating into the generation even tighter. This group can rarely be used with cloud-based model offerings, but is powerful due to the high level of control.
+Other papers modify the logits during the generation itself, increasing the flexibility even further, but integrating into the generation even tighter. This group can rarely be used with cloud-based model offerings, but is powerful due to the high level of control.
 The following sections describe prior works, grouped into these three groups. Beforehand, an introductory work is presented.
 
 === Introductory related work
@@ -106,7 +106,7 @@ Sites such as DevDocs may include additional documentation over regular document
 
 //
 The downside of DocPrompting is that official code documentation of dependencies is used indirectly. Instead of directly retrieving documentation of dependencies, it is sourced elsewhere. The sources must be kept up-to-date. Additionally, the paper only aims for the latest documentation, not considering scenarios in which models work on legacy code bases. Using embeddings of documentation, it is hard to distinguish between different versions of the same code documentation.
-The next downside is that searching for relevant documentation is based on the current prompt and not incomplete code during generation. The model is not provided with the information it requires *during* generation, but with information it may require due to the input.
+The next downside is that searching for relevant documentation is based on the current prompt and not incomplete code during generation. The model is not provided with the information it requires _during_ generation, but with information it may require due to the input.
 This problem will now be referred to as the "context retrieval problem".
 
 The issue is that such information is unknown before the first generation. This leads to more complex multi-step generation approaches, or even approaches controlling the model during generation.
@@ -136,7 +136,7 @@ The downside of such a work is clear. As the index only considers repository fil
 Only the persistent core project files are considered project files.
 This excludes temporary project environment directories, such as `node_modules` or `venv` directories.
 ], no other dependencies are indexed. Thus, RepoCoder cannot provide relevant context on a specific version of a dependency.
-Additionally, the solution to the "context retrieval problem" is slow, as multiple iterations are needed, to arrive at a satisfactory code solution.
+Additionally, the solution to the "context retrieval problem" is slow, as multiple iterations are needed to arrive at a satisfactory code solution.
 As before, the upside is that by integrating the model generation into a wider strategy, this work can be used with cloud-based model providers.
 
 // TODO: note that authors bash static analysis
@@ -175,7 +175,7 @@ Enhancing LLM-Based Coding Tools through Native Integration of IDE-Derived Stati
 The last work is IDECoder by Li et al. @liEnhancingLLMBasedCoding2024.
 Compared to previous works, the authors identify that such #acr("RAG") approaches suffer from too many returned results and proper filtering is necessary.
 The authors propose to use #acr("IDE")-native tooling to extract relevant information.
-This is the first work in this group to leverage #acr("LSP") to extract information from code.
+This is the first work in this group to leverage the #acr("LSP") to extract information from code.
 
 IDECoder uses a slightly different approach than the previous two works.
 The first difference is that static information is added to the initial prompt, such as docstrings, project paths, member functions, class attributes, etc., which are extracted from the project.
@@ -186,7 +186,7 @@ The assumption here is that relevant context has been found and only other error
 
 IDECoder showcases similar benefits as previous approaches. It can still be used with cloud-based model offerings, as the model is only used for generation. Additionally, high quality context information is used through language servers, even providing automated human feedback on the code.
 
-While the approach shows less downsides, it may still struggle when using specific versions of dependencies, as the approach requires the model to be trained on samples of the dependency. This is not sustainable and IDECoder does *not* use the language server to provide such accurate context information.
+While the approach shows less downsides, it may still struggle when using specific versions of dependencies, as the approach requires the model to be trained on samples of the dependency. This is not sustainable and IDECoder does _not_ use the language server to provide such accurate context information.
 
 === Logits manipulation-based related works
 
@@ -207,7 +207,7 @@ The proposed approach combines a generation hook with static analysis through la
 #acr("MGD") focuses on type-consistent object-dereferencing, guiding the model when generating a dereference operation on an object, such as accessing a member function or attribute.
 The generation is restricted to only allow available member functions or attributes of the type. Restriction occurs by modifying the logits of the current generation step.
 
-In contrast to previous approaches, this work is more complex. It uses both static analysis through a language server and operating during the generation itself. While this increases the overall complexity, it achieves higher speeds while accurately pinpointing relevant context. Using the language server even enables the model to generate type-consistent object-dereferences for types of any source, such as third-party dependencies @agrawalMonitorGuidedDecodingCode.
+In contrast to previous approaches, this work is more complex. It uses both static analysis through a language server and is operating during the generation itself. While this increases the overall complexity, it achieves higher speeds while accurately pinpointing relevant context. Using the language server even enables the model to generate type-consistent object-dereferences for types of any source, such as third-party dependencies @agrawalMonitorGuidedDecodingCode.
 #acr("MGD") is the first listed approach to correctly provide accurate context information for third-party dependencies.
 While this is a great basis for further works, it fails to address the issue of code versioning, such as deprecated functions.
 When guiding the model towards an attribute of a type, no distinction is made between deprecated and non-deprecated attributes.

@@ -62,7 +62,7 @@ The first main component is the `Generator`. It is the main component initializi
 It in turn will initialize the `Monitor`, the `Prompt Editor` and a connection to external `Static Analysis` tooling.
 
 In addition, it will initialize the tokenizer and model, adding a custom special token to the vocabulary of the tokenizer and resize the model embeddings to fit the new special token.
-The new special token is called the interrupt token and only be used during the approach. No further training with the token is necessary, as the model will not need to predict the tokens, as the `Monitor` component will force the prediction of the interrupt token.
+The new special token is called the interrupt token and is only used during the approach. No further training with the token is necessary, as the model will not need to predict the tokens, as the `Monitor` component will force the prediction of the interrupt token.
 
 The `Generator` will start the model generation process, providing the initial prompt to the model. After the model finishes the whole generation, it will check the final token.
 If the final token is *not* an interrupt token, the generation process finished normally and the final generation result can be obtained by removing any remaining injected context through the `Prompt Editor`.
@@ -116,7 +116,7 @@ The design mentioned in the previous section uses multiple model generation step
 This is similar to a typical multi-step meta-strategy, but with the difference that no major changes are made to the prompt.
 Each prompt to the model is an edited version of the previous prompt, with the only difference being the injected context.
 
-Moreover, the strategy has a tighter control over the model generation, through the use of the interrupt token *and* support for model generation strategies.
+Moreover, the strategy has a tighter control over the model generation, through the use of the interrupt token _and_ support for model generation strategies.
 The previous section simplified the resumption of the model generation behavior, suggesting that the model generation can be resumed directly after interruption and context injection.
 This is the case for simple decoding strategies like greedy decoding, which generate on a single sequence.
 
@@ -124,7 +124,7 @@ Complex decoding strategies like beam search require complex handling, as they o
 At the start of a typical generation process using beam search, firstly $k$ hypothesis of the input prompt are initialized.
 Then the generation process is started, with each hypothesis predicting the next token to form $k*V$ combinations, of which the top-k combinations are kept.
 
-When the stop condition is met, the *singular* top hypothesis is selected as the generation result.
+When the stop condition is met, the _singular_ top hypothesis is selected as the generation result.
 The `Generator` must ensure that the interrupted generation returns the current top-k hypothesis and is resumed with the edited top-k hypothesis.
 
 To support complex decoding strategies, the `Generator` must use an edited model generation loop, that can store all sequences currently in the generation process and which can resume the generation process with existing sequences.

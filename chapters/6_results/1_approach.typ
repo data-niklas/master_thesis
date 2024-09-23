@@ -353,8 +353,7 @@ This can be explained by the method being decorated with `@lru_cache`, which pro
 
 #figure(
   codefile("/assets/code/correct_approach_wrong_code_rich_1.py"),
-  caption: [
-    Example of the approach confusing the model to use invalid parameters for a method. The approach guided the generation towards the correct method `clear_meta_and_links`, but was confused by the method signature.
+  caption: [Example of the approach confusing the model to use invalid parameters for a method. The approach guided the generation towards the correct method `clear_meta_and_links`, but was confused by the method signature.
   ],
 )<figure:correct_approach_wrong_code_rich_1>
 
@@ -452,7 +451,7 @@ When looking at error categories, unexpectedly, a large portion of errors are du
     )<table:evaluation-errors-card>]
 }
 
-In summary, some tasks like "theflow_1" in DependencyEval are very hard, leading to a $100%$ error rate in the baseline and approach. Additionally, the added complexity of the approach causes some simple tasks to fail, such as "pytorch_1". Next to such evaluation errors, the model Magicoder causes indentation errors when using greedy decoding. Additionally, the approach configuration "Use Completions" causes a high GPU usage, sometimes causing out of memory exceptions at runtime.
+In summary, some tasks like "theflow_1" in DependencyEval are very hard, leading to an $100%$ error rate in the baseline and approach. Additionally, the added complexity of the approach causes some simple tasks to fail, such as "pytorch_1". Next to such evaluation errors, the model Magicoder causes indentation errors when using greedy decoding. Additionally, the approach configuration "Use Completions" causes a high GPU usage, sometimes causing out of memory exceptions at runtime.
 
 === *RQ2* How does the approach handle different types of dependencies?
 To answer this question, in particular the two subquestions #rq(2.1) and #rq(2.2), this section presents @table:results:approach:dependency-stats.

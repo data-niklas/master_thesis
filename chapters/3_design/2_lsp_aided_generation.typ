@@ -13,7 +13,7 @@ Finally, it will detail the design decisions made for the components.
 The key thought guiding the work is:
 #thought()[
   Developers base their decisions on contextual information provided by the #acr("LSP") server.
-  \ Why can't the neural code completion do the same?
+  \ Why can the neural code completion not do the same?
 ]
 
 // Developers base their decisions on contextual information provided by the #acr("LSP") server.
@@ -21,9 +21,9 @@ The key thought guiding the work is:
 Developers use a wide variety of tools to guide their programming decisions. Code completion is the most frequently used tool inside #acrpl("IDE") @amannStudyVisualStudio2016.
 It displays available symbols, their documentation and type information.
 Next to code completion, signature help is another important tool, as it displays available parameters of selected functions and their types, thus providing information about the structure of the data.
-Additionally, #acrpl("IDE") highlight the code with diagnostics information, such as important errors or warnings which may be ignored. The diagnostics information guide the developer to potential problems, such wrong symbols, or code smells, such as dead code.
+Additionally, #acrpl("IDE") highlight the code with diagnostics information, such as important errors or warnings which may be ignored. The diagnostics information guide the developer to potential problems, such as wrong symbols, code smells, or dead code.
 
-This approach aims to guide the #acr("CLM") using the same information sources as developers have access to. The analysis in @chapter:design:analysis already highlights the benefits of using a language server in combination with a #acr("MGD")-like strategy.
+This approach aims to guide the #acr("CLM") using the same information sources developers have access to. The analysis in @chapter:design:analysis already highlights the benefits of using a language server in combination with a #acr("MGD")-like strategy.
 @chapter:design:ibms provides insights into how these information sources can be integrated into a neural code completion model.
 
 The next observation is that the developer is provided with a vast amount of information, of which only a few select items are relevant. The approach must perform heavy filtering to provide only the relevant few items.
@@ -72,7 +72,7 @@ The autocompletion information is especially useful after the dereference operat
 The signature help information is useful after starting to write a function call, as then the available parameters are displayed.
 
 As tokenizers allow tokens with several characters, the vocabulary could include tokens that start with a trigger character, followed by any tail.
-For autocompletion, this could include tokens such as `.model`. For signature help, this could be a token such as `()`.
+For autocompletion, this could include tokens such as "`.model`". For signature help, this could be a token such as "`()`".
 By predicting these tokens, the completed code would "jump" over the critical trigger characters, thus ignoring the autocompletion or signature help information.
 
 The `Boundary Processor` fixes this issue by identifying all tokens prefixed with a trigger character and replacing these tokens with the trigger character only.
@@ -80,7 +80,7 @@ It ensures that the logits value of the trigger character is higher than any oth
 
 ==== Comments Processor.
 Next to the `Boundary Processor`, the `Comments Processor` solves an issue regarding the generation of comments. A possible place to inject the context is in the completed code, as a code comment.
-The problem is that a model could see the code comments after an interrupt and try to predict a code comment preceding the next code block. Thus, code comments could be tainted by the code prediction itself
+The problem is that a model could see the code comments after an interrupt and try to predict a code comment preceding the next code block. Thus, code comments could be tainted by the code prediction itself.
 The `Comments Processor` disallows the generation of code comments, by stopping the prediction of the token starting a code comment by setting the logits value to $-oo$.
 
 === Design Decisions
@@ -117,7 +117,7 @@ This leads to the need for a `Comments Processor` to suppress the generation of 
 // RQ2: 6. Remove signatures without parameters
 This section details the different processing steps for the retrieved completion items and signature help.
 Both sources provide critical information, but also a lot of irrelevant information not needed to decide on the next code piece.
-Such context pollutes the context window of #acr("CLM") and worsens the prediction quality. As such, preprocessing is needed to filter such data.
+Such context pollutes the context window of a #acr("CLM") and worsens the prediction quality. As such, preprocessing is needed to filter such data.
 
 // Allow only specific types (no snippets)
 // Remove builtins
@@ -142,14 +142,14 @@ To avoid the completion of already completed code, the to-be-inserted text is ch
 // Deprecation vs non-deprecation
 Then the completion items are split into two categories, the non-deprecated and the deprecated completion items. This differentiation allows later steps to guide the model towards non-deprecated items, while avoiding deprecated items.
 
-The model may be biased towards generating old deprecated code. To only focus on the deprecated items, which the model *may* predict, the deprecated items are finally filtered by the next predicted token id.
+The model may be biased towards generating old deprecated code. To only focus on the deprecated items, which the model _may_ predict, the deprecated items are finally filtered by the next predicted token id.
 // Filter deprecation by next token
 
 ==== Logits Manipulation.
 These design choices try to ramify the problem of overlapping tokens in deprecated and non-deprecated completion items. Instead of masking all token ids that are not a prefix of one of the completions items, this argues for the following:
-- Token ids that are a prefix of a completion item should be scored higher
-- Token ids that are a prefix of a deprecated completion item and a non-deprecated completion item should be scored lower
-- Other token ids should be masked
+- Token ids that are a prefix of a completion item should be scored higher.
+- Token ids that are a prefix of a deprecated completion item and a non-deprecated completion item should be scored lower.
+- Other token ids should be masked.
 
 The exact delta score is not specified by the design and is left to the implementation.
 

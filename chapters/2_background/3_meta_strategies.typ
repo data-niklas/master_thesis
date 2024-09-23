@@ -4,13 +4,13 @@
 #acrpl("CLM") suffer from many problems, such as outdated knowledge, insufficient knowledge and insufficient capabilities. Most of these problems can be addressed by fine-tuning the model on further data, such as up-to-date information.
 The problem with fine-tuning is the need for a large amount of up-to-date data, which might not exist yet. In addition, fine-tuning is resource intensive and must be performed continuously, to stay up-to-date.
 
-This section will showcase different ways to control the generation of the model, without the need to perform fine-tuning. The text generation is complex and there are many different strategies and components, which may be controlled. Guided generation will focus in strategies to control the prediction of a single next token id, while the chapter prompting strategies will focus on prompting techniques.
+This section will showcase different ways to control the generation of the model, without the need to perform fine-tuning. The text generation is complex and there are many different strategies and components, which may be controlled. Guided generation will focus on strategies to control the prediction of a single next token id, while the chapter prompting strategies will focus on prompting techniques.
 
 === Guided Generation <chapter:bg:guided_generation>
-The #acr("CLM") generates a text, by iteratively choosing the next token ids. The decision on which token ids is the next token id, depends on two factors, as discussed in @chapter:bg:llms. It depends on the logits produced through the raw next token prediction function $f_"rntpf"$ and a decoding strategy.
+The #acr("CLM") generates a text by iteratively choosing the next token ids. The decision on which token ids is the next token id depends on two factors, as discussed in @chapter:bg:llms. It depends on the logits produced through the raw next token prediction function $f_"rntpf"$ and a decoding strategy.
 Guided generation is a technique to modify the logits before the decoding strategy is applied. The logits are modified according to a set of domain specific rules. The rules not only have access to the current logits, but also to the previously generated text. This allows for complex rules.
 
-Consider the following example:
+Consider @example:guided_generation:
 #exampletext(caption: "Enforcing \"yes\" or \"no\" answers")[
   A model is tasked with answering a "yes" or "no" question. The model should only respond with either of both words, without discussing any details or making small talk.
 
@@ -18,7 +18,7 @@ Consider the following example:
 
   Given the prompt "Is the sun shining?" and the previous token ids of the token "Ye", the guided generation will set all logits to $-oo$, except for the token id of the token "s". In the next step only the #acr("EOS") token will be permitted.
   Thus, the model will respond with "Yes".
-]
+]<example:guided_generation>
 
 Guided generation has the benefit of allowing complex rules to be applied to the generation process, to allow a very tightly controlled generation.
 
@@ -30,7 +30,7 @@ Prompting strategies are a set of techniques to control the generation of the mo
 
 The simplest form of control through prompting is to add instructions to the prompt. Models will follow the instructions, if the model was trained on instructions in a similar format. So called "instruction fine-tuned models" were fine-tuned especially on instructions, to improve instruction following capabilities. Non instruction fine-tuned models can still follow instructions, but then the instructions must be chosen carefully.
 
-A useful instruction is to define the desired output format. For example, by specifying that the model should output the response in #acr("JSON") format or Markdown format, the model will use the specified format. Especially formats such as Markdown and #acr("JSON") are preferred, as they are common formats and thus the model performs especially well in these formats.
+A useful instruction is to define the desired output format. For example, by specifying that the model should output the response in #acr("JSON") format or Markdown format, the model will use the specified format. Especially formats such as Markdown and #acr("JSON") are preferred, as they are common formats and thus the model performs especially well on these formats.
 Specifying the desired format increases the predictability of the response, which allows automated processing of the response.
 Specifying to respond in an unknown format does not work. Steering the model does not raise the capabilities of the model, but raises the efficiency with which its capabilities are used.
 
@@ -69,13 +69,13 @@ In contrast to providing knowledge about a desired response format, *context inj
   ],
 )<example:context_injection>
 
-@example:context_injection demonstrates how adding information controls the response of the model. This technique is very powerful, but comes with two strong restrictions:
+@example:context_injection demonstrates how adding information controls the response of the model. This technique is very powerful, but comes with two strong restrictions (non exhaustive):
 1. Finding relevant context.
 2. Limited prompt size.
 
-The first restriction is that the injected context must first be found. This is a hard search problem, as the information must be retrieved *before* prompting, before the intent of the prompt is known yet. In @example:context_injection the task of the #acr("CLM") is question answering. Even though the general task is known, the software has no way to know the specific domain, such as "country capitals" beforehand.
+The first restriction is that the injected context must first be found. This is a hard search problem, as the information must be retrieved _before_ prompting, before the intent of the prompt is known yet. In @example:context_injection the task of the #acr("CLM") is question answering. Even though the general task is known, the software has no way to know the specific domain, such as "country capitals" beforehand.
 
-The second restriction is the limited prompt size. Models are only capable of focusing on a prompt of limited size. Thus, token space is precious and may not be wasted. Providing the model with an up-to-date version of Wikipedia for every prompt oversaturates the prompt size limit instantly. The injected context must be *targeted* and *relevant*. The more *targeted* the context is, the less tokens are used.
+The second restriction is the limited prompt size. Models are only capable of focusing on a prompt of limited size. Thus, token space is precious and may not be wasted. Providing the model with an up-to-date version of Wikipedia for every prompt oversaturates the prompt size limit instantly. The injected context must be _targeted_ and _relevant_. The more _targeted_ the context is, the fewer tokens are used.
 
 As finding relevant context is a hard problem, several steps are needed to search for the context. Searching for relevant context may even involve the output of another #acr("CLM"). Strategies that involve the model in a multi-step process are called meta-strategies. These strategies will be further discussed in the next section.
 
@@ -85,7 +85,7 @@ As finding relevant context is a hard problem, several steps are needed to searc
 Meta-strategies incorporate a model into an algorithm according to a wider strategy. These strategies shift the focus to viewing the #acrpl("CLM") as a building block to be used as needed. Several models with different strenghts could be combined into a meta-strategy.
 
 // Benefits
-Generally, the main benefits are ease of use and flexibility. Any model can easily be integrated into the meta-strategy and stay interchangeable. By combining several models into a multi-turn process, including external tooling, powerful behavior is possible.
+Generally, the main benefits are ease of use and flexibility. Any model can easily be integrated into the meta-strategy and is replaceable. By combining several models into a multi-turn process, including external tooling, powerful behavior is possible.
 
 In contrast, common drawbacks of meta-strategies are the added complexity towards the already complex text generation. In addition, calling models several times increases the runtime of the program, if used without care.
 
@@ -112,6 +112,6 @@ The Tree of Thoughts meta-strategy generalizes the thoughts into a tree structur
 By structuring the thoughts into a tree, common tree search algorithms can be applied to the problem. Various algorithms such as a breadth-first search or depth-first search can be applied @yaoTreeThoughtsDeliberate2023a.
 
 // Benefits
-In general, the Tree of Thoughts meta-strategy is more powerful than the Chain of Thoughts. It is a very powerful and flexible strategy, which even allows following thoughts and then backtracking @yaoTreeThoughtsDeliberate2023a.
+In general, the Tree of Thoughts meta-strategy is more powerful than Chain of Thoughts. It is a very powerful and flexible strategy, which even allows following thoughts and then backtracking @yaoTreeThoughtsDeliberate2023a.
 
 // TODO: details? math, drawbacks, images, examples

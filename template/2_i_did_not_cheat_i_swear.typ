@@ -1,4 +1,4 @@
-#let i-did-not-cheat-i-swear(name, print-mode) = context {
+#let i-did-not-cheat-i-swear(name, print-mode, submission-date) = context {
   set page(header: none, footer: none)
   set par(first-line-indent: 0pt, hanging-indent: 0pt)
   v(40pt)
@@ -9,7 +9,7 @@
     and wording to the printed version. I agree that this electronic version is being checked
     for plagiarism at the university using plagiarism software.]
   v(50pt)
-  [Heidelberg, the #datetime.today().display("[year]-[month]-[day]")]
+  [Heidelberg, the #submission-date.display("[year]-[month]-[day]")]
   v(15pt)
   line(length: 6cm, stroke: 0.02cm + black)
   name
