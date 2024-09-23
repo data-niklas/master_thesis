@@ -53,6 +53,7 @@
   bibliography-file: none,
   matriculation-number: "",
   date-of-submission: datetime.today(),
+  date-of-signature: datetime.today(),
   abstract-en: "",
   abstract-de: "",
   thesis-repo: none,
@@ -99,7 +100,7 @@
     print-mode: print-mode,
   )
   set page(numbering: "I", number-align: center)
-  i-did-not-cheat-i-swear(author, print-mode, date-of-submission)
+  i-did-not-cheat-i-swear(author, print-mode, date-of-signature)
   // set text(spacing: 150%) // Space text to make it readable (\onehalfspacing)
   // // Apparently in LaTeX the spacing is not applied to the following elements
   // show footnote: set text(spacing: 100%)
