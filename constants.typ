@@ -1,0 +1,7 @@
+#let title = "Interrupt-Guided Neural Code Completion with Static Analysis of Dependencies"
+#let author = "Niklas Henrik Loeser"
+#let matriculation-number = "3737339"
+#let supervisor = "Prof. Dr. Artur Andrzejak"
+#let thesis-repo = "https://github.com/data-niklas/master_thesis"
+#let bibliography-file = "/bibliography.bib"
+#let supervisor-link = "https://aip.ifi.uni-heidelberg.de/team/aa"

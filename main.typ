@@ -1,21 +1,22 @@
 #import "template/0_mod.typ": *
 #import "acronyms.typ": *
 #import "/utils.typ": print-mode
+#import "/constants.typ": *
 // Take a look at the file `template.typ` in the file panel
 // to customize this template and discover how it works.
 #show: project.with(
-  title: "Interrupt-Guided Neural Code Completion with Static Analysis of Dependencies",
-  author: "Niklas Henrik Loeser",
+title: title,
+author: author,
   print-mode: print-mode,
   // Insert your abstract after the colon, wrapped in brackets.
   // Example: `abstract: [This is my abstract...]`
   abstract-en: include "/chapters/0_abstract/en.typ",
   abstract-de: include "/chapters/0_abstract/de.typ",
   acronyms: acronyms,
-  bibliography-file: "/bibliography.bib",
-  matriculation-number: "3737339",
-  supervisor: "Prof. Dr. Artur Andrzejak",
-  supervisor-link: "https://aip.ifi.uni-heidelberg.de/team/aa",
+  bibliography-file: bibliography-file,
+  matriculation-number: matriculation-number,
+  supervisor: supervisor,
+  supervisor-link: supervisor-link,
   date-of-submission: datetime(
     year: 2024,
     month: 09,

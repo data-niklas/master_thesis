@@ -227,7 +227,7 @@
   )
 }
 
-#let codefile(file) = {
+#let codefile(file, create-link: true) = {
   let file_content = read(file).trim()
   let path_parts = file.split("/")
   let last_part = path_parts.at(path_parts.len() - 1)
@@ -252,10 +252,14 @@
     )
 
   }
-  link(
-    "https://data-niklas.github.io/master_thesis/#" + id,
-    body,
-  )
+  if create-link {
+    link(
+      "https://data-niklas.github.io/master_thesis/#" + id,
+      body,
+    )
+  } else {
+    body
+  }
 }
 
 #let sys = box(raw("<<SYS>>"))
