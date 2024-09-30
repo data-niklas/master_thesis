@@ -5,7 +5,7 @@
 #import "/template/styling.typ": link-style, figure-style
 #let acronyms = (
   "IBMS": "Interrupt-Based Meta-Strategy",
-  "LLM": "Large Language Model",
+  "CLM": "Causal Language Model",
   "MGD": "Monitor-Guided-Decoding",
 )
 
@@ -74,6 +74,7 @@
   set figure.caption(position: bottom)
   show figure.caption: set text(size: 18pt)
   show figure.caption: set par(leading: 0.5em)
+  show outline: set text(size: 0.8em)
   raw-math-style(doc)
 }
 #set heading(numbering: numbly("{1}.", default: "1.1"))
@@ -132,7 +133,6 @@
 )
 #set heading(numbering: "1.1")
 #show heading.where(level: 1): set heading(numbering: "1.")
-#set par(leading: 1.5em)
 
 #let nested-list-style(item) = {
   set par(leading: 0.8em)
@@ -151,13 +151,21 @@
 // --------- Content --------------
 #title-slide()
 #empty-slide(components.adaptive-columns(outline(indent: 1em, depth: 1)))
+#set par(leading: 1.5em)
 // nothing unusual
 = Introduction
+== Causal Language Models
+#image("/presentation/assets/causal-language-model.drawio.svg")
+- $V$: vocabulary of all tokens
+- token: subword, word, or character
+- $omega_1...omega_n; omega in V$: sequence of tokens (#sym.arrow.double text)
+- $p_1...p_(|V|); sum_(i=1)^(|V|) p_i = 1$: probability distribution over $V$
+
 == Motivation
-- #acrpl("LLM") help reduce writing boilerplate code
+- #acrpl("CLM") help reduce writing boilerplate code
 - Copilot is widely used
-- #acrpl("LLM") trained on data _until cut-off date_
-- #acrpl("LLM") have issues with changing dependencies
+- #acrpl("CLM") trained on data _until cut-off date_
+- #acrpl("CLM") have issues with changing dependencies
 
 == Problem Scenarios
 1. _Feature recently changed (deprecation)_
@@ -166,7 +174,17 @@
 4. Feature changed in any way, but not represented in training data
 // Focus on deprecation: changed attribute / changed method
 
-== Interlude: Example Pydantic 1
+== Interlude: Example Pydantic 1 - Copilot
+#figure(
+  highlight(
+    (22,),
+    max-width: true,
+    padding: 2pt,
+    codefile("/assets/code/invalid_copilot_pydantic.py", create-link: false),
+  ),
+  caption: [Invalid completion by Copilot, even when guided by code comments.],
+)
+== Interlude: Example Pydantic 1 - Solution
 #figure(
   highlight(
     (20,),
@@ -174,7 +192,7 @@
     padding: 2pt,
     codefile("/assets/code/dataset/pydantic_1.py", create-link: false),
   ),
-  caption: [Gold solution highlighted in purple.\ Copilot suggest the use of the deprecated method `dict()`.],
+  caption: [Gold solution highlighted in purple.],
 )
 
 == Goals
@@ -323,3 +341,5 @@
     title: none,
   )
 ]
+
+// TODO: save definition of phrases, such as causal language model
