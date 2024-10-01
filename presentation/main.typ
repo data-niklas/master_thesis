@@ -4,8 +4,8 @@
 #import "/utils.typ": *
 #import "/template/styling.typ": link-style, figure-style
 #let acronyms = (
-  "IBMS": "Interrupt-Based Meta-Strategy",
   "CLM": "Causal Language Model",
+  "IBMS": "Interrupt-Based Meta-Strategy",
   "MGD": "Monitor-Guided-Decoding",
 )
 
@@ -228,6 +228,12 @@
 
 2. Logit-based Approaches
 
+== Prompt Injection Works
+#image("/presentation/assets/causal-language-model-prompt.drawio.svg")
+
+== Logit-based Approaches
+#image("/presentation/assets/causal-language-model-logits.drawio.svg")
+
 == DocPrompting @zhouDocPromptingGeneratingCode2023
 - Key points
   - Single-step meta-strategy
@@ -252,8 +258,29 @@
   - Injection point: Once before generation into prompt
 
 - Benefits
+  - Full source code as context, including docstrings
+  - Bases retrieval on generated code
 
 - Limitations
+  - Slower due to multiple steps
+  - No retrieval from dependencies
+
+== Monitor-Guided-Decoding#footnote[
+Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
+] @agrawalMonitorGuidedDecodingCode
+- Key points
+  - Online monitoring / manipulation of token sequence
+  - Context source: IDE completion entries
+  - Retrieval process: Request language server
+  - Injection point: Next token probability distribution
+
+- Benefits
+  - Accurate context retrieval
+  - Low performance overhead
+
+- Limitations
+  - Injection of unstructured context (docstring) hard
+  - Only focuses on available code, should disallow deprecated code
 
 // #utils.slide-counter.update(1)
 
@@ -261,8 +288,59 @@
 // 2: where is context injected, how and for how long
 // 3: how much performance impact does it have
 = Interrupt-Based Meta-Strategy
-== Monitor-Guided-Decoding
-==
+== Goals
+- Online injection of context into the prompt (e.g. docstrings)
+- #sym.arrow.double Enable #acr("MGD") to inject unstructured context
+- Full resumption of generation after injection (do not regenerate current partial result#footnote(text(size: 14pt)[_Details massively simplified here_]))
+- #sym.arrow.double Support beam search decoding strategy
+
+== Approach
+- Add special "interruption" token to model / tokenizer
+- Stop generation on interrupt token
+- #acr("MGD") sets interrupt token when context available
+- Edit prompt with provided context (_location_ / _scope_)
+- Patched model generation to enable full resumption#footnote[To fully enable beam search decoding]
+
+== Example
+#{
+  show raw: set text(font: "New Computer Modern Mono", size: 15pt)
+  // Else texttt style text in normal backticks is too small
+  show raw.where(lang: none, block: false): set text(size: 16pt)
+  figure(
+  highlight(
+    (20,),
+    max-width: true, padding: 2pt, bg: color.hsv(240deg, 100%, 70%, 20%),
+    codefile("/presentation/assets/pydantic_ibms_1.py", create-link: false),
+  ),
+  // caption: [],
+)
+  figure(
+  highlight(
+    (24,),
+    max-width: true, padding: 2pt, bg: color.hsv(240deg, 100%, 70%, 20%),
+  highlight(
+    (20,21,22,23),
+    max-width: true,
+    padding: 2pt,
+    codefile("/presentation/assets/pydantic_ibms_2.py", create-link: false),
+  )),
+  // caption: [],
+)
+  figure(
+  highlight(
+    (20,),
+    max-width: true, padding: 2pt, bg: color.hsv(240deg, 100%, 70%, 20%),
+    codefile("/presentation/assets/pydantic_ibms_3.py", create-link: false),
+  ),
+  // caption: [],
+)
+
+}
+
+== Refresher: Key points
+- Inject context into the prompt "during" generation
+- #sym.arrow.double Low performance overhead
+- Applicable outside of code completion
 
 = Full Approach
 - Complexity lies in implementation, as many issues hinder stability
