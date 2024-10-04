@@ -1,0 +1,13 @@
+{
+  "task_name": "textual_1",
+  "package_dependencies": [
+    "textual==0.51.0"
+  ],
+  "reason": "The parameter tab_behavior was renamed",
+  "kind": "modification",
+  "date": "2024-02-15",
+  "code_kind": "parameter",
+  "modification_kind": "rename",
+  "changelog": "https://github.com/Textualize/textual/blob/v0.51.0/CHANGELOG.md",
+  "python_version": "3.8"
+}

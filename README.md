@@ -40,3 +40,6 @@ Then view the document `main.pdf` using a PDF viewer that supports reloading the
   - Place table contents in /assets/code/table_name.csv
   - Store the used file names in /assets/code/index.txt and /assets/table/index.txt so that the deployed page can automatically query the list of tables and code snippets
   - Show tables and code using `csvtable` and `codefile`, pointing to the file, the function will create a table or code block and link to the interactive snippet
+
+# Notes
+- The thesis was built using Typst `v0.11.1`. `v0.13` will introduce major breaking changes, probably breaking parts of the template!

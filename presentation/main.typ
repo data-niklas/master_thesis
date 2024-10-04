@@ -343,11 +343,66 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 - Applicable outside of code completion
 
 = Full Approach
-- Complexity lies in implementation, as many issues hinder stability
-- How to filter?
+== Key points
+- Hybrid approach using #acr("MGD") and #acr("IBMS")
+- Retrieve context from IDE tooling in real-time:
+  - Code completion entries
+  - Signature help
+- Downrank deprecated code completions
+- Uprank other code completions
+- #acr("IBMS") is main tool to guide model, prediction manipulation secondary
+
+== Overview
+#move(
+  image(
+    "/presentation/assets/causal-language-model-approach.drawio.svg",
+    width: 110%,
+  ),
+  dx: -5%,
+)
+
+// by combining the two, it gets the best of both worlds
+// performance of online monitoring and allows changing predictions ad-hoc
+// also bases context on current predictions
+// interruption enables fast prompt modification, injecting  context efficiently
+// difficulty lies in the implementation, to enable full support and opitimizations
 
 = Results
 == DependencyEval Dataset
+- Handcrafted dataset to evaluate the approach used by the model
+- 25 Python tasks with fully pinned code environments
+- Evaluation framework to evaluate approach
+- Captures tasks for different problem scenarios:
+  - Feature recently changed (deprecation)
+  - Feature recently added
+  - Feature recently removed
+  - Feature changed in any way, but not represented in training data
+
+\
+
+#figure(
+  highlight(
+    // (9, 18, 21, 22),
+    (),
+    max-width: true,
+    bg: color.hsv(340deg, 100%, 70%, 20%),
+    codefile("/presentation/assets/example_task.json", create-link: false),
+  ),
+  caption: [
+    Example dataset task entry. Other fields omitted for brevity.
+  ],
+)
+#figure(
+  highlight(
+  (),
+    // (9, 18, 21, 22),
+    max-width: true,
+    codefile("/presentation/assets/full_tests.py", create-link: false),
+  ),
+)
+
+// Issues: finding testable high quality tasks
+
 == Experiment Environment
 #table(
   columns: 2,
@@ -401,6 +456,19 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 - Could the evaluation have included tasks of the standard library?
 // yes, but Python std is slower moving than other areas
 // i.e.: look at c++ and its std library
+- What is the difference between multi-step meta-strategies and the #acr("IBMS")?
+- Which further enhancements would improve the approach?
+
+== Implementation difficulties
+1. Model generating unwanted tokens (repetitions; descriptive sentences after generating code)
+2. Runtime does not provide enough control over decoding internals
+3. _Beam search_:
+  - sequence reordering
+  - separate state for different sequences
+4. Detokenization not inverse of tokenization in practice
+5. Model ignoring injected context
+6. Use of different virtual environments
+7. Language servers not providing accurate deprecation information
 
 = One-Click-Demo™
 
