@@ -92,15 +92,26 @@
 // Similar to column, but sets a fixed height to force the element to use the columns
 #let spread(count, has-header: false, body) = context {
   let header-height = 0pt
+  let current-header-height = 0pt
   if has-header {
     let inner = body
     if inner.func() == link {
       inner = inner.body
     }
     let header = inner.children.at(0)
-    header-height = measure(table(header)).height
+    let header-width = measure(table(header)).width
+    let table-args = inner.fields()
+    let _ = table-args.remove("children")
+    current-header-height = measure(
+      table(..table-args, header),
+    ).height
+    header-height = measure(
+      box(width: header-width / count, table(..table-args, header)),
+    ).height
   }
-  let height = ((measure(body).height - header-height) / count) + header-height
+  let height = (
+    (measure(body).height - current-header-height) / count
+  ) + header-height
   box(
     columns(count, body),
     height: height,
@@ -303,6 +314,20 @@
     },
     ..bitems,
   )
+}
+
+#let modify(content, attribute, mapper, variadic: none) = {
+  let fields = content.fields()
+  fields.insert(attribute, mapper(content.at(attribute)))
+  if variadic != none {
+    let variadic-field = fields.remove(variadic)
+    content.func()(
+      ..fields,
+      ..variadic-field,
+    )
+  } else {
+    content.func()(..fields)
+  }
 }
 
 #let num-dataset = 25

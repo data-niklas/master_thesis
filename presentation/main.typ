@@ -2,6 +2,9 @@
 #import "@preview/numbly:0.1.0": numbly
 #import "/constants.typ": *
 #import "/utils.typ": *
+#import "/plot.typ": *
+#import "/eval.typ": *
+#import "/eval-values.typ": *
 #import "/template/styling.typ": link-style, figure-style
 #let acronyms = (
   "CLM": "Causal Language Model",
@@ -438,15 +441,174 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
   [11.8],
 )
 
-== Baseline Results
-- Fails to use dependencies in following cases:
-  - Pydantic
-  - Textual
-- Differences between configurations
-== Results using the Approach
-- Improves following situations
-- Differences between configurations
-== Issues with the Approach
+== Experiment Setup
+1. Models:
+  - Code Llama Instruct 7B (CodeLlama)
+  - Magicoder-S-DS 6.7B (Magicoder)
+  - MistalHermes-CodePro 7B (MistalHermes)
+  - Copilot (only for baseline)
+  - _(each for 6 different decoding strategies)_
+
+2. Baseline: Default model generation
+3. Approach: Use one of the three configurations:
+  - Default
+  - Masked
+  - Use completion
+
+== Baseline Results - Models
+#figure(
+  {
+    set text(size: 0.8em)
+    stats-column-charts(
+      width: 20,
+      height: 10,
+      (
+        ("CodeLlama", codellama-baseline-stats),
+        (
+          "Magicoder",
+          magicoder-baseline-stats,
+        ),
+        (
+          "MistralHermes",
+          codestral-baseline-stats,
+        ),
+        (
+          "Copilot",
+          copilot,
+        ),
+      ),
+    )
+  },
+  caption: [
+    Baseline results for different models.
+  ],
+)
+// Error: evaluation cannot be made, e.g.: fails due to syntax error
+// Allows distinguishing e.g.: GPU memory limit errors in later stages
+// Not solved: Evaluation proceeds and unit tests fail
+// Partially solved: Only the functional test passes (usually the approach correctness test is stricter)
+// fully solved: both tests pass
+== Baseline Results - Model configurations
+#figure(
+  {
+    set text(size: 0.8em)
+    stats-column-charts(
+      width: 20,
+      height: 10,
+      (
+        ("Sampling", sampling-baseline),
+        ("No Sampling", no-sampling-baseline),
+        ("1 Beam", one-beam-baseline),
+        ("2 Beams", two-beams-baseline),
+        ("3 Beams", three-beams-baseline),
+      ),
+    )
+  },
+  caption: [
+    Baseline results for different model configurations.
+  ],
+)
+// sampling finds more perfect solutions, but without sampling generally solutions are found more consistently
+// beam search performs better than greedy decoding (1 beam task)
+
+== Baseline Results - Task Scenarios
+#figure(
+  box(
+    width: 100%,
+    height: 75%,
+    context {
+      set text(size: 0.6em)
+      set par(leading: 0.5em)
+      let t = task-stats-table(
+        show-total: false,
+        get-task-stats(
+          all-results + (raw-copilot,),
+          key: "evaluated_code_vanilla",
+        ),
+      )
+      t = modify(
+        t,
+        "children",
+        children => {
+          children.insert(5 * 6, table.hline())
+          children.insert(5 * 19, table.hline())
+          children.insert(5 * 23, table.hline())
+          children.insert(5 * 25, table.hline())
+          children
+        },
+        variadic: "children",
+      )
+      set table.hline(stroke: 1.5pt + gray)
+      spread(2, has-header: true, t)
+    },
+  ),
+  caption: [
+    Baseline evaluation results for each task. The table is sorted from best to worst solved tasks. Copilot results are included.
+  ],
+)
+#pause
+#place(
+  top + left,
+  box(width: 60pt, height: 138pt, stroke: 2.5pt + fuchsia, []),
+  dx: 169pt,
+  dy: 37pt + 120pt,
+)
+#place(
+  top + left,
+  box(width: 60pt, height: 59pt, stroke: 2.5pt + fuchsia, []),
+  dx: 555pt,
+  dy: 38pt,
+)
+
+== Approach Results - Task Scenarios
+#figure(
+  box(
+    width: 110%,
+    height: 75%,
+    context {
+      set text(size: 0.6em)
+      set par(leading: 0.5em)
+      let t = task-stats-table(
+        diff: true,
+        show-total: false,
+        task-stats-diff(
+          get-task-stats(
+            all-results,
+            key: "evaluated_code_llm_lsp",
+          ),
+          get-task-stats(
+            all-results,
+            key: "evaluated_code_vanilla",
+          ),
+        ),
+      )
+      t = modify(
+        t,
+        "children",
+        children => {
+          children.insert(6 * 10, table.hline())
+          children.insert(6 * 12, table.hline())
+          children.insert(6 * 15, table.hline())
+          children.insert(6 * 25, table.hline())
+          children
+        },
+        variadic: "children",
+      )
+      set table.hline(stroke: 1.5pt + gray)
+      spread(2, has-header: true, t)
+    },
+  ),
+  caption: [
+    Baseline evaluation results for each task. The table is sorted from best to worst solved tasks. Copilot results are included.
+  ],
+)
+#pause
+#place(
+  top + left,
+  box(width: 58pt, height: 158pt, stroke: 2.5pt + fuchsia, []),
+  dx: 40pt,
+  dy: 38pt,
+)
 
 = Discussion
 - Which assumptions does the approach hold about the model?
@@ -458,6 +620,14 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 // i.e.: look at c++ and its std library
 - What is the difference between multi-step meta-strategies and the #acr("IBMS")?
 - Which further enhancements would improve the approach?
+- Which assumptions does the approach hold about the programming language?
+// - Language server support for the language
+// - Completion entries
+// - There is a deprecation mechanism (no mechanism is ok, but then the approach is less applicable)
+// - There is a dereference operator
+// CURRENT IMPLEMENTATION ASSUMPTIONS:
+// () for function calls
+// . for dereferencing
 
 == Implementation difficulties
 1. Model generating unwanted tokens (repetitions; descriptive sentences after generating code)
@@ -469,6 +639,81 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 5. Model ignoring injected context
 6. Use of different virtual environments
 7. Language servers not providing accurate deprecation information
+
+== Baseline Results - Best combinations
+#figure(
+  {
+    set text(size: 0.8em)
+    set par(leading: 0.5em)
+    stats-column-charts(
+      width: 18,
+      height: 9,
+      all-stats.map(stat-with-name => (
+        stat-with-name.at(0),
+        stat-with-name.at(1).at(0),
+      )).sorted(key: task-sorted-key).rev().slice(0, 3),
+    )
+  },
+  caption: [
+    Overview over the top 3 baseline configurations.
+  ],
+)
+
+== Approach Results - Best combinations
+#figure(
+  {
+    set text(size: 0.8em)
+    set par(leading: 0.5em)
+    stats-table(
+      show-total: false,
+      all-stats.map(stat-with-name => (
+        stat-with-name.at(0),
+        stat-with-name.at(1).at(2),
+      )).sorted(key: task-sorted-key).rev().slice(0, 3),
+      diff: true,
+    )
+  },
+  caption: [
+    Overview over the top 3 approach configurations.
+  ],
+)
+== Baseline Results - Worst combinations
+#figure(
+  {
+    set text(size: 0.8em)
+    set par(leading: 0.5em)
+    stats-column-charts(
+      width: 18,
+      height: 9,
+      all-stats.map(stat-with-name => (
+        stat-with-name.at(0),
+        stat-with-name.at(1).at(0),
+      )).sorted(key: task-sorted-key).slice(0, 3),
+    )
+  },
+  caption: [
+    Overview over the top 3 baseline configurations.
+  ],
+)
+
+== Approach Results - Worst combinations
+#figure(
+  {
+    set text(size: 0.8em)
+    set par(leading: 0.5em)
+    stats-table(
+      show-total: false,
+      all-stats.map(stat-with-name => (
+        stat-with-name.at(0),
+        stat-with-name.at(1).at(2),
+      )).sorted(key: task-sorted-key).slice(0, 3),
+      diff: true,
+    )
+  },
+  caption: [
+    Overview over the top 3 approach configurations.
+  ],
+)
 
 = One-Click-Demo™
 
