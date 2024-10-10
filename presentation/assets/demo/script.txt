@@ -1,0 +1,45 @@
+# prerequisites
+rm -r ~/demo
+deactivate
+deactivate
+mkdir -p demo/project
+cd demo
+clear
+
+```py
+from typing import Dict, Any
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    email: str
+    age: int
+
+def convert_user_to_dict(user: User) -> Dict[str, Any]:
+    """Convert the user into a Python dictionary.
+
+    Args:
+        user (User): Pydantic user model
+
+    Returns:
+        Dict[str, Any]: User attributes as a Python key value mapping
+    """
+``` => demo/project/pydantic_1.py
+
+# show info
+pwd
+nvidia-smi
+
+# runtime
+export CUDA_VISIBLE_DEVICES=0
+python -m venv runtime-env
+source runtime-env/bin/activate
+pip install git+https://github.com/data-niklas/llm-lsp/
+
+# project
+python -m venv project/venv
+export VIRTUAL_ENV=~/demo/project/venv/
+project/venv/bin/pip install pydantic==1.10
+python -m llm_lsp -f project/pydantic_1.py
+project/venv/bin/pip install pydantic==2.9
+python -m llm_lsp -f project/pydantic_1.py
