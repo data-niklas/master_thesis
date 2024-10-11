@@ -11,6 +11,13 @@
   "IBMS": "Interrupt-Based Meta-Strategy",
   "MGD": "Monitor-Guided-Decoding",
 )
+#let column-colors = (
+  "#57A58C",
+  "#7888AD",
+  "#D67853",
+  "#C475A6",
+).map(color.rgb)
+#let c(body) = align(horizon + center, body)
 
 #let print-mode = false
 
@@ -84,6 +91,40 @@
 
 #import themes.university: *
 
+#let new-section-slide(
+  level: 1,
+  numbered: true,
+  title,
+) = touying-slide-wrapper(self => {
+  let body = {
+    set align(horizon)
+
+    show: pad.with(22%)
+    set par(leading: 0.5em, hanging-indent: 1em)
+    set text(size: 1.5em, fill: self.colors.primary, weight: "bold")
+    stack(
+      dir: ttb,
+      spacing: .65em,
+      utils.display-current-heading(level: level, numbered: numbered),
+      block(
+        height: 2pt,
+        width: 100%,
+        spacing: 0pt,
+        components.progress-bar(
+          height: 2pt,
+          self.colors.primary,
+          self.colors.primary-light,
+        ),
+      ),
+    )
+  }
+  self = utils.merge-dicts(
+    self,
+    config-page(fill: self.colors.neutral-lightest),
+  )
+  touying-slide(self: self, body)
+})
+
 #let title-slide(..args) = touying-slide-wrapper(self => {
   let info = self.info + args.named()
   let body = {
@@ -126,6 +167,7 @@
 
 #show: university-theme.with(
   aspect-ratio: "16-9",
+  config-common(new-section-slide-fn: new-section-slide),
   config-info(
     title: title,
     subtitle: [Master Colloquium],
@@ -222,7 +264,11 @@
   - 25 Python tasks with fully pinned code environments
   - Evaluation framework to evaluate approach
 
-= Comparison to Related Work
+#{
+  set par(leading: 0.5em)
+  heading(depth: 1)[Comparison to Related Work]
+}
+
 == Categories of Related Work
 // 1. Training Improvement Works
 1. Prompt Injection Works
@@ -232,10 +278,25 @@
 2. Logit-based Approaches
 
 == Prompt Injection Works
-#image("/presentation/assets/causal-language-model-prompt.drawio.svg")
+#c(
+  figure(
+    image("/presentation/assets/causal-language-model-prompt.drawio.svg"),
+    caption: [
+      Additions to the causal language model to enable multi-step prompt injection.
+    ],
+  ),
+)
+// the power of hindsight to refine the prompt
 
 == Logit-based Approaches
-#image("/presentation/assets/causal-language-model-logits.drawio.svg")
+#c(
+  figure(
+    image("/presentation/assets/causal-language-model-logits.drawio.svg"),
+    caption: [
+      Additions to the causal language model to enable logit-based approaches.
+    ],
+  ),
+)
 
 == DocPrompting @zhouDocPromptingGeneratingCode2023
 - Key points
@@ -243,12 +304,12 @@
   - Context source: Online Documentation (DevDocs)
   - Retrieval process: Embedding search
   - Injection point: Once before generation into prompt
-
+#pause
 - Benefits
   - Flexible which documentation to embed
   - Documentation may include high quality user-submitted guides / examples
   - Fast
-
+#pause
 - Limitations
   - Context retrieved based on given code, _not to-be-generated code_
   - No differentiation between dependency sources
@@ -259,10 +320,12 @@
   - Context source: Repository excluding environment files (`venv`, `node_modules`, etc.)
   - Retrieval process: Embedding search
   - Injection point: Once before generation into prompt
+#pause
 
 - Benefits
   - Full source code as context, including docstrings
   - Bases retrieval on generated code
+#pause
 
 - Limitations
   - Slower due to multiple steps
@@ -276,10 +339,12 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
   - Context source: IDE completion entries
   - Retrieval process: Request language server
   - Injection point: Next token probability distribution
+#pause
 
 - Benefits
   - Accurate context retrieval
   - Low performance overhead
+#pause
 
 - Limitations
   - Injection of unstructured context (docstring) hard
@@ -294,7 +359,7 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 == Goals
 - Online injection of context into the prompt (e.g. docstrings)
 - #sym.arrow.double Enable #acr("MGD") to inject unstructured context
-- Full resumption of generation after injection (do not regenerate current partial result#footnote(text(size: 14pt)[_Details massively simplified here_]))
+- Full resumption of generation after injection\ (do not regenerate current partial result#footnote(text(size: 14pt)[_Details massively simplified here_]))
 - #sym.arrow.double Support beam search decoding strategy
 
 == Approach
@@ -302,22 +367,25 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 - Stop generation on interrupt token
 - #acr("MGD") sets interrupt token when context available
 - Edit prompt with provided context (_location_ / _scope_)
-- Patched model generation to enable full resumption#footnote[To fully enable beam search decoding]
+- Patched model generation to enable full resumption#footnote(text(size: 14pt)[_To fully enable beam search decoding_])
 
 == Example
 #{
   show raw: set text(font: "New Computer Modern Mono", size: 15pt)
   // Else texttt style text in normal backticks is too small
   show raw.where(lang: none, block: false): set text(size: 16pt)
-  figure(
+  c(
+    figure(
   highlight(
     (20,),
     max-width: true, padding: 2pt, bg: color.hsv(240deg, 100%, 70%, 20%),
     codefile("/presentation/assets/pydantic_ibms_1.py", create-link: false),
   ),
   // caption: [],
-)
-  figure(
+),
+  )
+  c(
+    figure(
   highlight(
     (24,),
     max-width: true, padding: 2pt, bg: color.hsv(240deg, 100%, 70%, 20%),
@@ -328,15 +396,18 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
     codefile("/presentation/assets/pydantic_ibms_2.py", create-link: false),
   )),
   // caption: [],
-)
-  figure(
+),
+  )
+  c(
+    figure(
   highlight(
     (20,),
     max-width: true, padding: 2pt, bg: color.hsv(240deg, 100%, 70%, 20%),
     codefile("/presentation/assets/pydantic_ibms_3.py", create-link: false),
   ),
   // caption: [],
-)
+),
+  )
 
 }
 
@@ -356,12 +427,16 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 - #acr("IBMS") is main tool to guide model, prediction manipulation secondary
 
 == Overview
-#move(
-  image(
-    "/presentation/assets/causal-language-model-approach.drawio.svg",
-    width: 110%,
+#c(
+  figure(
+    image(
+      "/presentation/assets/causal-language-model-approach.drawio.svg",
+      width: 110%,
+    ),
+    caption: [
+      Additions to the causal language model to enable the approach.
+    ],
   ),
-  dx: -5%,
 )
 
 // by combining the two, it gets the best of both worlds
@@ -383,23 +458,16 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 
 \
 
-#figure(
-  highlight(
-    // (9, 18, 21, 22),
-    (),
-    max-width: true,
-    bg: color.hsv(340deg, 100%, 70%, 20%),
+#c(
+  figure(
     codefile("/presentation/assets/example_task.json", create-link: false),
+    caption: [
+      Example dataset task entry. Other fields omitted for brevity.
+    ],
   ),
-  caption: [
-    Example dataset task entry. Other fields omitted for brevity.
-  ],
 )
-#figure(
-  highlight(
-  (),
-    // (9, 18, 21, 22),
-    max-width: true,
+#c(
+  figure(
     codefile("/presentation/assets/full_tests.py", create-link: false),
   ),
 )
@@ -462,6 +530,7 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
     stats-column-charts(
       width: 20,
       height: 10,
+      colors: column-colors,
       (
         ("CodeLlama", codellama-baseline-stats),
         (
@@ -495,6 +564,7 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
     stats-column-charts(
       width: 20,
       height: 10,
+      colors: column-colors,
       (
         ("Sampling", sampling-baseline),
         ("No Sampling", no-sampling-baseline),
@@ -648,6 +718,7 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
     stats-column-charts(
       width: 18,
       height: 9,
+      colors: column-colors,
       all-stats.map(stat-with-name => (
         stat-with-name.at(0),
         stat-with-name.at(1).at(0),
@@ -685,6 +756,7 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
     stats-column-charts(
       width: 18,
       height: 9,
+      colors: column-colors,
       all-stats.map(stat-with-name => (
         stat-with-name.at(0),
         stat-with-name.at(1).at(0),

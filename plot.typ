@@ -265,6 +265,13 @@
   two-rows: false,
   width: none,
   height: none,
+  colors: (
+    "#52D726",
+    "#007ED6",
+    "#d229db",
+    "#db2929",
+    "#555555",
+  ).map(color.rgb),
 ) = {
   cetz.canvas(
     {
@@ -274,13 +281,6 @@
       if diff {
         value-keys += (5,)
       }
-      let colors = (
-        "#52D726",
-        "#007ED6",
-        "#d229db",
-        "#db2929",
-        "#555555",
-      ).map(color.rgb)
       let stat-to-list(stat) = {
         let full = stat.at("full")
         let partial = stat.at("partial")
