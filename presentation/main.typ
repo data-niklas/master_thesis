@@ -207,12 +207,14 @@
 - $p_1...p_(|V|); sum_(i=1)^(|V|) p_i = 1$: probability distribution over $V$
 
 == Motivation
+#v(0.8em)
 - #acrpl("CLM") help reduce writing boilerplate code
 - Copilot is widely used
 - #acrpl("CLM") trained on data _until cut-off date_
 - #acrpl("CLM") have issues with changing dependencies
 
 == Problem Scenarios
+#v(0.8em)
 1. _Feature recently changed (deprecation)_
 2. Feature recently added
 3. Feature recently removed
@@ -241,6 +243,7 @@
 )
 
 == Goals
+#v(0.8em)
 1. Retrieval: Retrieve accurate code context using IDE tooling
 2. Injection: Inject context into model, to guide it ...
   - ... away from incorrect suggestions (deprecated / removed features)
@@ -248,6 +251,7 @@
 3. Low performance overhead
 
 == Contributions
+#v(0.2em)
 1. Static Analysis-guided neural code completion
   - Online monitoring of code completion
   - Accurate context retrieval
@@ -270,6 +274,7 @@
 }
 
 == Categories of Related Work
+#v(0.8em)
 // 1. Training Improvement Works
 1. Prompt Injection Works
   - Single-step meta-strategies
@@ -299,6 +304,7 @@
 )
 
 == DocPrompting @zhouDocPromptingGeneratingCode2023
+#v(0.2em)
 - Key points
   - Single-step meta-strategy
   - Context source: Online Documentation (DevDocs)
@@ -315,6 +321,8 @@
   - No differentiation between dependency sources
 
 == RepoCoder @zhangRepoCoderRepositoryLevelCode2023
+
+#v(0.8em)
 - Key points
   - Multi-step meta-strategy
   - Context source: Repository excluding environment files (`venv`, `node_modules`, etc.)
@@ -334,6 +342,7 @@
 == Monitor-Guided-Decoding#footnote[
 Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 ] @agrawalMonitorGuidedDecodingCode
+#v(0.8em)
 - Key points
   - Online monitoring / manipulation of token sequence
   - Context source: IDE completion entries
@@ -357,12 +366,14 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 // 3: how much performance impact does it have
 = Interrupt-Based Meta-Strategy
 == Goals
+#v(0.8em)
 - Online injection of context into the prompt (e.g. docstrings)
 - #sym.arrow.double Enable #acr("MGD") to inject unstructured context
 - Full resumption of generation after injection\ (do not regenerate current partial result#footnote(text(size: 14pt)[_Details massively simplified here_]))
 - #sym.arrow.double Support beam search decoding strategy
 
 == Approach
+#v(0.8em)
 - Add special "interruption" token to model / tokenizer
 - Stop generation on interrupt token
 - #acr("MGD") sets interrupt token when context available
@@ -385,7 +396,9 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 ),
   )
   c(
-    figure(
+    move(
+      dy: 0pt,
+      figure(
   highlight(
     (24,),
     max-width: true, padding: 2pt, bg: color.hsv(240deg, 100%, 70%, 20%),
@@ -397,6 +410,7 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
   )),
   // caption: [],
 ),
+    ),
   )
   c(
     figure(
@@ -412,12 +426,14 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 }
 
 == Refresher: Key points
+#v(0.8em)
 - Inject context into the prompt "during" generation
 - #sym.arrow.double Low performance overhead
 - Applicable outside of code completion
 
 = Full Approach
 == Key points
+#v(0.8em)
 - Hybrid approach using #acr("MGD") and #acr("IBMS")
 - Retrieve context from IDE tooling in real-time:
   - Code completion entries
@@ -447,6 +463,7 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 
 = Results
 == DependencyEval Dataset
+#v(0.8em)
 - Handcrafted dataset to evaluate the approach used by the model
 - 25 Python tasks with fully pinned code environments
 - Evaluation framework to evaluate approach
@@ -510,6 +527,7 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 )
 
 == Experiment Setup
+#v(0.8em)
 1. Models:
   - Code Llama Instruct 7B (CodeLlama)
   - Magicoder-S-DS 6.7B (Magicoder)
