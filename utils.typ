@@ -238,7 +238,7 @@
   )
 }
 
-#let codefile(file, create-link: true) = {
+#let codefile(file, create-link: true, lines: auto) = {
   let file_content = read(file).trim()
   let path_parts = file.split("/")
   let last_part = path_parts.at(path_parts.len() - 1)
@@ -260,6 +260,7 @@
     body = code(
       raw_code,
       lang: language,
+      lines: lines,
     )
 
   }

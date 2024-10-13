@@ -201,6 +201,7 @@
 = Introduction
 == Causal Language Models
 #image("/presentation/assets/causal-language-model.drawio.svg")
+#pause
 - $V$: vocabulary of all tokens
 - token: subword, word, or character
 - $omega_1...omega_n; omega in V$: sequence of tokens (#sym.arrow.double text)
@@ -215,31 +216,32 @@
 
 == Problem Scenarios
 #v(0.8em)
-1. _Feature recently changed (deprecation)_
-2. Feature recently added
-3. Feature recently removed
+1. _Feature recently replaced_
+2. Feature recently removed
+3. Feature recently added
 4. Feature changed in any way, but not represented in training data
 // Focus on deprecation: changed attribute / changed method
 
 == Interlude: Example Pydantic 1 - Copilot
-#figure(
+#c(
   highlight(
     (22,),
     max-width: true,
     padding: 2pt,
-    codefile("/assets/code/invalid_copilot_pydantic.py", create-link: false),
+    codefile(
+      "/presentation/assets/invalid_copilot_pydantic.py",
+      create-link: false,
+    ),
   ),
-  caption: [Invalid completion by Copilot, even when guided by code comments.],
 )
 == Interlude: Example Pydantic 1 - Solution
-#figure(
+#c(
   highlight(
     (20,),
     max-width: true,
     padding: 2pt,
-    codefile("/assets/code/dataset/pydantic_1.py", create-link: false),
+    codefile("/presentation/assets/pydantic_1.py", create-link: false),
   ),
-  caption: [Gold solution highlighted in purple.],
 )
 
 == Goals
@@ -284,23 +286,13 @@
 
 == Prompt Injection Works
 #c(
-  figure(
-    image("/presentation/assets/causal-language-model-prompt.drawio.svg"),
-    caption: [
-      Additions to the causal language model to enable multi-step prompt injection.
-    ],
-  ),
+  image("/presentation/assets/causal-language-model-prompt.drawio.svg"),
 )
 // the power of hindsight to refine the prompt
 
 == Logit-based Approaches
 #c(
-  figure(
-    image("/presentation/assets/causal-language-model-logits.drawio.svg"),
-    caption: [
-      Additions to the causal language model to enable logit-based approaches.
-    ],
-  ),
+  image("/presentation/assets/causal-language-model-logits.drawio.svg"),
 )
 
 == DocPrompting @zhouDocPromptingGeneratingCode2023
@@ -386,41 +378,44 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
   // Else texttt style text in normal backticks is too small
   show raw.where(lang: none, block: false): set text(size: 16pt)
   c(
-    figure(
-  highlight(
-    (20,),
-    max-width: true, padding: 2pt, bg: color.hsv(240deg, 100%, 70%, 20%),
-    codefile("/presentation/assets/pydantic_ibms_1.py", create-link: false),
-  ),
-  // caption: [],
-),
+    highlight(
+      (20,),
+      max-width: true,
+      padding: 2pt,
+      bg: color.hsv(240deg, 100%, 70%, 20%),
+      codefile("/presentation/assets/pydantic_ibms_1.py", create-link: false),
+    ),
   )
+  pagebreak()
   c(
     move(
       dy: 0pt,
-      figure(
-  highlight(
-    (24,),
-    max-width: true, padding: 2pt, bg: color.hsv(240deg, 100%, 70%, 20%),
-  highlight(
-    (20,21,22,23),
-    max-width: true,
-    padding: 2pt,
-    codefile("/presentation/assets/pydantic_ibms_2.py", create-link: false),
-  )),
-  // caption: [],
-),
+      highlight(
+        (24,),
+        max-width: true,
+        padding: 2pt,
+        bg: color.hsv(240deg, 100%, 70%, 20%),
+        highlight(
+          (20, 21, 22, 23),
+          max-width: true,
+          padding: 2pt,
+          codefile(
+            "/presentation/assets/pydantic_ibms_2.py",
+            create-link: false,
+          ),
+        ),
+      ),
     ),
   )
+  pagebreak()
   c(
-    figure(
-  highlight(
-    (20,),
-    max-width: true, padding: 2pt, bg: color.hsv(240deg, 100%, 70%, 20%),
-    codefile("/presentation/assets/pydantic_ibms_3.py", create-link: false),
-  ),
-  // caption: [],
-),
+    highlight(
+      (20,),
+      max-width: true,
+      padding: 2pt,
+      bg: color.hsv(240deg, 100%, 70%, 20%),
+      codefile("/presentation/assets/pydantic_ibms_3.py", create-link: false),
+    ),
   )
 
 }
@@ -444,14 +439,9 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 
 == Overview
 #c(
-  figure(
-    image(
-      "/presentation/assets/causal-language-model-approach.drawio.svg",
-      width: 110%,
-    ),
-    caption: [
-      Additions to the causal language model to enable the approach.
-    ],
+  image(
+    "/presentation/assets/causal-language-model-approach.drawio.svg",
+    width: 110%,
   ),
 )
 
@@ -473,21 +463,21 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
   - Feature recently removed
   - Feature changed in any way, but not represented in training data
 
-\
+#pagebreak()
 
 #c(
-  figure(
-    codefile("/presentation/assets/example_task.json", create-link: false),
-    caption: [
-      Example dataset task entry. Other fields omitted for brevity.
-    ],
-  ),
+  codefile("/presentation/assets/example_task.json", create-link: false),
 )
-#c(
-  figure(
-    codefile("/presentation/assets/full_tests.py", create-link: false),
-  ),
-)
+== DependencyEval Dataset - Tests
+1. Output Correctness Test
+  - Check the output of the function
+  - Check set attributes, etc.
+
+2. Approach Correctness Test
+  - Check used variables _during_ the function call
+// #c(
+//   codefile("/presentation/assets/full_tests.py", create-link: false),
+// )
 
 // Issues: finding testable high quality tasks
 
@@ -541,110 +531,125 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
   - Masked
   - Use completion
 
+== Result Labels
+1. Full / Fully solved
+  - _both_ unit tests pass (functional and approach correctness)
+2. Partial / Partially solved
+  - only _one_ of the unit tests pass
+3. Not solved
+  - neither of the unit tests pass
+  - includes runtime exceptions, which the test framework catches
+4. Error
+  - evaluation cannot be made
+// Goal: move partially solved tasks to fully solved
+
 == Baseline Results - Models
-#figure(
-  {
-    set text(size: 0.8em)
-    stats-column-charts(
-      width: 20,
-      height: 10,
-      colors: column-colors,
+#{
+  set text(size: 0.8em)
+  stats-column-charts(
+    width: 20,
+    height: 10,
+    x-label: none,
+    colors: column-colors,
+    (
+      ("CodeLlama", codellama-baseline-stats),
       (
-        ("CodeLlama", codellama-baseline-stats),
-        (
-          "Magicoder",
-          magicoder-baseline-stats,
-        ),
-        (
-          "MistralHermes",
-          codestral-baseline-stats,
-        ),
-        (
-          "Copilot",
-          copilot,
-        ),
+        "Magicoder",
+        magicoder-baseline-stats,
       ),
-    )
-  },
-  caption: [
-    Baseline results for different models.
-  ],
-)
-// Error: evaluation cannot be made, e.g.: fails due to syntax error
+      (
+        "MistralHermes",
+        codestral-baseline-stats,
+      ),
+      (
+        "Copilot",
+        copilot,
+      ),
+    ),
+  )
+}// Error: evaluation cannot be made, e.g.: fails due to syntax error
 // Allows distinguishing e.g.: GPU memory limit errors in later stages
 // Not solved: Evaluation proceeds and unit tests fail
 // Partially solved: Only the functional test passes (usually the approach correctness test is stricter)
 // fully solved: both tests pass
 == Baseline Results - Model configurations
-#figure(
-  {
-    set text(size: 0.8em)
-    stats-column-charts(
-      width: 20,
-      height: 10,
-      colors: column-colors,
-      (
-        ("Sampling", sampling-baseline),
-        ("No Sampling", no-sampling-baseline),
-        ("1 Beam", one-beam-baseline),
-        ("2 Beams", two-beams-baseline),
-        ("3 Beams", three-beams-baseline),
-      ),
-    )
-  },
-  caption: [
-    Baseline results for different model configurations.
-  ],
-)
+Sampling
+#{
+  set text(size: 0.8em)
+  stats-column-charts(
+    width: 20,
+    height: 10,
+    colors: column-colors,
+    x-label: none,
+    (
+      ("Sampling", sampling-baseline),
+      ("No Sampling", no-sampling-baseline),
+    ),
+  )
+}
+// sampling finds more perfect solutions, but without sampling generally solutions are found more consistently
+// beam search performs better than greedy decoding (1 beam task)
+
+== Baseline Results - Model configurations
+Beam search
+#{
+  set text(size: 0.8em)
+  stats-column-charts(
+    width: 20,
+    height: 10,
+    colors: column-colors,
+    x-label: none,
+    (
+      ("1 Beam", one-beam-baseline),
+      ("2 Beams", two-beams-baseline),
+      ("3 Beams", three-beams-baseline),
+    ),
+  )
+}
 // sampling finds more perfect solutions, but without sampling generally solutions are found more consistently
 // beam search performs better than greedy decoding (1 beam task)
 
 == Baseline Results - Task Scenarios
-#figure(
-  box(
-    width: 100%,
-    height: 75%,
-    context {
-      set text(size: 0.6em)
-      set par(leading: 0.5em)
-      let t = task-stats-table(
-        show-total: false,
-        get-task-stats(
-          all-results + (raw-copilot,),
-          key: "evaluated_code_vanilla",
-        ),
-      )
-      t = modify(
-        t,
-        "children",
-        children => {
-          children.insert(5 * 6, table.hline())
-          children.insert(5 * 19, table.hline())
-          children.insert(5 * 23, table.hline())
-          children.insert(5 * 25, table.hline())
-          children
-        },
-        variadic: "children",
-      )
-      set table.hline(stroke: 1.5pt + gray)
-      spread(2, has-header: true, t)
-    },
-  ),
-  caption: [
-    Baseline evaluation results for each task. The table is sorted from best to worst solved tasks. Copilot results are included.
-  ],
+#box(
+  width: 100%,
+  height: 75%,
+  context {
+    set text(size: 0.6em)
+    set par(leading: 0.5em)
+    let t = task-stats-table(
+      show-total: false,
+      get-task-stats(
+        all-results + (raw-copilot,),
+        key: "evaluated_code_vanilla",
+      ),
+    )
+    t = modify(
+      t,
+      "children",
+      children => {
+        children.insert(5 * 6, table.hline())
+        children.insert(5 * 19, table.hline())
+        children.insert(5 * 23, table.hline())
+        children.insert(5 * 25, table.hline())
+        children
+      },
+      variadic: "children",
+    )
+    set table.hline(stroke: 1.5pt + gray)
+    spread(2, has-header: true, t)
+  },
 )
 #pause
 #place(
   top + left,
   box(width: 60pt, height: 138pt, stroke: 2.5pt + fuchsia, []),
-  dx: 169pt,
+  dx: 144pt,
   dy: 37pt + 120pt,
 )
 #place(
   top + left,
   box(width: 60pt, height: 59pt, stroke: 2.5pt + fuchsia, []),
-  dx: 555pt,
+  dx: 530pt,
   dy: 38pt,
 )
 
@@ -698,6 +703,7 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
   dy: 38pt,
 )
 
+= One-Click-Demo
 = Discussion
 - Which assumptions does the approach hold about the model?
 // - Model has capability to predict entrypoint into completed code
@@ -804,8 +810,112 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
     Overview over the top 3 approach configurations.
   ],
 )
-
-= One-Click-Demo™
+== Tasks
+#show figure: set block(breakable: false)
+#figure(
+  codefile("/assets/code/dataset/bidict_1.py"),
+  caption: [Task: `bidict_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/bidict_2.py"),
+  caption: [Task: `bidict_2.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/dateutil_1.py"),
+  caption: [Task: `dateutil_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/dotted_1.py"),
+  caption: [Task: `dotted_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/dotted_2.py"),
+  caption: [Task: `dotted_2.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/emoji_1.py"),
+  caption: [Task: `emoji_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/fastapi_1.py"),
+  caption: [Task: `fastapi_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/numpy_1.py"),
+  caption: [Task: `numpy_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/pandas_1.py"),
+  caption: [Task: `pandas_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/polars_1.py"),
+  caption: [Task: `polars_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/pydantic_1.py"),
+  caption: [Task: `pydantic_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/pydantic_2.py"),
+  caption: [Task: `pydantic_2.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/pydantic_3.py"),
+  caption: [Task: `pydantic_3.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/pytorch_1.py"),
+  caption: [Task: `pytorch_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/pytorch_2.py"),
+  caption: [Task: `pytorch_2.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/pytorch_3.py"),
+  caption: [Task: `pytorch_3.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/rich_1.py"),
+  caption: [Task: `rich_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/rich_2.py"),
+  caption: [Task: `rich_2.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/sklearn_1.py"),
+  caption: [Task: `sklearn_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/sklearn_2.py"),
+  caption: [Task: `sklearn_2.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/sqlalchemy_1.py"),
+  caption: [Task: `sqlalchemy_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/textual_1.py"),
+  caption: [Task: `textual_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/textual_2.py"),
+  caption: [Task: `textual_2.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/theflow_1.py", lines: (1, 21)),
+  caption: [Task: `theflow_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/theflow_1.py", lines: (23, auto)),
+  caption: [Task: `theflow_1.py`],
+)
+#figure(
+  codefile("/assets/code/dataset/tsv2py_1.py"),
+  caption: [Task: `tsv2py_1.py`],
+)
 
 = Appendix
 #empty-slide[#print-index(outlined: true, title: "Acronyms", level: 2)]

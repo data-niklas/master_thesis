@@ -265,6 +265,7 @@
   two-rows: false,
   width: none,
   height: none,
+  x-label: "Tasks",
   colors: (
     "#52D726",
     "#007ED6",
@@ -332,7 +333,7 @@
             size: (chart-width, chart-height),
             bar-style: cetz.palette.new(colors: colors),
             y-label: [Task Completion $(%)$],
-            x-label: "Tasks",
+            x-label: x-label,
             labels: names,
           )
         },
