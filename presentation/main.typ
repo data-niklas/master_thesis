@@ -199,30 +199,14 @@
 #set par(leading: 1.5em)
 // nothing unusual
 = Introduction
-== Causal Language Models
-#image("/presentation/assets/causal-language-model.drawio.svg")
-#pause
-- $V$: vocabulary of all tokens
-- token: subword, word, or character
-- $omega_1...omega_n; omega in V$: sequence of tokens (#sym.arrow.double text)
-- $p_1...p_(|V|); sum_(i=1)^(|V|) p_i = 1$: probability distribution over $V$
-
 == Motivation
 #v(0.8em)
-- #acrpl("CLM") help reduce writing boilerplate code
-- Copilot is widely used
+- #acrpl("CLM") are used for code completion
+- #acrpl("CLM") help reduce writing boilerplate code (e.g. Copilot)
 - #acrpl("CLM") trained on data _until cut-off date_
 - #acrpl("CLM") have issues with changing dependencies
 
-== Problem Scenarios
-#v(0.8em)
-1. _Feature recently replaced_
-2. Feature recently removed
-3. Feature recently added
-4. Feature changed in any way, but not represented in training data
-// Focus on deprecation: changed attribute / changed method
-
-== Interlude: Example Pydantic 1 - Copilot
+== Example Pydantic 1 - Copilot
 #c(
   highlight(
     (22,),
@@ -234,7 +218,7 @@
     ),
   ),
 )
-== Interlude: Example Pydantic 1 - Solution
+== Example Pydantic 1 - Solution
 #c(
   highlight(
     (20,),
@@ -243,6 +227,21 @@
     codefile("/presentation/assets/pydantic_1.py", create-link: false),
   ),
 )
+== Problem Scenarios
+#v(0.8em)
+1. _Feature recently replaced_
+2. Feature recently removed
+3. Feature recently added
+4. Feature changed in any way, but not represented in training data
+// Focus on deprecation: changed attribute / changed method
+
+== Background - Causal Language Models
+#image("/presentation/assets/causal-language-model.drawio.svg")
+#pause
+- $V$: vocabulary of all tokens
+- token: subword, word, or character
+- $omega_1...omega_n; omega in V$: sequence of tokens (#sym.arrow.double text)
+- $p_1...p_(|V|); sum_(i=1)^(|V|) p_i = 1$: probability distribution over $V$
 
 == Goals
 #v(0.8em)
@@ -458,7 +457,7 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 - 25 Python tasks with fully pinned code environments
 - Evaluation framework to evaluate approach
 - Captures tasks for different problem scenarios:
-  - Feature recently changed (deprecation)
+  - Feature recently _replaced_
   - Feature recently added
   - Feature recently removed
   - Feature changed in any way, but not represented in training data
@@ -494,26 +493,12 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
     }
   },
   table.header([*Component*], [*Value*]),
-  [*CPU*],
-  [2x AMD EPYC 7713 64-Core],
-  [*Memory*],
-  [1 TB],
   [*GPU*],
   [4x NVIDIA GeForce RTX 3090],
   [*OS*],
   [Ubuntu 21.04],
-  [*Kernel*],
-  [5.15.0],
   [*Docker*],
   [20.10.7],
-  [*Python*],
-  [3.9.18],
-  [*Transformers*],
-  [4.39.0],
-  [*PyTorch*],
-  [2.2.1],
-  [*CUDA*],
-  [11.8],
 )
 
 == Experiment Setup
@@ -572,40 +557,6 @@ Monitor-Guided Decoding of Code LMs with Static Analysis of Repository Context
 // Not solved: Evaluation proceeds and unit tests fail
 // Partially solved: Only the functional test passes (usually the approach correctness test is stricter)
 // fully solved: both tests pass
-== Baseline Results - Model configurations
-Sampling
-#{
-  set text(size: 0.8em)
-  stats-column-charts(
-    width: 20,
-    height: 10,
-    colors: column-colors,
-    x-label: none,
-    (
-      ("Sampling", sampling-baseline),
-      ("No Sampling", no-sampling-baseline),
-    ),
-  )
-}
-// sampling finds more perfect solutions, but without sampling generally solutions are found more consistently
-// beam search performs better than greedy decoding (1 beam task)
-
-== Baseline Results - Model configurations
-Beam search
-#{
-  set text(size: 0.8em)
-  stats-column-charts(
-    width: 20,
-    height: 10,
-    colors: column-colors,
-    x-label: none,
-    (
-      ("1 Beam", one-beam-baseline),
-      ("2 Beams", two-beams-baseline),
-      ("3 Beams", three-beams-baseline),
-    ),
-  )
-}
 // sampling finds more perfect solutions, but without sampling generally solutions are found more consistently
 // beam search performs better than greedy decoding (1 beam task)
 
@@ -639,7 +590,7 @@ Beam search
     spread(2, has-header: true, t)
   },
 )
-#pause
+// #pause
 #place(
   top + left,
   box(width: 60pt, height: 138pt, stroke: 2.5pt + fuchsia, []),
@@ -654,7 +605,7 @@ Beam search
 )
 
 == Approach Results - Task Scenarios
-#figure(
+#c(
   box(
     width: 110%,
     height: 75%,
@@ -691,16 +642,13 @@ Beam search
       spread(2, has-header: true, t)
     },
   ),
-  caption: [
-    Baseline evaluation results for each task. The table is sorted from best to worst solved tasks. Copilot results are included.
-  ],
 )
-#pause
+// #pause
 #place(
   top + left,
   box(width: 58pt, height: 158pt, stroke: 2.5pt + fuchsia, []),
   dx: 40pt,
-  dy: 38pt,
+  dy: 86pt,
 )
 
 = One-Click-Demo
@@ -810,6 +758,74 @@ Beam search
     Overview over the top 3 approach configurations.
   ],
 )
+== Full Experiment Environment
+#table(
+  columns: 2,
+  align: (column, row) => {
+    if (row == 0) {
+      center
+    } else if (column == 0) {
+      left
+    } else {
+      left
+    }
+  },
+  table.header([*Component*], [*Value*]),
+  [*CPU*],
+  [2x AMD EPYC 7713 64-Core],
+  [*Memory*],
+  [1 TB],
+  [*GPU*],
+  [4x NVIDIA GeForce RTX 3090],
+  [*OS*],
+  [Ubuntu 21.04],
+  [*Kernel*],
+  [5.15.0],
+  [*Docker*],
+  [20.10.7],
+  [*Python*],
+  [3.9.18],
+  [*Transformers*],
+  [4.39.0],
+  [*PyTorch*],
+  [2.2.1],
+  [*CUDA*],
+  [11.8],
+)
+== Baseline Results - Model configurations
+Sampling
+#{
+  set text(size: 0.8em)
+  stats-column-charts(
+    width: 20,
+    height: 10,
+    colors: column-colors,
+    x-label: none,
+    (
+      ("Sampling", sampling-baseline),
+      ("No Sampling", no-sampling-baseline),
+    ),
+  )
+}
+// sampling finds more perfect solutions, but without sampling generally solutions are found more consistently
+// beam search performs better than greedy decoding (1 beam task)
+
+== Baseline Results - Model configurations
+Beam search
+#{
+  set text(size: 0.8em)
+  stats-column-charts(
+    width: 20,
+    height: 10,
+    colors: column-colors,
+    x-label: none,
+    (
+      ("1 Beam", one-beam-baseline),
+      ("2 Beams", two-beams-baseline),
+      ("3 Beams", three-beams-baseline),
+    ),
+  )
+}
 == Tasks
 #show figure: set block(breakable: false)
 #figure(
